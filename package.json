@@ -1,0 +1,25 @@
+{
+  "name": "three-test",
+  "version": "0.1.0",
+  "description": "test of three.js 2D graphics",
+  "author": "Rudolph",
+  "license": "MIT",
+  "repository": {
+    "type": "git"
+  },
+  "dependencies": {
+    "systemjs": "^0.20.19"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-sourcemaps": "^2.6.1",
+    "gulp-tslint": "^8.1.2",
+    "gulp-typescript": "^3.2.3",
+    "tslint": "^5.8.0",
+    "typescript": "^2.6.2"
+  },
+  "engines": {
+    "node": "^8.9.1",
+    "npm": "^5.5.1"
+  }
+}

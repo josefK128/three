@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>three tests</title>
+  <style>
+     body { margin: 0; }
+     canvas { width: 100%; height: 100% }
+  </style>
+</head>
+
+<body>
+  <canvas id="space"></canvas>
+
+  <script src="../node_modules/systemjs/dist/system.src.js"></script>
+  <script src="./systemjs/systemjs-static-es6.config.js"></script>
+  <!-- latest three.js release is 88 -->
+  <script src="../../../three.js/build/three.js"></script> 
+
+  <script>
+    var _app = './app-es6/space';
+
+    window.onload = System.import(_app)
+      .then((graphics) => {
+         var renderer,
+             camera,
+             scene;
+            
+        // show path and imported object
+        console.log(`System.import ${_app}`);
+        console.log(`graphics = `);
+        console.dir(graphics);
+
+        // default renderer camera and scene
+        camera = graphics.camera();
+        renderer = graphics.renderer();
+        scene = graphics.scene();
+        
+        //Tell the renderer to render the stage
+        renderer.render(scene, camera);
+      });
+  </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>three graphics service tests</title>
+</head>
+<body>
+  <script src="../node_modules/systemjs/dist/system.src.js"></script>
+  <script src="./systemjs/systemjs-static-es6.config.js"></script>
+  <!-- latest three.js release is 88 -->
+  <script src="../../../three.js/build/three.js"></script> 
+
+  <script>
+    var _app = './app-es6/services/graphics';
+
+    window.onload = System.import(_app)
+      .then((Graphics) => {
+         var graphics,
+             renderer,
+             polygon,
+             stage;
+            
+        // show path and module
+        console.log(`System.import ${_app}`);
+        console.log(`Graphics = `);
+        console.dir(Graphics);
+
+        // get exported service from module
+        graphics = Graphics.graphics;
+        console.log(`graphics = `);
+        console.dir(graphics);
+
+        // default renderer camera and scene
+        camera = graphics.camera();
+        renderer = graphics.renderer();
+        scene = graphics.scene();
+        
+        //Tell the renderer to render the scene
+        renderer.render(scene, camera);
+
+      });
+  </script>
+</body>
+</html>
