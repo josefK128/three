@@ -15,35 +15,45 @@
   <script src="./systemjs/systemjs-static-es6.config.js"></script>
   <!-- latest three.js release is 88 -->
   <script src="../../../three.js/build/three.js"></script> 
+  <script src="../../../three.js/examples/js/controls/OrbitControls.js"></script> 
 
   <script>
-    var _app = './app-es6/services/graphics';
+    var _app = './app-es6/services/graphics-actor';
 
+
+    // bootstrap
     window.onload = System.import(_app)
       .then((Graphics) => {
-         var graphics,
-             renderer,
-             polygon,
-             stage;
-            
+        var graphics = Graphics.graphics;
+
+
         // show path and module
         console.log(`System.import ${_app}`);
         console.log(`Graphics = `);
         console.dir(Graphics);
 
-        // get exported service from module
-        graphics = Graphics.graphics;
+        // show exported service from module
         console.log(`graphics = `);
         console.dir(graphics);
 
-        // default renderer camera and scene
-        scene = graphics.scene();
-        renderer = graphics.renderer();
-        camera = graphics.camera();
-        
-        //Tell the renderer to render the scene
-        renderer.render(scene, camera);
+        // initialize scene, renderer, camera, light(s) etc.
+        graphics.init();
 
+        // add actors - exp: grid
+        graphics.actor('grid', 'grid1');
+        graphics.actor('line', 'line1');
+
+        // dolly camera into past with present at right edge and scale actors
+        setTimeout(() => {
+          graphics.scaleActor('grid1', 2.0, 3.0, 1.0);
+          graphics.pastCamera();
+          setTimeout(() => {
+            graphics.scaleActor('line1', 1.0, 0.5, 1.0);
+          }, 10000);
+        },10000);
+
+        // render loop
+        graphics.animate();
       });
   </script>
 

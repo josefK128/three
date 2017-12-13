@@ -2,6 +2,9 @@
 // usage is by dependency injection or possibly by import:
 // import {graphics} from './services/graphics';
 
+import {Grid} from '../actors/Grid';
+
+
 
 // closure vars
 var graphics:Graphics,
@@ -13,19 +16,14 @@ var graphics:Graphics,
 class Graphics {
 
   // default camera
-  camera(fov:number = 90, aspect:number = window.innerWidth/window.innerHeight,
-    near:number = 0.001, far:number = 1000.0):THREE.PerspectiveCamera {
-    
-    var camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+  camera(fov:number = 90, aspect:number = window.innerWidth/window.innerHeight, near:number = 0.001, far:number = 1000.0):THREE.PerspectiveCamera {
+
     return camera;
   }
 
   // default renderer 
-  renderer(width:number = window.innerWidth, 
-           height:number = window.innerHeight): THREE.WebGLRenderer {
+  renderer(width:number = window.innerWidth, height:number = window.innerHeight): THREE.WebGLRenderer {
     
-    var renderer:THREE.WebGLRenderer = new THREE.WebGLRenderer(document.getElementById("space"));
-
     renderer.setSize(width, height );
     return renderer;
   }
@@ -34,11 +32,29 @@ class Graphics {
   // meta-container for all graphics
   scene():THREE.Scene {
 
-    var scene:THREE.Scene = new THREE.Scene();
-
     // return meta-container - 'scene'
     return scene;
   }
+
+
+  // create and return grid
+  async grid():THREE.GridHelper {
+    var grid:THREE.GridHelper;
+
+    console.log(`Grid =`);
+    console.dir(Grid);
+    try{
+      grid = await Grid.create();
+      console.log(`grid =`);
+      console.dir(grid);
+      console.log(`adding grid to scene = ${scene}`);
+      scene.add(grid);
+      return grid;
+    }catch(e){
+      console.log(`failed to create grid: ${e}`);
+    }
+  }      
+
 }//Graphics
 
 
@@ -49,5 +65,3 @@ if(graphics === undefined){
 }
 
 export {graphics};
-
-

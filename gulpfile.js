@@ -15,7 +15,7 @@ var tsconfig = require('./tsconfig.json');
 //var docco = require('gulp-docco');
 //var del = require('del');
 //var exec = require('child_process').exec;
-//var sass = require('gulp-sass');
+var sass = require('gulp-sass');
 //var concat = require('gulp-concat');
 //var annotate = require('gulp-ng-annotate');
 var sourcemaps = require('gulp-sourcemaps');
@@ -35,6 +35,14 @@ var tsFiles = [
 // write destinations
 var srcDest_es5 = './src/app-es5/',
     srcDest_es6 = './src/app-es6/';
+
+// styles
+var styleFiles = [
+  './src/styles/scss/*.scss'
+];
+
+var styleFilesDest = './src/styles/css';
+
 
 
 // tasks
@@ -57,6 +65,17 @@ gulp.task('ts2js', () => {
         //.pipe(sourcemaps.write('.')) // for separate sourcemap-files
         .pipe(sourcemaps.write())     // for sourcemap inline at end of js-file
         .pipe(gulp.dest(srcDest_es6));
+});
+
+
+// task - sass:<br>
+// translates .scss-files to .css-files
+gulp.task('sass', () => {
+  gulp.src(styleFiles)
+    .pipe(sourcemaps.init())
+    .pipe(sass())
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest(styleFilesDest));
 });
 
 
