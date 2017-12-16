@@ -1,79 +1,64 @@
-// space.ts - basic Three.js graphics nucleus 
+// space.ts - future graphics bootstrap application which builds
+// data-objects and injects the graphics service
+
+import {graphics} from './services/graphics';
+
+var space:Space;
 
 
-var graphics = {
 
-  // default camera
-  camera(fov:number = 90, aspect:number = window.innerWidth/window.innerHeight,
-    near:number = 0.001, far:number = 1000.0):THREE.PerspectiveCamera {
-    
-    var camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    return camera;
-  },
+class Space {
 
-  // default renderer 
-  renderer(width:number = window.innerWidth, 
-           height:number = window.innerHeight): THREE.WebGLRenderer {
-    
-    var renderer:THREE.WebGLRenderer = new THREE.WebGLRenderer(document.getElementById("space"));
+  init(config:object = {}):void {
+    console.log(`space.init: config = `);
+    console.dir(config);
 
-    renderer.setPixelRatio( window.devicePixelRatio );
-    renderer.setSize(width, height );
-    return renderer;
-  },
+    // initialize scene, renderer, camera, light(s) etc.
+    graphics.init();
 
-    
-  // meta-container for all graphics
-  scene():THREE.Scene {
-
-    var scene:THREE.Scene = new THREE.Scene(),
-        gridh:THREE.GridHelper = new THREE.GridHelper(10, 10),
-        grid:THREE.Object3D = graphics.createGrid();
-
-    // add grid to scene
-    scene.add(gridh);
-    scene.add(grid);
-
-    // return meta-container - 'scene'
-    return scene;
-  },
+    // read config - create data objects - inject each with graphics service
+    // NOTE: graphics service is a singleton
+    // TBD
 
 
-  createGrid(opts?):THREE.Object3D {
-    var config = opts || {
-      height: 500,
-      width: 500,
-      linesHeight: 10,
-      linesWidth: 10,
-      color: 0xDD006C
-    },
-    material = new THREE.LineBasicMaterial({
-      color: config.color,
-      opacity: 0.2
-    }),
-    gridObject = new THREE.Object3D(),
-    gridGeo = new THREE.Geometry(),
-    stepw = 2 * config.width / config.linesWidth,
-    steph = 2 * config.height / config.linesHeight,
-    line:THREE.Line;
-  
-    //width
-    for (let i = -config.width; i <= config.width; i += stepw) {
-      gridGeo.vertices.push(new THREE.Vector3(-config.height, i, 0));
-      gridGeo.vertices.push(new THREE.Vector3(config.height, i, 0));
-  
-    }
-    //height
-    for (let i = -config.height; i <= config.height; i += steph) {
-      gridGeo.vertices.push(new THREE.Vector3(i, -config.width, 0));
-      gridGeo.vertices.push(new THREE.Vector3(i, config.width, 0));
-    }
-  
-    line = new THREE.Line(gridGeo, material, THREE.LineSegments);
-    gridObject.add(line);
-  
-    return gridObject;
-  }
+    // mock data-object creation of graphics actors
+    graphics.actor('grid', 'grid1');
+    graphics.actor('line', 'line1');
+    graphics.actor('quad', 'quad1');
 
-};
 
+    // dolly camera into past with present at right edge and scale actors
+    setTimeout(() => {
+      console.log(`scaling entire stage by sy=0.5`);
+      graphics.scaleActor('stage', 1.0, 0.5, 1.0);
+      console.log(`translating grid x=0 'now' to right edge of window`);
+      console.log(`NOTE: scaling of grid and stage is uniform from origin, not from center of window`);
+      graphics.pastCamera();
+
+      setTimeout(() => {
+        console.log(`scaling entire stage by sy=1.0 - re-normalize`);
+        graphics.scaleActor('stage', 1.0, 1.0, 1.0);
+        
+        setTimeout(() => {
+          graphics.scaleActor('line1', 1.0, 0.5, 1.0);
+          graphics.scaleActor('quad1', 1.0, 0.5, 1.0);
+          // grid is defined in XZ-plane and then rotated by PI/2
+          // Thus the vertical axis is Z (horizontal axis is X)
+          graphics.scaleActor('grid1', 1.0, 1.0, 0.5);
+        }, 10000);
+      }, 10000);
+    },10000);
+
+    // render loop
+    graphics.animate();
+  }//init
+
+}//Space
+
+
+// enforce singleton export
+if(space === undefined){
+  space = new Space();
+}
+
+export {space};

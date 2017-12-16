@@ -1,51 +1,45 @@
-// space.ts - basic Three.js graphics nucleus 
-var graphics = {
-    //�default camera
-    camera(fov = 90, aspect = window.innerWidth / window.innerHeight, near = 0.001, far = 1000.0) {
-        var camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-        return camera;
-    },
-    // default renderer 
-    renderer(width = window.innerWidth, height = window.innerHeight) {
-        var renderer = new THREE.WebGLRenderer(document.getElementById("space"));
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(width, height);
-        return renderer;
-    },
-    // meta-container for all graphics
-    scene() {
-        var scene = new THREE.Scene(), gridh = new THREE.GridHelper(10, 10), grid = graphics.createGrid();
-        // add grid to scene
-        scene.add(gridh);
-        scene.add(grid);
-        // return meta-container - 'scene'
-        return scene;
-    },
-    createGrid(opts) {
-        var config = opts || {
-            height: 500,
-            width: 500,
-            linesHeight: 10,
-            linesWidth: 10,
-            color: 0xDD006C
-        }, material = new THREE.LineBasicMaterial({
-            color: config.color,
-            opacity: 0.2
-        }), gridObject = new THREE.Object3D(), gridGeo = new THREE.Geometry(), stepw = 2 * config.width / config.linesWidth, steph = 2 * config.height / config.linesHeight, line;
-        //width
-        for (let i = -config.width; i <= config.width; i += stepw) {
-            gridGeo.vertices.push(new THREE.Vector3(-config.height, i, 0));
-            gridGeo.vertices.push(new THREE.Vector3(config.height, i, 0));
+System.register(["./services/graphics"], function (exports_1, context_1) {
+    "use strict";
+    var __moduleName = context_1 && context_1.id;
+    var graphics_1, space, Space;
+    return {
+        setters: [
+            function (graphics_1_1) {
+                graphics_1 = graphics_1_1;
+            }
+        ],
+        execute: function () {
+            Space = class Space {
+                init(config = {}) {
+                    console.log(`space.init: config = `);
+                    console.dir(config);
+                    graphics_1.graphics.init();
+                    graphics_1.graphics.actor('grid', 'grid1');
+                    graphics_1.graphics.actor('line', 'line1');
+                    graphics_1.graphics.actor('quad', 'quad1');
+                    setTimeout(() => {
+                        console.log(`scaling entire stage by sy=0.5`);
+                        graphics_1.graphics.scaleActor('stage', 1.0, 0.5, 1.0);
+                        console.log(`translating grid x=0 'now' to right edge of window`);
+                        console.log(`NOTE: scaling of grid and stage is uniform from origin, not from center of window`);
+                        graphics_1.graphics.pastCamera();
+                        setTimeout(() => {
+                            console.log(`scaling entire stage by sy=1.0 - re-normalize`);
+                            graphics_1.graphics.scaleActor('stage', 1.0, 1.0, 1.0);
+                            setTimeout(() => {
+                                graphics_1.graphics.scaleActor('line1', 1.0, 0.5, 1.0);
+                                graphics_1.graphics.scaleActor('quad1', 1.0, 0.5, 1.0);
+                                graphics_1.graphics.scaleActor('grid1', 1.0, 1.0, 0.5);
+                            }, 10000);
+                        }, 10000);
+                    }, 10000);
+                    graphics_1.graphics.animate();
+                } 
+            }; 
+            if (space === undefined) {
+                exports_1("space", space = new Space());
+            }
         }
-        //height
-        for (let i = -config.height; i <= config.height; i += steph) {
-            gridGeo.vertices.push(new THREE.Vector3(i, -config.width, 0));
-            gridGeo.vertices.push(new THREE.Vector3(i, config.width, 0));
-        }
-        line = new THREE.Line(gridGeo, material, THREE.LineSegments);
-        gridObject.add(line);
-        return gridObject;
-    }
-};
+    };
+});
 
-//# sourceMappingURL=data:application/json;charset=utf8;base64,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UUFDRCxRQUFRO1FBQ1IsR0FBRyxDQUFDLENBQUMsSUFBSSxDQUFDLEdBQUcsQ0FBQyxNQUFNLENBQUMsTUFBTSxFQUFFLENBQUMsSUFBSSxNQUFNLENBQUMsTUFBTSxFQUFFLENBQUMsSUFBSSxLQUFLLEVBQUUsQ0FBQztZQUM1RCxPQUFPLENBQUMsUUFBUSxDQUFDLElBQUksQ0FBQyxJQUFJLEtBQUssQ0FBQyxPQUFPLENBQUMsQ0FBQyxFQUFFLENBQUMsTUFBTSxDQUFDLEtBQUssRUFBRSxDQUFDLENBQUMsQ0FBQyxDQUFDO1lBQzlELE9BQU8sQ0FBQyxRQUFRLENBQUMsSUFBSSxDQUFDLElBQUksS0FBSyxDQUFDLE9BQU8sQ0FBQyxDQUFDLEVBQUUsTUFBTSxDQUFDLEtBQUssRUFBRSxDQUFDLENBQUMsQ0FBQyxDQUFDO1FBQy9ELENBQUM7UUFFRCxJQUFJLEdBQUcsSUFBSSxLQUFLLENBQUMsSUFBSSxDQUFDLE9BQU8sRUFBRSxRQUFRLEVBQUUsS0FBSyxDQUFDLFlBQVksQ0FBQyxDQUFDO1FBQzdELFVBQVUsQ0FBQyxHQUFHLENBQUMsSUFBSSxDQUFDLENBQUM7UUFFckIsTUFBTSxDQUFDLFVBQVUsQ0FBQztJQUNwQixDQUFDO0NBRUYsQ0FBQyIsImZpbGUiOiJzcGFjZS5qcyIsInNvdXJjZXNDb250ZW50IjpbIi8vIHNwYWNlLnRzIC0gYmFzaWMgVGhyZWUuanMgZ3JhcGhpY3MgbnVjbGV1cyBcblxuXG52YXIgZ3JhcGhpY3MgPSB7XG5cbiAgLy/vv71kZWZhdWx0IGNhbWVyYVxuICBjYW1lcmEoZm92Om51bWJlciA9IDkwLCBhc3BlY3Q6bnVtYmVyID0gd2luZG93LmlubmVyV2lkdGgvd2luZG93LmlubmVySGVpZ2h0LFxuICAgIG5lYXI6bnVtYmVyID0gMC4wMDEsIGZhcjpudW1iZXIgPSAxMDAwLjApOlRIUkVFLlBlcnNwZWN0aXZlQ2FtZXJhIHtcbiAgICBcbiAgICB2YXIgY2FtZXJhID0gbmV3IFRIUkVFLlBlcnNwZWN0aXZlQ2FtZXJhKGZvdiwgYXNwZWN0LCBuZWFyLCBmYXIpO1xuICAgIHJldHVybiBjYW1lcmE7XG4gIH0sXG5cbiAgLy8gZGVmYXVsdCByZW5kZXJlciBcbiAgcmVuZGVyZXIod2lkdGg6bnVtYmVyID0gd2luZG93LmlubmVyV2lkdGgsIFxuICAgICAgICAgICBoZWlnaHQ6bnVtYmVyID0gd2luZG93LmlubmVySGVpZ2h0KTogVEhSRUUuV2ViR0xSZW5kZXJlciB7XG4gICAgXG4gICAgdmFyIHJlbmRlcmVyOlRIUkVFLldlYkdMUmVuZGVyZXIgPSBuZXcgVEhSRUUuV2ViR0xSZW5kZXJlcihkb2N1bWVudC5nZXRFbGVtZW50QnlJZChcInNwYWNlXCIpKTtcblxuICAgIHJlbmRlcmVyLnNldFBpeGVsUmF0aW8oIHdpbmRvdy5kZXZpY2VQaXhlbFJhdGlvICk7XG4gICAgcmVuZGVyZXIuc2V0U2l6ZSh3aWR0aCwgaGVpZ2h0ICk7XG4gICAgcmV0dXJuIHJlbmRlcmVyO1xuICB9LFxuXG4gICAgXG4gIC8vIG1ldGEtY29udGFpbmVyIGZvciBhbGwgZ3JhcGhpY3NcbiAgc2NlbmUoKTpUSFJFRS5TY2VuZSB7XG5cbiAgICB2YXIgc2NlbmU6VEhSRUUuU2NlbmUgPSBuZXcgVEhSRUUuU2NlbmUoKSxcbiAgICAgICAgZ3JpZGg6VEhSRUUuR3JpZEhlbHBlciA9IG5ldyBUSFJFRS5HcmlkSGVscGVyKDEwLCAxMCksXG4gICAgICAgIGdyaWQ6VEhSRUUuT2JqZWN0M0QgPSBncmFwaGljcy5jcmVhdGVHcmlkKCk7XG5cbiAgICAvLyBhZGQgZ3JpZCB0byBzY2VuZVxuICAgIHNjZW5lLmFkZChncmlkaCk7XG4gICAgc2NlbmUuYWRkKGdyaWQpO1xuXG4gICAgLy8gcmV0dXJuIG1ldGEtY29udGFpbmVyIC0gJ3NjZW5lJ1xuICAgIHJldHVybiBzY2VuZTtcbiAgfSxcblxuXG4gIGNyZWF0ZUdyaWQob3B0cz8pOlRIUkVFLk9iamVjdDNEIHtcbiAgICB2YXIgY29uZmlnID0gb3B0cyB8fCB7XG4gICAgICBoZWlnaHQ6IDUwMCxcbiAgICAgIHdpZHRoOiA1MDAsXG4gICAgICBsaW5lc0hlaWdodDogMTAsXG4gICAgICBsaW5lc1dpZHRoOiAxMCxcbiAgICAgIGNvbG9yOiAweEREMDA2Q1xuICAgIH0sXG4gICAgbWF0ZXJpYWwgPSBuZXcgVEhSRUUuTGluZUJhc2ljTWF0ZXJpYWwoe1xuICAgICAgY29sb3I6IGNvbmZpZy5jb2xvcixcbiAgICAgIG9wYWNpdHk6IDAuMlxuICAgIH0pLFxuICAgIGdyaWRPYmplY3QgPSBuZXcgVEhSRUUuT2JqZWN0M0QoKSxcbiAgICBncmlkR2VvID0gbmV3IFRIUkVFLkdlb21ldHJ5KCksXG4gICAgc3RlcHcgPSAyICogY29uZmlnLndpZHRoIC8gY29uZmlnLmxpbmVzV2lkdGgsXG4gICAgc3RlcGggPSAyICogY29uZmlnLmhlaWdodCAvIGNvbmZpZy5saW5lc0hlaWdodCxcbiAgICBsaW5lOlRIUkVFLkxpbmU7XG4gIFxuICAgIC8vd2lkdGhcbiAgICBmb3IgKGxldCBpID0gLWNvbmZpZy53aWR0aDsgaSA8PSBjb25maWcud2lkdGg7IGkgKz0gc3RlcHcpIHtcbiAgICAgIGdyaWRHZW8udmVydGljZXMucHVzaChuZXcgVEhSRUUuVmVjdG9yMygtY29uZmlnLmhlaWdodCwgaSwgMCkpO1xuICAgICAgZ3JpZEdlby52ZXJ0aWNlcy5wdXNoKG5ldyBUSFJFRS5WZWN0b3IzKGNvbmZpZy5oZWlnaHQsIGksIDApKTtcbiAgXG4gICAgfVxuICAgIC8vaGVpZ2h0XG4gICAgZm9yIChsZXQgaSA9IC1jb25maWcuaGVpZ2h0OyBpIDw9IGNvbmZpZy5oZWlnaHQ7IGkgKz0gc3RlcGgpIHtcbiAgICAgIGdyaWRHZW8udmVydGljZXMucHVzaChuZXcgVEhSRUUuVmVjdG9yMyhpLCAtY29uZmlnLndpZHRoLCAwKSk7XG4gICAgICBncmlkR2VvLnZlcnRpY2VzLnB1c2gobmV3IFRIUkVFLlZlY3RvcjMoaSwgY29uZmlnLndpZHRoLCAwKSk7XG4gICAgfVxuICBcbiAgICBsaW5lID0gbmV3IFRIUkVFLkxpbmUoZ3JpZEdlbywgbWF0ZXJpYWwsIFRIUkVFLkxpbmVTZWdtZW50cyk7XG4gICAgZ3JpZE9iamVjdC5hZGQobGluZSk7XG4gIFxuICAgIHJldHVybiBncmlkT2JqZWN0O1xuICB9XG5cbn07XG5cbiJdfQ==

@@ -1,25 +1,18 @@
 // Fragment shader program 
-// fsh_default - texture map
+// fsh_color - texture map
 export var uniforms:Object = {
-  tDiffuse: {type: 't', value: null},
-  uTime:{type: 'f', value: 0.0},
-  uResolution:{type: 'v2', value: new THREE.Vector2(960,1080)}
+  uColor:{type: 'c', value: new THREE.Color(0x00ff00)},
 };
 
 export var fsh:string = `
       #ifdef GL_ES
       precision mediump float;
       #endif
-      uniform sampler2D tDiffuse; 
-      uniform float uTime; 
-      varying vec2 vuv;
+      uniform vec3 uColor;
 
       void main() {
-        // map texture pixels to [-1,1]x[-1,1] near plane of fsh-eye fov=90
-        vec3 fwd = normalize(vec3(2.0*vuv.s-1.0, 2.0*vuv.t-1.0,-1.0));
-
-        // paint
-        gl_FragColor = texture2D(tDiffuse, vuv); 
+        //gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); 
+        gl_FragColor = vec4(uColor, 1.0); 
       }`;
 
 

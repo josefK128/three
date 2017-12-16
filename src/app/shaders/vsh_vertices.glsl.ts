@@ -1,10 +1,14 @@
 // Vertex shader program 
-// vsh_default - texture map
+// vsh_vertices
+// assumes positions p are in world coordinates
+
 export var vsh:string = `
-      varying vec2 vuv;
+attribute vec3 p;
+
       void main() {
-        gl_Position = vec4(position.xy, 1.0, 1.0);
-        vuv = uv;
+        //gl_Position = vec4(p, 1.0);
+        vec4 mv_position = viewMatrix * vec4(p, 1.0);
+        gl_Position = projectionMatrix * mv_position;
       }
       `;
 

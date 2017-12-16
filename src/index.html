@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>css-test</title>
+  <title>webgl bootstrap application</title>
   <meta charset=utf-8>
   <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css'> 
@@ -15,29 +15,32 @@
   <script src="./systemjs/systemjs-static-es6.config.js"></script>
   <!-- latest three.js release is 88 -->
   <script src="../../../three.js/build/three.js"></script> 
+  <script src="../../../three.js/examples/js/controls/OrbitControls.js"></script> 
 
   <script>
     var _app = './app-es6/space';
-    //var _app = './app-es6/services/graphics';
+    var _config = './app-es6/configs/test-minimal';
 
+
+    // bootstrap application - central organizational fabric - space
     window.onload = System.import(_app)
-      .then((graphics) => {
-         var renderer,
-             camera,
-             scene;
+      .then((Space) => {
+        var space = Space.space;
             
         // show path and imported object
         console.log(`System.import ${_app}`);
-        console.log(`graphics = `);
-        console.dir(graphics);
+        console.log(`space = `);
+        console.dir(space);
 
-        // default renderer camera and scene
-        camera = graphics.camera();
-        renderer = graphics.renderer();
-        scene = graphics.scene();
-        
-        //Tell the renderer to render the stage
-        renderer.render(scene, camera);
+        // import config and initialize space
+        System.import(_config)
+          .then((Config) => {
+            // show path and imported object
+            console.log(`System.import ${_config}`);
+            console.log(`config = `);
+            console.dir(Config.config);
+            space.init(Config.config);
+          });
       });
   </script>
 

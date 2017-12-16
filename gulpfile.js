@@ -19,6 +19,7 @@ var sass = require('gulp-sass');
 //var concat = require('gulp-concat');
 //var annotate = require('gulp-ng-annotate');
 var sourcemaps = require('gulp-sourcemaps');
+var strip = require('gulp-strip-comments');
 //var uglify = require('gulp-uglify');
 //require('gulp-task-list')(gulp);
 
@@ -51,6 +52,27 @@ var styleFilesDest = './src/styles/css';
 // NOTE: default task!
 gulp.task('default', ['ts2js']);
 gulp.task('ts2js', () => {
+    var tsResult = gulp
+        .src(tsFiles)
+        .pipe(sourcemaps.init())
+        .pipe(tslint({formatter:'verbose'}))
+        .pipe(tslint.report())
+        .pipe(typescript(tsconfig.compilerOptions));
+
+    if(tsconfig.compilerOptions.target === 'es5'){
+        return tsResult.js
+          .pipe(strip())
+          .pipe(gulp.dest(srcDest_es5));
+    }
+    return tsResult.js
+        //.pipe(sourcemaps.write('.')) // for separate sourcemap-files
+        .pipe(sourcemaps.write())     // for sourcemap inline at end of js-file
+        .pipe(strip())
+        .pipe(gulp.dest(srcDest_es6));
+});
+
+// 'nostripping' (ts2js-ns) of comments in the output .js-file
+gulp.task('ts2js-ns', () => {
     var tsResult = gulp
         .src(tsFiles)
         .pipe(sourcemaps.init())

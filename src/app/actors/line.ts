@@ -11,28 +11,30 @@ export var Line = {
     console.log(`line.create() options= `);
     console.dir(options);
 
-    var g:THREE.BufferGeometry,
-        m:THREE.LineBasicMaterial,
+    var line_g:THREE.BufferGeometry,
+        line_m:THREE.LineBasicMaterial,
         positions:Float32Array,
         drawCount:number,
         line:THREE.Line,
+        count:number = 0,
+        flag:boolean = true,
         promise = new Promise((resolve, reject) => {
 
           try{
-            g = new THREE.BufferGeometry();
-            m = new THREE.LineBasicMaterial(options.color, options.lineWidth);
+            line_g = new THREE.BufferGeometry();
+            line_m = new THREE.LineBasicMaterial(options.color, options.lineWidth);
 
             // create custom attribute for BufferGeometry
             // (x,y,z) => 3 vertices per point
             positions = new Float32Array(options.max_vertices*3); 
-            g.addAttribute('position', new THREE.BufferAttribute(positions,3));
+            line_g.addAttribute('position', new THREE.BufferAttribute(positions,3));
 
             // set rendering set
             drawCount = options.drawCount;
-            g.setDrawRange(0, drawCount);
+            line_g.setDrawRange(0, drawCount);
 
             // create line
-            line = new THREE.Line(g,m);
+            line = new THREE.Line(line_g,line_m);
 
             // assign positions the attribute 'position'
             positions = line.geometry.attributes.position.array;
@@ -45,6 +47,17 @@ export var Line = {
               positions[i++] = 0.0;
             }
             line.geometry.attributes.position.needsUpdate = true;
+
+            // add line render function called by graphics service each frame
+            line['render'] = (options:any = {color:0x00ff00}):void => {
+              if(count++ % 1000 === 1){
+                if(flag = !flag){
+                  line_m.color = new THREE.Color(0x00ff00); 
+                }else{
+                  line_m.color = new THREE.Color(0xff0000); 
+                }
+              }
+            };
 
             // scale function - LATER send vec3 <sx,sy,sz> as attribute to GPU
             line['_scale'] = (sx:number=1.0,sy:number=1.0,sz:number=1.0):void =>            {

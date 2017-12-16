@@ -1,4 +1,5 @@
 // grid.ts
+// NOTE: seems to only scale in x-coord (not y?!)
 export var Grid = {
   create: (options:any = {
     size: 400, 
