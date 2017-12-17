@@ -9,7 +9,7 @@ System.register(["../actors/Grid", "../actors/Line", "../actors/Quad"], function
         });
     };
     var __moduleName = context_1 && context_1.id;
-    var Grid_1, Line_1, Quad_1, graphics, gl, camera, controls, scene, stage, renderer, actors, clock, light, et, init_options, count, onWindowResize, Graphics;
+    var Grid_1, Line_1, Quad_1, graphics, gl, camera, lookAt, controls, scene, stage, stats, renderer, actors, clock, light, et, init_options, count, onWindowResize, Graphics;
     return {
         setters: [
             function (Grid_1_1) {
@@ -23,7 +23,7 @@ System.register(["../actors/Grid", "../actors/Line", "../actors/Quad"], function
             }
         ],
         execute: function () {
-            actors = {}, clock = new THREE.Clock(), light = new THREE.PointLight(), et = 0, init_options = {}, count = 0, onWindowResize = () => {
+            lookAt = { x: 0.0, y: 0.0, z: 0.0 }, actors = {}, clock = new THREE.Clock(), light = new THREE.PointLight(), et = 0, init_options = {}, count = 0, onWindowResize = () => {
                 let w = window.innerWidth, h = window.innerHeight;
                 camera.aspect = w / h;
                 camera.updateProjectionMatrix();
@@ -32,8 +32,14 @@ System.register(["../actors/Grid", "../actors/Line", "../actors/Quad"], function
             Graphics = class Graphics {
                 init(options = {}) {
                     scene = graphics.scene();
+                    console.log(`Stats = ${Stats}`);
+                    if (Stats) {
+                        stats = new Stats();
+                        console.log(`created stats = ${stats}`);
+                        document.body.appendChild(stats.domElement);
+                    }
                     camera = graphics.camera();
-                    light.position.set(0, 100, 200);
+                    light.position.set(0, 10, 20);
                     camera.add(light);
                     controls = new THREE.OrbitControls(camera);
                     renderer = graphics.renderer(document.getElementById('space'));
@@ -47,6 +53,9 @@ System.register(["../actors/Grid", "../actors/Line", "../actors/Quad"], function
                             actors[actor].render();
                         }
                     }
+                    if (stats) {
+                        stats.update();
+                    }
                     controls.update();
                     renderer.render(scene, camera);
                 }
@@ -59,10 +68,11 @@ System.register(["../actors/Grid", "../actors/Line", "../actors/Quad"], function
                     }
                     return scene;
                 }
-                camera(fov = 90, aspect = window.innerWidth / window.innerHeight, near = 0.001, far = 1000.0) {
+                camera(fov = 90, aspect = window.innerWidth / window.innerHeight, near = 0.5, far = 1000.0, z = 10) {
+                    var w = window.innerWidth, h = window.innerHeight;
                     if (camera === undefined) {
-                        camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.001, 1000);
-                        camera.position.z = 38;
+                        camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+                        camera.position.z = z;
                     }
                     return camera;
                 }
@@ -81,7 +91,7 @@ System.register(["../actors/Grid", "../actors/Line", "../actors/Quad"], function
                 }
                 actor(type, name) {
                     return __awaiter(this, void 0, void 0, function* () {
-                        var grid, line, quad;
+                        var grid, line, quad, cp = camera.position, layerScale;
                         try {
                             switch (type) {
                                 case 'grid':
@@ -91,11 +101,15 @@ System.register(["../actors/Grid", "../actors/Line", "../actors/Quad"], function
                                     return grid;
                                 case 'line':
                                     line = yield Line_1.Line.create(); 
+                                    layerScale = (cp.z - line.position.z) / cp.z;
+                                    line.scale.set(layerScale, layerScale, 1.0);
                                     actors[name] = line;
                                     stage.add(line);
                                     return line;
                                 case 'quad':
                                     quad = yield Quad_1.Quad.create(); 
+                                    layerScale = (cp.z - quad.position.z) / cp.z;
+                                    quad.scale.set(layerScale, layerScale, 1.0);
                                     actors[name] = quad;
                                     stage.add(quad);
                                     return quad;
@@ -115,21 +129,26 @@ System.register(["../actors/Grid", "../actors/Line", "../actors/Quad"], function
                         if (actor === 'stage') {
                             actors['grid1'].scale.set(sx, sz, sy);
                         }
-                        if (actors[actor]._scale) {
-                            actors[actor]._scale(sx, sy, sz);
-                        }
                     }
                 }
-                pastCamera() {
-                    console.log(`camera looking at past(x<0) ONLY...`);
+                dollyX(dx = 0.0) {
+                    let q = actors['quad1'], l = actors['line1'], qp = q.position, lp = l.position, cp = camera.position, qdt, ldt;
+                    console.log(`\n@@@`);
+                    console.log(`pre:quad.scale = [${q.scale.x},${q.scale.y},${q.scale.z}]`);
+                    camera.translateX(dx);
+                    lookAt.x += dx;
+                    controls.target.set(lookAt.x, lookAt.y, lookAt.z);
+                    console.log(`camera now located at [${cp.x}, ${cp.y}, ${cp.z}]`);
+                    console.log(`camera looking at [${lookAt.x}, ${lookAt.y}, ${lookAt.z}]`);
+                    qdt = dx / cp.z * qp.z;
+                    console.log(`for correct projection of layer ${qp.z}, x-translating quad by ${qdt}`);
+                    q.translateX(qdt);
+                    ldt = dx / cp.z * lp.z;
+                    console.log(`for correct projection of layer ${lp.z}, x-translating line by ${ldt}`);
+                    l.translateX(ldt);
                     actors['line1'].geometry.setDrawRange(0, 90);
-                    controls.target.set(-32, 0, 0);
-                    camera.translateX(-32);
-                }
-                presentCamera() {
-                    console.log(`camera looking at past(x<0) present(x=0) and future(x>0)...`);
-                    controls.target.set(0, 0, 0);
-                    camera.translateX(32);
+                    console.log(`post:quad.scale = [${q.scale.x},${q.scale.y},${q.scale.z}]`);
+                    console.log(`@@@\n`);
                 }
             }; 
             if (graphics === undefined) {

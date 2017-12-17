@@ -1,11 +1,12 @@
 // line.ts
 export var Line = {
   create: (options:any = {
-    max_vertices: 900, 
+    max_vertices: 200, 
     drawCount:3, 
     color: 0xff0000, 
     lineWidth: 2, 
-    vertices: [0,0,0, -2,16,0, -4,0,0,]
+    z:-1.0, // layer2 (layer0 is grid z=0, layer1 is quads z=-0.5)
+    vertices: [0,0,0, -1,2,0, -2,0,0,]
   }):Promise<THREE.Line> => {
 
     console.log(`line.create() options= `);
@@ -36,14 +37,17 @@ export var Line = {
             // create line
             line = new THREE.Line(line_g,line_m);
 
+            // place on correct layer
+            line.position.z = options.z;
+
             // assign positions the attribute 'position'
             positions = line.geometry.attributes.position.array;
             for(let i=0; i<options.vertices.length; i++){
               positions[i] = options.vertices[i];
             }
             for(let i=options.vertices.length; i<options.max_vertices*3;){
-              positions[i++] = -2*i;
-              positions[i++] = 64.0*Math.random();
+              positions[i++] = -i;
+              positions[i++] = 8.0*Math.random();
               positions[i++] = 0.0;
             }
             line.geometry.attributes.position.needsUpdate = true;
@@ -59,11 +63,6 @@ export var Line = {
               }
             };
 
-            // scale function - LATER send vec3 <sx,sy,sz> as attribute to GPU
-            line['_scale'] = (sx:number=1.0,sy:number=1.0,sz:number=1.0):void =>            {
-              console.log(`scale: sx=${sx} sy=${sy} sz=${sz}`);
-            };
-  
             resolve(line);
           }catch(e){
             reject(e);

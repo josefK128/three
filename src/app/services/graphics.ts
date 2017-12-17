@@ -12,9 +12,11 @@ import {Quad} from '../actors/Quad';
 var graphics:Graphics,
     gl:any,
     camera:THREE.PerspectiveCamera,
+    lookAt:any = {x:0.0, y:0.0, z:0.0},
     controls:THREE.OrbitControls,
     scene:THREE.Scene,
     stage:THREE.Group,
+    stats:Stats,
     renderer:THREE.WebGLRenderer,
     actors:object = {},
     clock:THREE.Clock = new THREE.Clock(),
@@ -41,9 +43,15 @@ class Graphics {
     // scene
     scene = graphics.scene();
 
+    // stats
+    if(Stats){
+      stats = new Stats();
+      document.body.appendChild(stats.domElement );  
+    }
+
     // camera and light(s)
     camera = graphics.camera();
-    light.position.set(0, 100, 200);
+    light.position.set(0, 10, 20);
     camera.add(light);
     controls = new THREE.OrbitControls(camera);
 
@@ -67,9 +75,9 @@ class Graphics {
         actors[actor].render();
       }
     }
-
-    //camera.position.x = 100 * Math.cos( time );
-    //camera.position.z = 50 + 10 * Math.sin( time );
+    if(stats){
+      stats.update();
+    }
     controls.update();
     renderer.render( scene, camera );
   }
@@ -95,11 +103,14 @@ class Graphics {
 
 
   // default camera
-  camera(fov:number = 90, aspect:number = window.innerWidth/window.innerHeight, near:number = 0.001, far:number = 1000.0):THREE.PerspectiveCamera {
+  camera(fov:number=90, aspect:number=window.innerWidth/window.innerHeight, near:number=0.5, far:number=1000.0, z:number=10):THREE.PerspectiveCamera {
+
+  var w:number = window.innerWidth,
+      h:number = window.innerHeight;
 
     if(camera === undefined){
-      camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 0.001, 1000 );
-      camera.position.z = 38;
+      camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+      camera.position.z = z;
     }
     return camera;
   }
@@ -132,29 +143,36 @@ class Graphics {
   async actor(type:string, name:string):Promise<THREE.Object3D> {
     var grid:THREE.GridHelper,
         line:THREE.Line,
-        quad:THREE.Quad;
+        quad:THREE.Quad,
+        cp:THREE.Vector3 = camera.position,
+        layerScale:number;
 
         //console.log(`%%% request to create actor ${name} of type ${type}`);
     try{
       switch(type){
         case 'grid':
-          //console.log(`%%% case 'grid'`);
           grid = await Grid.create();  // Grid.create() returns Promise
           actors[name] = grid;
-          scene.add(grid);    // grid is in different plane than other actors!
-          //stage.add(grid);
+scene.add(grid);    // grid is in different plane than other actors!
           return grid;
 
         case 'line':
-          //console.log(`%%% case 'line'`);
           line = await Line.create();  // Line.create() returns Promise
+          // perspective-scale actor according to layer depth so each actor
+          // appears to exist at local size on grid-layer (z=0 XZ plane)
+          //layerScale = (10.0-quad.position.z)/10.0;
+          layerScale = (cp.z-line.position.z)/cp.z;
+          line.scale.set(layerScale,layerScale,1.0);
           actors[name] = line;
           stage.add(line);
           return line;
 
         case 'quad':
-          //console.log(`%%% case 'quad'`);
           quad = await Quad.create();  // Quad.create() returns Promise
+          // perspective-scale actor according to layer depth so each actor
+          // appears to exist at local size on grid-layer (z=0 XZ plane)
+          layerScale = (cp.z-quad.position.z)/cp.z;
+          quad.scale.set(layerScale,layerScale,1.0);
           actors[name] = quad;
           stage.add(quad); 
           return quad;
@@ -173,32 +191,63 @@ class Graphics {
   scaleActor(actor:string, sx:number, sy:number, sz:number):void {
     if(actors[actor]){
       console.log(`%%% scaling actor = ${actor} sx=${sx} sy=${sy} sz=${sz}`);
-      actors[actor].scale.set(sx, sy, sz);
       
+      // set local scale of actor
+      // RECALL: if actor is 'stage' - all actor-children are scaled by 
+      // stage.scale but keep their individual local scales
+      actors[actor].scale.set(sx, sy, sz);
+
+      // TMP! - modify local scale to sync effect of stage-scale
+      // RECALL: 'grid1' is NOT a child of stage
       // scale vertical axis (Z) for grid (in XZ plane)
       if(actor === 'stage'){    
         actors['grid1'].scale.set(sx, sz, sy);
-      }
-      if(actors[actor]._scale){
-        actors[actor]._scale(sx, sy, sz);
       }
     }
   }
 
 
+  dollyX(dx:number = 0.0):void {
+    let q = actors['quad1'],
+        l = actors['line1'],
+        qp = q.position,
+        lp = l.position,
+        cp = camera.position,
+        qdt,
+        ldt;
 
-  pastCamera():void {
-    console.log(`camera looking at past(x<0) ONLY...`);
+    // diagnostics
+    console.log(`\n@@@`);
+    console.log(`pre:quad.scale = [${q.scale.x},${q.scale.y},${q.scale.z}]`);
+
+    // translate camera and set controls lookAt target so camera remains
+    // orthogonal to all layers
+    camera.translateX(dx);
+    lookAt.x += dx;
+    controls.target.set(lookAt.x, lookAt.y, lookAt.z);
+    console.log(`camera now located at [${cp.x}, ${cp.y}, ${cp.z}]`);
+    console.log(`camera looking at [${lookAt.x}, ${lookAt.y}, ${lookAt.z}]`);
+
+    // adjust grid positions so actors project correctly onto z=0 plane
+    // layer0 
+    // no perspective adjustment needed - it is the z=0 projection plane
+
+    // layer1
+    qdt = dx/cp.z * qp.z;
+    console.log(`for correct projection of layer ${qp.z}, x-translating quad by ${qdt}`);
+    q.translateX(qdt);
+
+    // layer2
+    ldt = dx/cp.z * lp.z;
+    console.log(`for correct projection of layer ${lp.z}, x-translating line by ${ldt}`);
+    l.translateX(ldt);
+
+    // adjust number of visible line vertices to 90 (arbitrary POC)
     actors['line1'].geometry.setDrawRange(0, 90);
-    controls.target.set( -32, 0, 0 );
-    camera.translateX(-32);
-  }
 
-  // not used!
-  presentCamera():void {
-    console.log(`camera looking at past(x<0) present(x=0) and future(x>0)...`);
-    controls.target.set( 0, 0, 0 );
-    camera.translateX(32);
+    // diagnostics
+    console.log(`post:quad.scale = [${q.scale.x},${q.scale.y},${q.scale.z}]`);
+    console.log(`@@@\n`);
   }
 
 }//Graphics

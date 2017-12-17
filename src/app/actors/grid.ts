@@ -2,7 +2,7 @@
 // NOTE: seems to only scale in x-coord (not y?!)
 export var Grid = {
   create: (options:any = {
-    size: 400, 
+    size: 100, 
     divisions:100, 
     centerLineColor: 0x0000ff, 
     gridColor: 0x808080, 

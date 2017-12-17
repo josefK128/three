@@ -7,7 +7,7 @@ System.register([], function (exports_1, context_1) {
         execute: function () {
             exports_1("Grid", Grid = {
                 create: (options = {
-                        size: 400,
+                        size: 100,
                         divisions: 100,
                         centerLineColor: 0x0000ff,
                         gridColor: 0x808080,
