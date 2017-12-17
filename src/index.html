@@ -19,28 +19,23 @@
   <script src="../../../three.js/examples/js/libs/stats.min.js"></script> 
 
   <script>
-    var _app = './app-es6/space';
     var _config = './app-es6/configs/test-minimal';
 
 
     // bootstrap application - central organizational fabric - space
-    window.onload = System.import(_app)
-      .then((Space) => {
-        var space = Space.space;
-            
-        // show path and imported object
-        console.log(`System.import ${_app}`);
-        console.log(`space = `);
-        console.dir(space);
+    window.onload = System.import(_config)
+      .then((Config) => {
+        var config = Config.config;
 
-        // import config and initialize space
-        System.import(_config)
-          .then((Config) => {
-            // show path and imported object
-            console.log(`System.import ${_config}`);
-            console.log(`config = `);
-            console.dir(Config.config);
-            space.init(Config.config);
+        // show path and imported object
+        console.log(`System.import ${_config}`);
+        console.log(`config = `);
+        console.dir(config);
+
+        // import and initialize bootstrap app 'space'
+        System.import(config._app)
+          .then((Space) => {
+            Space.space.init(config);
           });
       });
   </script>

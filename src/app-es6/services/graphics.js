@@ -32,10 +32,8 @@ System.register(["../actors/Grid", "../actors/Line", "../actors/Quad"], function
             Graphics = class Graphics {
                 init(options = {}) {
                     scene = graphics.scene();
-                    console.log(`Stats = ${Stats}`);
                     if (Stats) {
                         stats = new Stats();
-                        console.log(`created stats = ${stats}`);
                         document.body.appendChild(stats.domElement);
                     }
                     camera = graphics.camera();

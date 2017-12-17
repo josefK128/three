@@ -1,5 +1,8 @@
 export interface Config {
 
+  // controller app url
+  _app:string;
+
   // keymap
   _map:string;
 

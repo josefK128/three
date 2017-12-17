@@ -220,7 +220,7 @@ scene.add(grid);    // grid is in different plane than other actors!
     console.log(`\n@@@`);
     console.log(`pre:quad.scale = [${q.scale.x},${q.scale.y},${q.scale.z}]`);
 
-    // translate camera and set controls lookAt target so camera remains
+    // translate camera and set controls lookAt-target so camera remains
     // orthogonal to all layers
     camera.translateX(dx);
     lookAt.x += dx;

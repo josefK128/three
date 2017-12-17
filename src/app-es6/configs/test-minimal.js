@@ -6,6 +6,7 @@ System.register([], function (exports_1, context_1) {
         setters: [],
         execute: function () {
             config = {
+                _app: './app-es6/space',
                 _map: '',
                 _controls: '',
                 controlsOptions: {},
