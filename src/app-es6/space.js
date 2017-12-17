@@ -1,7 +1,7 @@
 System.register(["./services/graphics"], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var graphics_1, space, Space;
+    var graphics_1, space, options, Space;
     return {
         setters: [
             function (graphics_1_1) {
@@ -14,9 +14,10 @@ System.register(["./services/graphics"], function (exports_1, context_1) {
                     console.log(`space.init: config = `);
                     console.dir(config);
                     graphics_1.graphics.init();
-                    graphics_1.graphics.actor('grid', 'grid1');
-                    graphics_1.graphics.actor('line', 'line1');
-                    graphics_1.graphics.actor('quad', 'quad1');
+                    graphics_1.graphics.actor('grid', 'grid1', options);
+                    graphics_1.graphics.actor('line', 'line1', options);
+                    graphics_1.graphics.actor('quad', 'quad1', options);
+                    graphics_1.graphics.actor('sprite', 'sprite1', options);
                     setTimeout(() => {
                         console.log(`\n*** graphics.dollyX(-10.0)`);
                         graphics_1.graphics.dollyX(-10.0);

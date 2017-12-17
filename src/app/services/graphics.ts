@@ -5,7 +5,7 @@
 import {Grid} from '../actors/Grid';
 import {Line} from '../actors/Line';
 import {Quad} from '../actors/Quad';
-
+import {Sprite} from '../actors/Sprite';
 
 
 // closure vars
@@ -140,10 +140,11 @@ class Graphics {
 
 
   // create actor - give reference name
-  async actor(type:string, name:string):Promise<THREE.Object3D> {
+  async actor(type:string, name:string, options:any):Promise<THREE.Object3D> {
     var grid:THREE.GridHelper,
         line:THREE.Line,
         quad:THREE.Quad,
+        sprite:THREE.Sprite,
         cp:THREE.Vector3 = camera.position,
         layerScale:number;
 
@@ -151,13 +152,13 @@ class Graphics {
     try{
       switch(type){
         case 'grid':
-          grid = await Grid.create();  // Grid.create() returns Promise
+          grid = await Grid.create(options);  // Grid.create() returns Promise
           actors[name] = grid;
 scene.add(grid);    // grid is in different plane than other actors!
           return grid;
 
         case 'line':
-          line = await Line.create();  // Line.create() returns Promise
+          line = await Line.create(options);  // Line.create() returns Promise
           // perspective-scale actor according to layer depth so each actor
           // appears to exist at local size on grid-layer (z=0 XZ plane)
           //layerScale = (10.0-quad.position.z)/10.0;
@@ -168,7 +169,7 @@ scene.add(grid);    // grid is in different plane than other actors!
           return line;
 
         case 'quad':
-          quad = await Quad.create();  // Quad.create() returns Promise
+          quad = await Quad.create(options);  // Quad.create() returns Promise
           // perspective-scale actor according to layer depth so each actor
           // appears to exist at local size on grid-layer (z=0 XZ plane)
           layerScale = (cp.z-quad.position.z)/cp.z;
@@ -176,6 +177,16 @@ scene.add(grid);    // grid is in different plane than other actors!
           actors[name] = quad;
           stage.add(quad); 
           return quad;
+
+        case 'sprite':
+          sprite = await Sprite.create(options);  // Sprite.create() returns Promise
+          // perspective-scale actor according to layer depth so each actor
+          // appears to exist at local size on grid-layer (z=0 XZ plane)
+          layerScale = (cp.z-sprite.position.z)/cp.z;
+          sprite.scale.set(layerScale,layerScale,1.0);
+          actors[name] = sprite;
+          stage.add(sprite); 
+          return sprite;
 
         default:
           console.log(`%%% failed to create actor of type ${type}`);
@@ -210,15 +221,18 @@ scene.add(grid);    // grid is in different plane than other actors!
   dollyX(dx:number = 0.0):void {
     let q = actors['quad1'],
         l = actors['line1'],
+        s = actors['sprite1'],
         qp = q.position,
         lp = l.position,
+        sp = s.position,
         cp = camera.position,
         qdt,
-        ldt;
+        ldt,
+        sdt;
 
     // diagnostics
     console.log(`\n@@@`);
-    console.log(`pre:quad.scale = [${q.scale.x},${q.scale.y},${q.scale.z}]`);
+    console.log(`pre-dolly:quad.position = [${q.position.x},${q.position.y},${q.position.z}]`);
 
     // translate camera and set controls lookAt-target so camera remains
     // orthogonal to all layers
@@ -232,21 +246,26 @@ scene.add(grid);    // grid is in different plane than other actors!
     // layer0 
     // no perspective adjustment needed - it is the z=0 projection plane
 
-    // layer1
+    // layer1 - quad
     qdt = dx/cp.z * qp.z;
     console.log(`for correct projection of layer ${qp.z}, x-translating quad by ${qdt}`);
     q.translateX(qdt);
 
-    // layer2
+    // layer2 - line
     ldt = dx/cp.z * lp.z;
     console.log(`for correct projection of layer ${lp.z}, x-translating line by ${ldt}`);
     l.translateX(ldt);
+
+    // layer3 - sprites
+    sdt = dx/cp.z * sp.z;
+    console.log(`for correct projection of layer ${sp.z}, x-translating line by ${sdt}`);
+    s.translateX(sdt);
 
     // adjust number of visible line vertices to 90 (arbitrary POC)
     actors['line1'].geometry.setDrawRange(0, 90);
 
     // diagnostics
-    console.log(`post:quad.scale = [${q.scale.x},${q.scale.y},${q.scale.z}]`);
+    console.log(`post:quad.position = [${q.position.x},${q.position.y},${q.position.z}]`);
     console.log(`@@@\n`);
   }
 

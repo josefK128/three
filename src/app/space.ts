@@ -3,8 +3,8 @@
 
 import {graphics} from './services/graphics';
 
-var space:Space;
-
+var space:Space,
+    options:any;
 
 
 class Space {
@@ -22,14 +22,15 @@ class Space {
 
 
     // mock data-object creation of graphics actors
-    graphics.actor('grid', 'grid1');
-    graphics.actor('line', 'line1');
-    graphics.actor('quad', 'quad1');
+    // NOTE: initially use default options
+    graphics.actor('grid', 'grid1', options);
+    graphics.actor('line', 'line1', options);
+    graphics.actor('quad', 'quad1', options);
+    graphics.actor('sprite', 'sprite1', options);
 
 
     // dolly camera into past with present at right edge and scale actors
     setTimeout(() => {
-      //graphics.scaleActor('stage', 1.0, 0.5, 1.0);
       console.log(`\n*** graphics.dollyX(-10.0)`);
       graphics.dollyX(-10.0);
 

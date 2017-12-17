@@ -1,4 +1,4 @@
-System.register(["../actors/Grid", "../actors/Line", "../actors/Quad"], function (exports_1, context_1) {
+System.register(["../actors/Grid", "../actors/Line", "../actors/Quad", "../actors/Sprite"], function (exports_1, context_1) {
     "use strict";
     var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         return new (P || (P = Promise))(function (resolve, reject) {
@@ -9,7 +9,7 @@ System.register(["../actors/Grid", "../actors/Line", "../actors/Quad"], function
         });
     };
     var __moduleName = context_1 && context_1.id;
-    var Grid_1, Line_1, Quad_1, graphics, gl, camera, lookAt, controls, scene, stage, stats, renderer, actors, clock, light, et, init_options, count, onWindowResize, Graphics;
+    var Grid_1, Line_1, Quad_1, Sprite_1, graphics, gl, camera, lookAt, controls, scene, stage, stats, renderer, actors, clock, light, et, init_options, count, onWindowResize, Graphics;
     return {
         setters: [
             function (Grid_1_1) {
@@ -20,6 +20,9 @@ System.register(["../actors/Grid", "../actors/Line", "../actors/Quad"], function
             },
             function (Quad_1_1) {
                 Quad_1 = Quad_1_1;
+            },
+            function (Sprite_1_1) {
+                Sprite_1 = Sprite_1_1;
             }
         ],
         execute: function () {
@@ -87,30 +90,37 @@ System.register(["../actors/Grid", "../actors/Line", "../actors/Quad"], function
                 getCurrentWebGLProgram() {
                     return gl.getParameter(gl.CURRENT_PROGRAM);
                 }
-                actor(type, name) {
+                actor(type, name, options) {
                     return __awaiter(this, void 0, void 0, function* () {
-                        var grid, line, quad, cp = camera.position, layerScale;
+                        var grid, line, quad, sprite, cp = camera.position, layerScale;
                         try {
                             switch (type) {
                                 case 'grid':
-                                    grid = yield Grid_1.Grid.create(); 
+                                    grid = yield Grid_1.Grid.create(options); 
                                     actors[name] = grid;
                                     scene.add(grid); 
                                     return grid;
                                 case 'line':
-                                    line = yield Line_1.Line.create(); 
+                                    line = yield Line_1.Line.create(options); 
                                     layerScale = (cp.z - line.position.z) / cp.z;
                                     line.scale.set(layerScale, layerScale, 1.0);
                                     actors[name] = line;
                                     stage.add(line);
                                     return line;
                                 case 'quad':
-                                    quad = yield Quad_1.Quad.create(); 
+                                    quad = yield Quad_1.Quad.create(options); 
                                     layerScale = (cp.z - quad.position.z) / cp.z;
                                     quad.scale.set(layerScale, layerScale, 1.0);
                                     actors[name] = quad;
                                     stage.add(quad);
                                     return quad;
+                                case 'sprite':
+                                    sprite = yield Sprite_1.Sprite.create(options); 
+                                    layerScale = (cp.z - sprite.position.z) / cp.z;
+                                    sprite.scale.set(layerScale, layerScale, 1.0);
+                                    actors[name] = sprite;
+                                    stage.add(sprite);
+                                    return sprite;
                                 default:
                                     console.log(`%%% failed to create actor of type ${type}`);
                             }
@@ -130,9 +140,9 @@ System.register(["../actors/Grid", "../actors/Line", "../actors/Quad"], function
                     }
                 }
                 dollyX(dx = 0.0) {
-                    let q = actors['quad1'], l = actors['line1'], qp = q.position, lp = l.position, cp = camera.position, qdt, ldt;
+                    let q = actors['quad1'], l = actors['line1'], s = actors['sprite1'], qp = q.position, lp = l.position, sp = s.position, cp = camera.position, qdt, ldt, sdt;
                     console.log(`\n@@@`);
-                    console.log(`pre:quad.scale = [${q.scale.x},${q.scale.y},${q.scale.z}]`);
+                    console.log(`pre-dolly:quad.position = [${q.position.x},${q.position.y},${q.position.z}]`);
                     camera.translateX(dx);
                     lookAt.x += dx;
                     controls.target.set(lookAt.x, lookAt.y, lookAt.z);
@@ -144,8 +154,11 @@ System.register(["../actors/Grid", "../actors/Line", "../actors/Quad"], function
                     ldt = dx / cp.z * lp.z;
                     console.log(`for correct projection of layer ${lp.z}, x-translating line by ${ldt}`);
                     l.translateX(ldt);
+                    sdt = dx / cp.z * sp.z;
+                    console.log(`for correct projection of layer ${sp.z}, x-translating line by ${sdt}`);
+                    s.translateX(sdt);
                     actors['line1'].geometry.setDrawRange(0, 90);
-                    console.log(`post:quad.scale = [${q.scale.x},${q.scale.y},${q.scale.z}]`);
+                    console.log(`post:quad.position = [${q.position.x},${q.position.y},${q.position.z}]`);
                     console.log(`@@@\n`);
                 }
             }; 

@@ -69,5 +69,5 @@ export var Line = {
           }
         });
         return promise;
-    }
+  }//create
 };
