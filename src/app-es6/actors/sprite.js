@@ -6,7 +6,7 @@ System.register([], function (exports_1, context_1) {
         setters: [],
         execute: function () {
             exports_1("Sprite", Sprite = {
-                create: (options = { x: 0, y: 5, z: -1.5, sx: 100, sy: 200 }) => {
+                create: (options = { x: 0, y: 6, z: -1.5, sx: 100, sy: 200 }) => {
                     console.log(`sprite.create() options= `);
                     console.dir(options);
                     var sprite_m, sprite, opacity = options['opacity'] || 1.0, promise = new Promise((resolve, reject) => {

@@ -2,7 +2,7 @@
 
 
 export var Sprite = {
-  create: (options:any={x:0,y:5,z:-1.5, sx:100,sy:200}):Promise<THREE.Line> => {
+  create: (options:any={x:0,y:6,z:-1.5, sx:100,sy:200}):Promise<THREE.Line> => {
         
     console.log(`sprite.create() options= `);
     console.dir(options);

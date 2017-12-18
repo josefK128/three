@@ -6,12 +6,11 @@ System.register([], function (exports_1, context_1) {
         setters: [],
         execute: function () {
             exports_1("vsh", vsh = `
-attribute vec3 p;
-
+      varying vec2 vuv;
       void main() {
-        //gl_Position = vec4(p, 1.0);
-        vec4 mv_position = viewMatrix * vec4(p, 1.0);
+        vec4 mv_position = viewMatrix * vec4(position, 1.0);
         gl_Position = projectionMatrix * mv_position;
+        vuv = uv;
       }
       `);
         }
