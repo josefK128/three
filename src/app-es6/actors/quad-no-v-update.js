@@ -37,27 +37,10 @@ System.register([], function (exports_1, context_1) {
                                 if (count++ % 1000 === 1) {
                                     if (flag = !flag) {
                                         quad_m.color = new THREE.Color(0x00ff00);
-                                        quad.geometry.attributes.position.array = new Float32Array([
-                                            -1.0, -2.0, 0.0,
-                                            1.0, -2.0, 0.0,
-                                            1.0, 2.0, 0.0,
-                                            1.0, 2.0, 0.0,
-                                            -1.0, 2.0, 0.0,
-                                            -1.0, -2.0, 0.0
-                                        ]);
                                     }
                                     else {
                                         quad_m.color = new THREE.Color(0xff0000);
-                                        quad.geometry.attributes.position.array = new Float32Array([
-                                            -0.5, -3.0, 0.0,
-                                            0.5, -3.0, 0.0,
-                                            0.5, 3.0, 0.0,
-                                            0.5, 3.0, 0.0,
-                                            -0.5, 3.0, 0.0,
-                                            -0.5, -3.0, 0.0
-                                        ]);
                                     }
-                                    quad.geometry.attributes.position.needsUpdate = true;
                                 }
                             }; 
                             resolve(quad);
