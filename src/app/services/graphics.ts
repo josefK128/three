@@ -282,7 +282,9 @@ class Graphics {
       for(let actor of layers[i].children){
         // adjust grid positions so actors project correctly onto z=0 plane
         actor.translateX(tx/cp.z * actor.position.z);
-        actor.translateY(ty/cp.z * actor.position.z);
+        if(ty !== 0.0){
+          actor.translateY(ty/cp.z * actor.position.z);
+        }
       }
     }
   }//dolly()

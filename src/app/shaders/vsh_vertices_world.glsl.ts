@@ -1,7 +1,7 @@
 // Vertex shader program 
-// vsh_vertices_world
+// vsh_vertices
 // assumes positions are in world coordinates 
-// world-coordinates are transformed into camera coordinates by viewMatrix
+// world vertices are transformed into camera coordinates by viewMatrix
 // Finally the projectionMatrix transforms the camera coords to the output
 // framebuffer screen which is the near clip-plane of the camera
 // It also passes any texture coords uv->vuv to the fragment shader
