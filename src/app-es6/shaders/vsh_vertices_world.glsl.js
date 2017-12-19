@@ -8,7 +8,7 @@ System.register([], function (exports_1, context_1) {
             exports_1("vsh", vsh = `
       varying vec2 vuv;
       void main() {
-        vec4 mv_position = modelViewMatrix * vec4(position, 1.0);
+        vec4 mv_position = viewMatrix * vec4(position, 1.0);
         gl_Position = projectionMatrix * mv_position;
         vuv = uv;
       }

@@ -14,7 +14,7 @@ class Space {
     console.dir(config);
 
     // initialize scene, renderer, camera, light(s) etc.
-    graphics.init();
+    graphics.init(config, options);
 
     // read config - create data objects - inject each with graphics service
     // NOTE: graphics service is a singleton
@@ -23,16 +23,20 @@ class Space {
 
     // mock data-object creation of graphics actors
     // NOTE: initially use default options
-    graphics.actor('grid', 'grid1', options);
-    graphics.actor('line', 'line1', options);
-    graphics.actor('quad', 'quad1', options);
-    graphics.actor('sprite', 'sprite1', options);
+    graphics.create('grid', 'grid1', 0, options);
+    graphics.create('quad', 'quad1', 1, options);
+    graphics.create('quad_shm', 'quad_shm1', 1, options);   
+    graphics.create('sprite', 'sprite1', 2, options);
+    graphics.create('line', 'line1', 3, options);
 
 
     // dolly camera into past with present at right edge and scale actors
     setTimeout(() => {
-      console.log(`\n*** graphics.dollyX(-10.0)`);
+
+      console.log(`\n*** graphics.dollyX(-10.0) & extend line vertices`);
+      console.log(`expand the visible vertices of 'line1'`);
       graphics.dollyX(-10.0);
+      graphics.actor('line1').geometry.setDrawRange(0, 90);
 
       setTimeout(() => {
         console.log(`*** scaling entire stage by sy=0.5`);

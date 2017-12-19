@@ -7,13 +7,8 @@ System.register([], function (exports_1, context_1) {
         execute: function () {
             config = {
                 _app: './app-es6/space',
-                _map: '',
-                _controls: '',
-                controlsOptions: {},
-                canvas_id: 'space',
-                clearColor: 'white',
-                alpha: 1.0,
-                antialias: true
+                nLayers: 4,
+                layerDelta: 0.5
             };
             exports_1("config", config);
         }

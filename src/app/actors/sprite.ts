@@ -1,8 +1,8 @@
 // sprite.ts
-
+// sprite is texture-mapped char/numeral symbol
 
 export var Sprite = {
-  create: (options:any={x:0,y:6,z:-1.5, sx:100,sy:200}):Promise<THREE.Line> => {
+  create: (options:any={x:0,y:4.0,z:0.0, sx:1,sy:1}):Promise<THREE.Line> => {
         
     console.log(`sprite.create() options= `);
     console.dir(options);
@@ -23,9 +23,8 @@ export var Sprite = {
               // scale sprite
               sprite.scale.set(options.sx, options.sy, 1);
     
-              sprite.position.x = options.x;
-              sprite.position.y = options.y;
-              sprite.position.z = options.z;          
+              // translate to world coords
+              sprite.position.set(options.x, options.y, options.z);          
           
               // return actor ready to be added to scene
               resolve(sprite);

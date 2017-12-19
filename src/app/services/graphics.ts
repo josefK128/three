@@ -2,10 +2,11 @@
 // usage is by dependency injection or possibly by import:
 // import {graphics} from './services/graphics';
 
-import {Grid} from '../actors/Grid';
-import {Line} from '../actors/Line';
-import {Quad} from '../actors/Quad';
-import {Sprite} from '../actors/Sprite';
+import {Grid} from '../actors/grid';
+import {Line} from '../actors/line';
+import {Quad} from '../actors/quad';
+import {Quad_shm} from '../actors/quad_shm';
+import {Sprite} from '../actors/sprite';
 
 
 // closure vars
@@ -16,6 +17,9 @@ var graphics:Graphics,
     controls:THREE.OrbitControls,
     scene:THREE.Scene,
     stage:THREE.Group,
+    layers:THREE.Group[] = [],
+    nLayers:number, 
+    layerDelta:number,
     stats:Stats,
     renderer:THREE.WebGLRenderer,
     actors:object = {},
@@ -38,10 +42,7 @@ var graphics:Graphics,
 class Graphics {
 
   // init scene, camera, renderer  etc.
-  init(options:object = {}):void {
-
-    // scene
-    scene = graphics.scene();
+  init(config:Config, options:object = {}):void {
 
     // stats
     if(Stats){
@@ -49,18 +50,27 @@ class Graphics {
       document.body.appendChild(stats.domElement );  
     }
 
+    // depth
+    nLayers = config.nLayers;
+    console.log(`nLayers = ${nLayers}`);
+    layerDelta = config.layerDelta;
+    console.log(`layerDelta = ${layerDelta}`);
+
     // camera and light(s)
     camera = graphics.camera();
     light.position.set(0, 10, 20);
     camera.add(light);
     controls = new THREE.OrbitControls(camera);
 
+    // scene
+    scene = graphics.scene();
+
     // WebGLRenderer
     renderer = graphics.renderer(document.getElementById('space'));
 
     // resize renderer and adjust camera aspect ratio
     window.addEventListener( 'resize', onWindowResize, false );
-  }
+  }//init
 
 
   // render-loop - must run init first !!
@@ -93,13 +103,34 @@ class Graphics {
   scene():THREE.Scene {
 
     if(scene === undefined){
+      // scene, stage
       scene = new THREE.Scene();
       stage = new THREE.Group();
       actors['stage'] = stage;
       scene.add(stage);
+  
+      // layers
+      // let d = camera.position.z (default = 10.0)
+      // Then layer[i] is scaled by (d+layerDelta*i)/d
+      // exp: suppose config.layerdelta = 0.5
+      // grid ->        layers[0] z=0.0 scale= (d+0)/d = 1.0
+      // glyph-quads -> layers[1] z=-0.5 scale= (d+0.5)/d = 1.05
+      // line ->        layers[2] z=-1.0 scale= (d+1.0)/d = 1.1
+      // sprite ->      layers[3] z=-1.5 scale= (d+1.5)/d = 1.15
+      let d = camera.position.z;   // default=10.0
+      console.log(`\n^^^ graphics.scene(): camera.position.z = ${d}`);
+      for(let i=0; i<nLayers; i++){
+        let s = (d+layerDelta*i)/d;
+        console.log(`^^^ graphics.scene():layer[${i}] scale s = ${s}`);
+        layers[i] = new THREE.Group();
+        layers[i].scale.set(s, s, 1.0);
+        console.log(`layers[${i}].scale = ${layers[i].scale.toArray()}`);
+        console.log(`adding layers[${i}] to stage`);
+        stage.add(layers[i]);
+      }
+      return scene;
     }
-    return scene;
-  }
+  }//scene()
 
 
   // default camera
@@ -140,13 +171,20 @@ class Graphics {
 
 
   // create actor - give reference name
-  async actor(type:string, name:string, options:any):Promise<THREE.Object3D> {
+  // place in appropriate layer
+  // let d = camera.position.z (default = 10.0)
+  // Then layer[i] is scaled by (d-layerZ[i])/d
+  // grid ->        layers[0] z=0.0 scale= (d-z)/d = 1.0
+  // glyph-quads -> layers[1] z=-0.5 scale= (d+0.5)/d = 1.05
+  // line ->        layers[2] z=-1.0 scale= (d+1.0)/d = 1.1
+  // sprite ->      layers[3] z=-1.5 scale= (d+1.5)/d = 1.15
+  async create(type:string, name:string, layer:number, options:any):Promise<THREE.Object3D> {
     var grid:THREE.GridHelper,
         line:THREE.Line,
-        quad:THREE.Quad,
-        sprite:THREE.Sprite,
-        cp:THREE.Vector3 = camera.position,
-        layerScale:number;
+        quad:THREE.Mesh,         // BufferGeometry & MeshBasicMaterial
+        quad_shm:THREE.Mesh,    // BufferGeometry & ShaderMaterial
+        sprite:THREE.Sprite;
+        
 
         //console.log(`%%% request to create actor ${name} of type ${type}`);
     try{
@@ -154,45 +192,54 @@ class Graphics {
         case 'grid':
           grid = await Grid.create(options);  // Grid.create() returns Promise
           actors[name] = grid;
-scene.add(grid);    // grid is in different plane than other actors!
+          grid.position.z = -layer*layerDelta;
+          layers[layer].add(grid);
           return grid;
-
-        case 'line':
-          line = await Line.create(options);  // Line.create() returns Promise
-          // perspective-scale actor according to layer depth so each actor
-          // appears to exist at local size on grid-layer (z=0 XZ plane)
-          //layerScale = (10.0-quad.position.z)/10.0;
-          layerScale = (cp.z-line.position.z)/cp.z;
-          line.scale.set(layerScale,layerScale,1.0);
-          actors[name] = line;
-          stage.add(line);
-          return line;
 
         case 'quad':
           quad = await Quad.create(options);  // Quad.create() returns Promise
-          // perspective-scale actor according to layer depth so each actor
-          // appears to exist at local size on grid-layer (z=0 XZ plane)
-          layerScale = (cp.z-quad.position.z)/cp.z;
-          quad.scale.set(layerScale,layerScale,1.0);
           actors[name] = quad;
-          stage.add(quad); 
+          quad.position.z = -layer*layerDelta;
+          layers[layer].add(quad);
           return quad;
+
+        case 'quad_shm':
+          quad_shm = await Quad_shm.create(options);  // Quad_shm.create() returns Promise
+          actors[name] = quad_shm;
+          quad_shm.position.z = -layer*layerDelta;
+          layers[layer].add(quad_shm);
+          return quad_shm;
 
         case 'sprite':
           sprite = await Sprite.create(options);  // Sprite.create() returns Promise
-          // perspective-scale actor according to layer depth so each actor
-          // appears to exist at local size on grid-layer (z=0 XZ plane)
-          layerScale = (cp.z-sprite.position.z)/cp.z;
-          sprite.scale.set(layerScale,layerScale,1.0);
           actors[name] = sprite;
-          stage.add(sprite); 
+          sprite.position.z = -layer*layerDelta;
+          layers[layer].add(sprite);
           return sprite;
+
+        case 'line':
+          line = await Line.create(options);  // Line.create() returns Promise
+          actors[name] = line;
+          line.position.z = -layer*layerDelta;
+          layers[layer].add(line);
+          return line;
+
 
         default:
           console.log(`%%% failed to create actor of type ${type}`);
       }
     }catch(e){
      console.log(`%%% error creating actor of type ${type}: ${e}`);
+    }
+  }//create()
+
+
+  // get actor by name
+  actor(name:string):THREE.Object3D {
+    if(actors[name]){
+      return actors[name];
+    }else{
+      console.log(`actor with name = ${name} does NOT exist!`);
     }
   }
 
@@ -218,56 +265,27 @@ scene.add(grid);    // grid is in different plane than other actors!
   }
 
 
-  dollyX(dx:number = 0.0):void {
-    let q = actors['quad1'],
-        l = actors['line1'],
-        s = actors['sprite1'],
-        qp = q.position,
-        lp = l.position,
-        sp = s.position,
-        cp = camera.position,
-        qdt,
-        ldt,
-        sdt;
-
-    // diagnostics
-    console.log(`\n@@@`);
-    console.log(`pre-dolly:quad.position = [${q.position.x},${q.position.y},${q.position.z}]`);
+  dollyX(tx:number = 0.0, ty:number = 0.0):void {
+    let cp = camera.position;
 
     // translate camera and set controls lookAt-target so camera remains
     // orthogonal to all layers
-    camera.translateX(dx);
-    lookAt.x += dx;
+    camera.translateX(tx);
+    lookAt.x += tx;
     controls.target.set(lookAt.x, lookAt.y, lookAt.z);
     console.log(`camera now located at [${cp.x}, ${cp.y}, ${cp.z}]`);
     console.log(`camera looking at [${lookAt.x}, ${lookAt.y}, ${lookAt.z}]`);
 
-    // adjust grid positions so actors project correctly onto z=0 plane
-    // layer0 
-    // no perspective adjustment needed - it is the z=0 projection plane
-
-    // layer1 - quad
-    qdt = dx/cp.z * qp.z;
-    console.log(`for correct projection of layer ${qp.z}, x-translating quad by ${qdt}`);
-    q.translateX(qdt);
-
-    // layer2 - line
-    ldt = dx/cp.z * lp.z;
-    console.log(`for correct projection of layer ${lp.z}, x-translating line by ${ldt}`);
-    l.translateX(ldt);
-
-    // layer3 - sprites
-    sdt = dx/cp.z * sp.z;
-    console.log(`for correct projection of layer ${sp.z}, x-translating line by ${sdt}`);
-    s.translateX(sdt);
-
-    // adjust number of visible line vertices to 90 (arbitrary POC)
-    actors['line1'].geometry.setDrawRange(0, 90);
-
-    // diagnostics
-    console.log(`post:quad.position = [${q.position.x},${q.position.y},${q.position.z}]`);
-    console.log(`@@@\n`);
-  }
+    // NOTE: layer[0] needs no adjustment - it is the z=0 projection plane
+    // NOTE: layer[i].children is an array of actors
+    for(let i=1; i<nLayers; i++){
+      for(let actor of layers[i].children){
+        // adjust grid positions so actors project correctly onto z=0 plane
+        actor.translateX(tx/cp.z * actor.position.z);
+        actor.translateY(ty/cp.z * actor.position.z);
+      }
+    }
+  }//dolly()
 
 }//Graphics
 

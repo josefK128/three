@@ -1,5 +1,7 @@
 // Fragment shader program 
-// fsh_color - texture map
+// fsh_color - color of actor given by uColor - default blue
+// default alpha = 1.0 (opaque) set in gl_FragColor = vec4(uColor, 1.0); 
+
 export var uniforms:Object = {
   uColor:{type: 'c', value: new THREE.Color(0x0000ff)},
 };

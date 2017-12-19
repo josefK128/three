@@ -11,8 +11,7 @@ System.register([], function (exports_1, context_1) {
                         drawCount: 3,
                         color: 0xff0000,
                         lineWidth: 2,
-                        z: -1.0,
-                        vertices: [0, 0, 0, -1, 2, 0, -2, 0, 0,]
+                        vertices: [0, 0, 0, -3, 4, 0, -6, 1, 0]
                     }) => {
                     console.log(`line.create() options= `);
                     console.dir(options);
@@ -25,7 +24,6 @@ System.register([], function (exports_1, context_1) {
                             drawCount = options.drawCount;
                             line_g.setDrawRange(0, drawCount);
                             line = new THREE.Line(line_g, line_m);
-                            line.position.z = options.z;
                             positions = line.geometry.attributes.position.array;
                             for (let i = 0; i < options.vertices.length; i++) {
                                 positions[i] = options.vertices[i];

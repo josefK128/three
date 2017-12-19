@@ -6,7 +6,7 @@ System.register([], function (exports_1, context_1) {
         setters: [],
         execute: function () {
             exports_1("Sprite", Sprite = {
-                create: (options = { x: 0, y: 6, z: -1.5, sx: 100, sy: 200 }) => {
+                create: (options = { x: 0, y: 4.0, z: 0.0, sx: 1, sy: 1 }) => {
                     console.log(`sprite.create() options= `);
                     console.dir(options);
                     var sprite_m, sprite, opacity = options['opacity'] || 1.0, promise = new Promise((resolve, reject) => {
@@ -19,9 +19,7 @@ System.register([], function (exports_1, context_1) {
                                 });
                                 sprite = new THREE.Sprite(sprite_m);
                                 sprite.scale.set(options.sx, options.sy, 1);
-                                sprite.position.x = options.x;
-                                sprite.position.y = options.y;
-                                sprite.position.z = options.z;
+                                sprite.position.set(options.x, options.y, options.z);
                                 resolve(sprite);
                             });
                         }

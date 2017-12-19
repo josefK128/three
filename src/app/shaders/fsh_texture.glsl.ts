@@ -1,5 +1,6 @@
 // Fragment shader program 
-// fsh_texture - texture map
+// fsh_texture - texture map set by tDiffuse
+// Also current elapsed time passed into uniform uTime
 export var uniforms:Object = {
   tDiffuse: {type: 't', value: null},
   uTime:{type: 'f', value: 0.0}

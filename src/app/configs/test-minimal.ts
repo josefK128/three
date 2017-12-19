@@ -6,22 +6,14 @@ import {Config} from './config.interface';
 // for space.ts initialization
 const config:Config = {
 
-    // controller app url
-    _app: './app-es6/space',
+  // controller app url
+  _app: './app-es6/space',
 
-    // _map is name of models/camera/keymap file
-    _map: '',
+  // number of layers
+  nLayers: 4,
+  // layer delta - distance between adjacent layers
+  layerDelta: 0.5
 
-    // camera controls - _controls url or false
-    _controls:'',
-    controlsOptions:{},
-
- 
-    // canvas - renderer
-    canvas_id: 'space',
-    clearColor:'white',
-    alpha:1.0,
-    antialias:true
 };
 
 

@@ -3,17 +3,10 @@ export interface Config {
   // controller app url
   _app:string;
 
-  // keymap
-  _map:string;
-
-  // camera controls
-  _controls:string;
-  controlsOptions:Object;
-
-  // canvas - renderer
-  canvas_id:string;
-  clearColor:string;
-  alpha:number;
-  antialias:boolean;
+  // layers definitions
+  // number of layers
+  nLayers:number;
+  // layer delta - distance between adjacent layers
+  layerDelta:number;
 }
 

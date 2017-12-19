@@ -13,14 +13,17 @@ System.register(["./services/graphics"], function (exports_1, context_1) {
                 init(config = {}) {
                     console.log(`space.init: config = `);
                     console.dir(config);
-                    graphics_1.graphics.init();
-                    graphics_1.graphics.actor('grid', 'grid1', options);
-                    graphics_1.graphics.actor('line', 'line1', options);
-                    graphics_1.graphics.actor('quad', 'quad1', options);
-                    graphics_1.graphics.actor('sprite', 'sprite1', options);
+                    graphics_1.graphics.init(config, options);
+                    graphics_1.graphics.create('grid', 'grid1', 0, options);
+                    graphics_1.graphics.create('quad', 'quad1', 1, options);
+                    graphics_1.graphics.create('quad_shm', 'quad_shm1', 1, options);
+                    graphics_1.graphics.create('sprite', 'sprite1', 2, options);
+                    graphics_1.graphics.create('line', 'line1', 3, options);
                     setTimeout(() => {
-                        console.log(`\n*** graphics.dollyX(-10.0)`);
+                        console.log(`\n*** graphics.dollyX(-10.0) & extend line vertices`);
+                        console.log(`expand the visible vertices of 'line1'`);
                         graphics_1.graphics.dollyX(-10.0);
+                        graphics_1.graphics.actor('line1').geometry.setDrawRange(0, 90);
                         setTimeout(() => {
                             console.log(`*** scaling entire stage by sy=0.5`);
                             graphics_1.graphics.scaleActor('stage', 1.0, 0.5, 1.0);

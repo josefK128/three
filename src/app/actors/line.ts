@@ -5,8 +5,7 @@ export var Line = {
     drawCount:3, 
     color: 0xff0000, 
     lineWidth: 2, 
-    z:-1.0, // layer2 (layer0 is grid z=0, layer1 is quads z=-0.5)
-    vertices: [0,0,0, -1,2,0, -2,0,0,]
+    vertices: [0,0,0, -3,4,0, -6,1,0]
   }):Promise<THREE.Line> => {
 
     console.log(`line.create() options= `);
@@ -36,9 +35,6 @@ export var Line = {
 
             // create line
             line = new THREE.Line(line_g,line_m);
-
-            // place on correct layer
-            line.position.z = options.z;
 
             // assign positions the attribute 'position'
             positions = line.geometry.attributes.position.array;
