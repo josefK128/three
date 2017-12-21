@@ -51,6 +51,7 @@ System.register(["../actors/grid", "../actors/line", "../actors/quad", "../actor
                     controls = new THREE.OrbitControls(camera);
                     scene = graphics.scene();
                     renderer = graphics.renderer(document.getElementById('space'));
+                    renderer.setClearColor(0xffffff, 1);
                     window.addEventListener('resize', onWindowResize, false);
                 } 
                 animate() {
@@ -181,7 +182,9 @@ System.register(["../actors/grid", "../actors/line", "../actors/quad", "../actor
                     for (let i = 1; i < nLayers; i++) {
                         for (let actor of layers[i].children) {
                             actor.translateX(tx / cp.z * actor.position.z);
-                            actor.translateY(ty / cp.z * actor.position.z);
+                            if (ty !== 0.0) {
+                                actor.translateY(ty / cp.z * actor.position.z);
+                            }
                         }
                     }
                 } 

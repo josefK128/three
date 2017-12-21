@@ -10,7 +10,7 @@ System.register([], function (exports_1, context_1) {
                         size: 100,
                         divisions: 100,
                         centerLineColor: 0x0000ff,
-                        gridColor: 0x808080,
+                        gridColor: 0x808000,
                         x: 0,
                         y: 0,
                         z: 0

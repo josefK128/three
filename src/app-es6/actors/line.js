@@ -10,7 +10,7 @@ System.register([], function (exports_1, context_1) {
                         max_vertices: 200,
                         drawCount: 3,
                         color: 0xff0000,
-                        lineWidth: 2,
+                        lineWidth: 4,
                         vertices: [0, 0, 0, -3, 4, 0, -6, 1, 0]
                     }) => {
                     console.log(`line.create() options= `);

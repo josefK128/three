@@ -4,7 +4,7 @@ export var Line = {
     max_vertices: 200, 
     drawCount:3, 
     color: 0xff0000, 
-    lineWidth: 2, 
+    lineWidth: 4, 
     vertices: [0,0,0, -3,4,0, -6,1,0]
   }):Promise<THREE.Line> => {
 

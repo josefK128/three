@@ -67,6 +67,7 @@ class Graphics {
 
     // WebGLRenderer
     renderer = graphics.renderer(document.getElementById('space'));
+    renderer.setClearColor(0xffffff, 1);
 
     // resize renderer and adjust camera aspect ratio
     window.addEventListener( 'resize', onWindowResize, false );
