@@ -10,7 +10,7 @@ System.register([], function (exports_1, context_1) {
                         max_vertices: 200,
                         drawCount: 3,
                         color: 0xff0000,
-                        lineWidth: 4,
+                        linewidth: 10,
                         vertices: [0, 0, 0, -3, 4, 0, -6, 1, 0]
                     }) => {
                     console.log(`line.create() options= `);
@@ -18,7 +18,8 @@ System.register([], function (exports_1, context_1) {
                     var line_g, line_m, positions, drawCount, line, count = 0, flag = true, promise = new Promise((resolve, reject) => {
                         try {
                             line_g = new THREE.BufferGeometry();
-                            line_m = new THREE.LineBasicMaterial(options.color, options.lineWidth);
+                            console.log(`line: linewidth = ${options.linewidth}`);
+                            line_m = new THREE.LineBasicMaterial(options.color, options.linewidth);
                             positions = new Float32Array(options.max_vertices * 3);
                             line_g.addAttribute('position', new THREE.BufferAttribute(positions, 3));
                             drawCount = options.drawCount;

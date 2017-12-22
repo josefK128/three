@@ -12,7 +12,7 @@ export var Sprite = {
         opacity = options['opacity'] || 1.0,
         promise = new Promise((resolve, reject) => {
           try{
-            (new THREE.TextureLoader()).load('./assets/images/sprite_quantum.png', (texture) => { 
+            (new THREE.TextureLoader()).load('./assets/images/sprite_redlight.png', (texture) => { 
               console.log(`&&& texture = ${texture}`);
               sprite_m = new THREE.SpriteMaterial({
                 map: texture,

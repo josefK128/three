@@ -180,7 +180,10 @@ System.register(["../actors/grid", "../actors/line", "../actors/quad", "../actor
                     console.log(`camera now located at [${cp.x}, ${cp.y}, ${cp.z}]`);
                     console.log(`camera looking at [${lookAt.x}, ${lookAt.y}, ${lookAt.z}]`);
                     for (let i = 1; i < nLayers; i++) {
+                        console.log(`layer is ${i}`);
                         for (let actor of layers[i].children) {
+                            console.log(`dolly-scaled actor is ${actor}`);
+                            console.log(`dolly-scaled actor.z is ${actor.position.z}`);
                             actor.translateX(tx / cp.z * actor.position.z);
                             if (ty !== 0.0) {
                                 actor.translateY(ty / cp.z * actor.position.z);

@@ -1,4 +1,4 @@
-// test-minimal.ts - simple test configuration
+// dev-stage1.ts - simple test configuration
 
 import {Config} from './config.interface';
 

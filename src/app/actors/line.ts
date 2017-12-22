@@ -4,7 +4,7 @@ export var Line = {
     max_vertices: 200, 
     drawCount:3, 
     color: 0xff0000, 
-    lineWidth: 4, 
+    linewidth: 10, 
     vertices: [0,0,0, -3,4,0, -6,1,0]
   }):Promise<THREE.Line> => {
 
@@ -22,7 +22,8 @@ export var Line = {
 
           try{
             line_g = new THREE.BufferGeometry();
-            line_m = new THREE.LineBasicMaterial(options.color, options.lineWidth);
+            console.log(`line: linewidth = ${options.linewidth}`);
+            line_m = new THREE.LineBasicMaterial(options.color, options.linewidth);
 
             // create custom attribute for BufferGeometry
             // (x,y,z) => 3 vertices per point

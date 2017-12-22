@@ -177,8 +177,8 @@ class Graphics {
   // Then layer[i] is scaled by (d-layerZ[i])/d
   // grid ->        layers[0] z=0.0 scale= (d-z)/d = 1.0
   // glyph-quads -> layers[1] z=-0.5 scale= (d+0.5)/d = 1.05
-  // line ->        layers[2] z=-1.0 scale= (d+1.0)/d = 1.1
-  // sprite ->      layers[3] z=-1.5 scale= (d+1.5)/d = 1.15
+  // sprite ->      layers[2] z=-1.0 scale= (d+1.5)/d = 1.1
+  // line ->        layers[3] z=-1.5 scale= (d+1.0)/d = 1.15
   async create(type:string, name:string, layer:number, options:any):Promise<THREE.Object3D> {
     var grid:THREE.GridHelper,
         line:THREE.Line,
@@ -187,7 +187,7 @@ class Graphics {
         sprite:THREE.Sprite;
         
 
-        //console.log(`%%% request to create actor ${name} of type ${type}`);
+    //console.log(`%%% request to create actor ${name} of type ${type}`);
     try{
       switch(type){
         case 'grid':
@@ -280,8 +280,11 @@ class Graphics {
     // NOTE: layer[0] needs no adjustment - it is the z=0 projection plane
     // NOTE: layer[i].children is an array of actors
     for(let i=1; i<nLayers; i++){
+      console.log(`layer is ${i}`);
       for(let actor of layers[i].children){
         // adjust grid positions so actors project correctly onto z=0 plane
+        console.log(`dolly-scaled actor is ${actor}`);
+        console.log(`dolly-scaled actor.z is ${actor.position.z}`);
         actor.translateX(tx/cp.z * actor.position.z);
         if(ty !== 0.0){
           actor.translateY(ty/cp.z * actor.position.z);
