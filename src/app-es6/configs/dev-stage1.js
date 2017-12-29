@@ -6,7 +6,7 @@ System.register([], function (exports_1, context_1) {
         setters: [],
         execute: function () {
             config = {
-                _app: './app-es6/space',
+                _app: './app-es6/space1',
                 nLayers: 4,
                 layerDelta: 0.5
             };

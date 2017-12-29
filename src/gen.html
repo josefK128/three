@@ -28,6 +28,7 @@
     window.onload = System.import(_config)
       .then((Config) => {
         var config = Config.config,
+
             index = 0,
             g = {
               actions: [
@@ -56,11 +57,19 @@
             scaleX_ = {scaleX_: -20},
             scaleYb = {scaleYb:()=>{console.log(`scaleY`)}};
 
-
+      
         // show path and imported object
         console.log(`System.import ${_config}`);
         console.log(`config = `);
         console.dir(config);
+
+   
+        // import and initialize bootstrap app 'space'
+        System.import(config._app)
+          .then((Space) => {
+            Space.space.init(config);
+          });
+
 
         // gui
         gui.add(rails, 'rails');
