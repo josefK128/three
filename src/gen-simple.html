@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>webgl generator test</title>
+  <meta charset=utf-8>
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css'> 
+  <link rel="stylesheet" href="./styles/css/space.css" > 
+ </head>
+
+<body>
+  <canvas id='space'></canvas>
+
+  <script src="../node_modules/systemjs/dist/system.src.js"></script>
+  <script src="./systemjs/systemjs-static-es6.config.js"></script>
+  <!-- latest three.js release is 88 -->
+  <script src="../../../three.js/build/three.js"></script> 
+  <script src="../../../three.js/examples/js/controls/OrbitControls.js"></script> 
+  <script src="../../../three.js/examples/js/libs/stats.min.js"></script> 
+  <script src="../../../three.js/examples/js/libs/dat.gui.min.js"></script> 
+
+  <script>
+    var _config = './app-es6/configs/dev-stage2';
+
+
+    // bootstrap application - central organizational fabric - space
+    window.onload = System.import(_config)
+      .then((Config) => {
+        var config = Config.config,
+            gui = new dat.GUI(),
+            text = {
+              speed: 0.0
+            },
+            actions = {
+              action: (index) => {
+                return `execute action ${index}`;
+              },
+              *generator() {
+                var index = 0;
+                while(index < 3){
+                  //yield `execute action ${index++}`;
+                  yield actions.action(index++);
+                }
+              }
+            },
+            gen = actions.generator(),
+            next = gen.next();
+
+
+        // show path and imported object
+        console.log(`System.import ${_config}`);
+        console.log(`config = `);
+        console.dir(config);
+
+        // gui
+        gui.add(text, 'speed', -5, 5);
+
+        // iterate over generated actions
+        //console.log(gen.next().value); // execute action 0
+        //console.log(gen.next().value); // execute action 1
+        //console.log(gen.next().value); // execute action 2
+        //console.log(gen.next().value); // undefined
+        console.log(`\n`);
+        while(!next.done){
+          console.log(next.value); // execute action k
+          next = gen.next();
+        }
+      });
+  </script>
+
+</body>
+</html>
+

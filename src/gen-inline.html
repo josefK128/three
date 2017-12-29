@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>webgl generator test</title>
+  <meta charset=utf-8>
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <!-- <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css'> -->
+  <link rel="stylesheet" href="./styles/css/space.css" > 
+</head>
+
+<body>
+  <canvas id='space'></canvas>
+
+  <script src="../node_modules/systemjs/dist/system.src.js"></script>
+  <script src="./systemjs/systemjs-static-es6.config.js"></script>
+  <!-- latest three.js release is 88 -->
+  <script src="../../../three.js/build/three.js"></script> 
+  <script src="../../../three.js/examples/js/controls/OrbitControls.js"></script> 
+  <script src="../../../three.js/examples/js/libs/stats.min.js"></script> 
+  <script src="../../../three.js/examples/js/libs/dat.gui.min.js"></script> 
+
+
+  <script>
+    var _config = './app-es6/configs/dev-stage2';
+
+
+    // bootstrap application - central organizational fabric - space
+    window.onload = System.import(_config)
+      .then((Config) => {
+        var config = Config.config,
+            index = 0,
+            actions = {
+              action: (i) => {
+                return `exec action ${i}`;
+              },
+              *generator() {
+                while(true){
+                  yield actions.action(index);
+                  index = (index+1)%10;
+                }
+              }
+            },
+            gen = actions.generator(),
+            gui = new dat.GUI(),
+            railsv = false,  // so initial rails=true
+            rails = {rails: railsv=!railsv},
+            symbolv = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'], 
+            menu = {
+              symbol: 'a',
+            },
+            eventb = { eventb:()=>{console.log(gen.next().value)}},
+            cameraX_ = { cameraX_: -10.0 },
+            cameraY_ = { cameraY_: 10.0 },
+            scaleX_ = {scaleX_: -20},
+            scaleYb = {scaleYb:()=>{console.log(`scaleY`)}};
+
+        // show path and imported object
+        console.log(`System.import ${_config}`);
+        console.log(`config = `);
+        console.dir(config);
+
+        // gui
+        gui.add(rails, 'rails');
+        gui.add(menu, 'symbol', symbolv );
+        gui.add(eventb, 'eventb');
+        gui.add(cameraX_, 'cameraX_', -190, -10);
+        gui.add(cameraY_, 'cameraY_', 10, 100);
+        gui.add(scaleX_, 'scaleX_', -200, -20);
+        gui.add(scaleYb, 'scaleYb');
+      });
+  </script>
+
+</body>
+</html>
+
