@@ -1,11 +1,14 @@
-System.register(["./services/graphics"], function (exports_1, context_1) {
+System.register(["./services/graphics", "./controllers/ui"], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var graphics_1, space, options, Space;
+    var graphics_1, ui_1, space, options, Space;
     return {
         setters: [
             function (graphics_1_1) {
                 graphics_1 = graphics_1_1;
+            },
+            function (ui_1_1) {
+                ui_1 = ui_1_1;
             }
         ],
         execute: function () {
@@ -15,6 +18,7 @@ System.register(["./services/graphics"], function (exports_1, context_1) {
                     console.dir(config);
                     graphics_1.graphics.init(config, options);
                     graphics_1.graphics.create('grid', 'grid1', 0, options);
+                    ui_1.ui.init(graphics_1.graphics, config);
                     graphics_1.graphics.animate();
                 } 
             }; 

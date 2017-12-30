@@ -1,7 +1,9 @@
-// space.ts - future graphics bootstrap application which builds
-// data-objects and injects the graphics service
+// space.ts - graphics bootstrap application which initializes
+// the graphics service (graphics.ts) and the graphics controller (ui.ts)
+// from the config-file
 
 import {graphics} from './services/graphics';
+import {ui} from './controllers/ui';
 
 var space:Space,
     options:any;
@@ -16,14 +18,14 @@ class Space {
     // initialize scene, renderer, camera, light(s) etc.
     graphics.init(config, options);
 
-    // read config - create data objects - inject each with graphics service
-    // NOTE: graphics service is a singleton
-    // TBD
-
 
     // mock data-object creation of graphics actors
     // NOTE: initially use default options
     graphics.create('grid', 'grid1', 0, options);
+
+
+    // initialize ui (gui)
+    ui.init(graphics, config);
 
     // render loop
     graphics.animate();
