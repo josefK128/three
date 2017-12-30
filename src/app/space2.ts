@@ -9,7 +9,7 @@ var space:Space,
 
 class Space {
 
-  init(config:object = {}):void {
+  init(config:Config = {}):void {
     console.log(`space.init: config = `);
     console.dir(config);
 
