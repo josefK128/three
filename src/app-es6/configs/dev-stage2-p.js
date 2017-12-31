@@ -7,12 +7,8 @@ System.register([], function (exports_1, context_1) {
         execute: function () {
             config = {
                 _app: './app-es6/space2',
-                stage: {
-                    layerDelta: 0.5,
-                    layers: [
-                        [{ name: 'grid1', type: 'grid', layer: 0, options: undefined }]
-                    ]
-                }
+                nLayers: 4,
+                layerDelta: 0.5
             };
             exports_1("config", config);
         }

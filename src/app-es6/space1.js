@@ -13,7 +13,7 @@ System.register(["./services/graphics"], function (exports_1, context_1) {
                 init(config = {}) {
                     console.log(`space.init: config = `);
                     console.dir(config);
-                    graphics_1.graphics.init(config, options);
+                    graphics_1.graphics.init(config);
                     graphics_1.graphics.create('grid', 'grid1', 0, options);
                     graphics_1.graphics.create('quad', 'quad1', 1, options);
                     graphics_1.graphics.create('quad_shm', 'quad_shm1', 1, options);

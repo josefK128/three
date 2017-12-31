@@ -42,7 +42,7 @@ var graphics:Graphics,
 class Graphics {
 
   // init scene, camera, renderer  etc.
-  init(config:Config, options:object = {}):void {
+  init(config:Config):void {
 
     // stats
     if(Stats){
@@ -51,9 +51,9 @@ class Graphics {
     }
 
     // depth
-    nLayers = config.nLayers;
+    nLayers = config.stage.layers.length;
     console.log(`nLayers = ${nLayers}`);
-    layerDelta = config.layerDelta;
+    layerDelta = config.stage.layerDelta;
     console.log(`layerDelta = ${layerDelta}`);
 
     // camera and light(s)

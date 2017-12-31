@@ -17,12 +17,7 @@ System.register(["./services/graphics", "./controllers/ui"], function (exports_1
                     console.log(`space.init: config = `);
                     console.dir(config);
                     graphics_1.graphics.init(config);
-                    for (let layer of config.stage['layers']) {
-                        for (let actor of layer) {
-                            console.log(`actor['options'] = ${actor['options']}`);
-                            graphics_1.graphics.create(actor['type'], actor['name'], actor['layer'], actor['options']);
-                        }
-                    }
+                    graphics_1.graphics.create('grid', 'grid1', 0, options);
                     ui_1.ui.init(graphics_1.graphics, config);
                     graphics_1.graphics.animate();
                 } 

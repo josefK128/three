@@ -9,10 +9,21 @@ const config:Config = {
   // controller app url
   _app: './app-es6/space2',
 
-  // number of layers
-  nLayers: 4,
-  // layer delta - distance between adjacent layers
-  layerDelta: 0.5
+
+  // stage: {
+  //   layerDelta:number = 0.5,
+  //   layers:object[][] = [
+  //     [{name:string, type:string, layer:number=0, options:object={}}, ...],
+  //     [{name:string, type:string, layer:number=0, options:object={}}, ...],
+  //     ...
+  //   ]
+  // }
+  stage: {
+    layerDelta: 0.5,
+    layers: [
+      [{name:'grid1', type:'grid', layer:0, options:undefined}]
+    ]
+  }
 
 };
 

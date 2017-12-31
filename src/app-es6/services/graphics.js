@@ -36,14 +36,14 @@ System.register(["../actors/grid", "../actors/line", "../actors/quad", "../actor
                 renderer.setSize(w, h);
             };
             Graphics = class Graphics {
-                init(config, options = {}) {
+                init(config) {
                     if (Stats) {
                         stats = new Stats();
                         document.body.appendChild(stats.domElement);
                     }
-                    nLayers = config.nLayers;
+                    nLayers = config.stage.layers.length;
                     console.log(`nLayers = ${nLayers}`);
-                    layerDelta = config.layerDelta;
+                    layerDelta = config.stage.layerDelta;
                     console.log(`layerDelta = ${layerDelta}`);
                     camera = graphics.camera();
                     light.position.set(0, 10, 20);

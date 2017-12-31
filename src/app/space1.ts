@@ -14,7 +14,7 @@ class Space {
     console.dir(config);
 
     // initialize scene, renderer, camera, light(s) etc.
-    graphics.init(config, options);
+    graphics.init(config);
 
     // read config - create data objects - inject each with graphics service
     // NOTE: graphics service is a singleton
