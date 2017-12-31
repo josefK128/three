@@ -122,37 +122,37 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                             switch (type) {
                                 case 'grid':
                                     grid = yield grid_1.Grid.create(options); 
-                                    actors[name] = grid;
+                                    graphics.addActor(name, grid, options);
                                     grid.position.z = -layer * layerDelta;
                                     layers[layer].add(grid);
                                     return grid;
                                 case 'axes':
                                     axes = yield axes_1.Axes.create(options); 
-                                    actors[name] = axes;
+                                    graphics.addActor(name, axes, options);
                                     axes.position.z = -layer * layerDelta;
                                     layers[layer].add(axes);
                                     return axes;
                                 case 'quad':
                                     quad = yield quad_1.Quad.create(options); 
-                                    actors[name] = quad;
+                                    graphics.addActor(name, quad, options);
                                     quad.position.z = -layer * layerDelta;
                                     layers[layer].add(quad);
                                     return quad;
                                 case 'quad_shm':
                                     quad_shm = yield quad_shm_1.Quad_shm.create(options); 
-                                    actors[name] = quad_shm;
+                                    graphics.addActor(name, quad_shm, options);
                                     quad_shm.position.z = -layer * layerDelta;
                                     layers[layer].add(quad_shm);
                                     return quad_shm;
                                 case 'sprite':
                                     sprite = yield sprite_1.Sprite.create(options); 
-                                    actors[name] = sprite;
+                                    graphics.addActor(name, sprite, options);
                                     sprite.position.z = -layer * layerDelta;
                                     layers[layer].add(sprite);
                                     return sprite;
                                 case 'line':
                                     line = yield line_1.Line.create(options); 
-                                    actors[name] = line;
+                                    graphics.addActor(name, line, options);
                                     line.position.z = -layer * layerDelta;
                                     layers[layer].add(line);
                                     return line;
@@ -165,6 +165,11 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                         }
                     });
                 } 
+                addActor(name, actor, options) {
+                    actor.name = name;
+                    actor.userData = options;
+                    actors[name] = actor;
+                }
                 actor(name) {
                     if (actors[name]) {
                         return actors[name];

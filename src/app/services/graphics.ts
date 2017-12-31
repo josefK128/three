@@ -194,42 +194,42 @@ class Graphics {
       switch(type){
         case 'grid':
           grid = await Grid.create(options);  // Grid.create() returns Promise
-          actors[name] = grid;
+          graphics.addActor(name, grid, options);
           grid.position.z = -layer*layerDelta;
           layers[layer].add(grid);
           return grid;
 
         case 'axes':
           axes = await Axes.create(options);  // Axes.create() returns Promise
-          actors[name] = axes;
+          graphics.addActor(name, axes, options);
           axes.position.z = -layer*layerDelta;
           layers[layer].add(axes);
           return axes;
 
         case 'quad':
           quad = await Quad.create(options);  // Quad.create() returns Promise
-          actors[name] = quad;
+          graphics.addActor(name, quad, options);
           quad.position.z = -layer*layerDelta;
           layers[layer].add(quad);
           return quad;
 
         case 'quad_shm':
           quad_shm = await Quad_shm.create(options);  // Quad_shm.create() returns Promise
-          actors[name] = quad_shm;
+          graphics.addActor(name, quad_shm, options);
           quad_shm.position.z = -layer*layerDelta;
           layers[layer].add(quad_shm);
           return quad_shm;
 
         case 'sprite':
           sprite = await Sprite.create(options);  // Sprite.create() returns Promise
-          actors[name] = sprite;
+          graphics.addActor(name, sprite, options);
           sprite.position.z = -layer*layerDelta;
           layers[layer].add(sprite);
           return sprite;
 
         case 'line':
           line = await Line.create(options);  // Line.create() returns Promise
-          actors[name] = line;
+          graphics.addActor(name, line, options);
           line.position.z = -layer*layerDelta;
           layers[layer].add(line);
           return line;
@@ -243,6 +243,14 @@ class Graphics {
     }
   }//create()
 
+
+  // add actor to actors by name
+  // NOTE: options should be non-transient data - currently NOT updated
+  addActor(name:string, actor:THREE.Object3D, options:object):void {
+    actor.name = name;
+    actor.userData = options;
+    actors[name] = actor;
+  }
 
   // get actor by name
   actor(name:string):THREE.Object3D {
