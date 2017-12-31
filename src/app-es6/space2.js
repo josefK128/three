@@ -19,7 +19,6 @@ System.register(["./services/graphics", "./controllers/ui"], function (exports_1
                     graphics_1.graphics.init(config);
                     for (let layer of config.stage['layers']) {
                         for (let actor of layer) {
-                            console.log(`actor['options'] = ${actor['options']}`);
                             graphics_1.graphics.create(actor['type'], actor['name'], actor['layer'], actor['options']);
                         }
                     }

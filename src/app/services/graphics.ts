@@ -3,6 +3,7 @@
 // import {graphics} from './services/graphics';
 
 import {Grid} from '../actors/grid';
+import {Axes} from '../actors/axes';
 import {Line} from '../actors/line';
 import {Quad} from '../actors/quad';
 import {Quad_shm} from '../actors/quad_shm';
@@ -181,13 +182,14 @@ class Graphics {
   // line ->        layers[3] z=-1.5 scale= (d+1.0)/d = 1.15
   async create(type:string, name:string, layer:number, options:any):Promise<THREE.Object3D> {
     var grid:THREE.GridHelper,
+        axes:THREE.AxesHelper,
         line:THREE.Line,
         quad:THREE.Mesh,         // BufferGeometry & MeshBasicMaterial
         quad_shm:THREE.Mesh,    // BufferGeometry & ShaderMaterial
         sprite:THREE.Sprite;
         
 
-    //console.log(`%%% request to create actor ${name} of type ${type}`);
+    console.log(`%%% request to create actor ${name} of type ${type}`);
     try{
       switch(type){
         case 'grid':
@@ -196,6 +198,13 @@ class Graphics {
           grid.position.z = -layer*layerDelta;
           layers[layer].add(grid);
           return grid;
+
+        case 'axes':
+          axes = await Axes.create(options);  // Axes.create() returns Promise
+          actors[name] = axes;
+          axes.position.z = -layer*layerDelta;
+          layers[layer].add(axes);
+          return axes;
 
         case 'quad':
           quad = await Quad.create(options);  // Quad.create() returns Promise

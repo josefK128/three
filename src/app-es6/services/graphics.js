@@ -1,4 +1,4 @@
-System.register(["../actors/grid", "../actors/line", "../actors/quad", "../actors/quad_shm", "../actors/sprite"], function (exports_1, context_1) {
+System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actors/quad", "../actors/quad_shm", "../actors/sprite"], function (exports_1, context_1) {
     "use strict";
     var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         return new (P || (P = Promise))(function (resolve, reject) {
@@ -9,11 +9,14 @@ System.register(["../actors/grid", "../actors/line", "../actors/quad", "../actor
         });
     };
     var __moduleName = context_1 && context_1.id;
-    var grid_1, line_1, quad_1, quad_shm_1, sprite_1, graphics, gl, camera, lookAt, controls, scene, stage, layers, nLayers, layerDelta, stats, renderer, actors, clock, light, et, init_options, count, onWindowResize, Graphics;
+    var grid_1, axes_1, line_1, quad_1, quad_shm_1, sprite_1, graphics, gl, camera, lookAt, controls, scene, stage, layers, nLayers, layerDelta, stats, renderer, actors, clock, light, et, init_options, count, onWindowResize, Graphics;
     return {
         setters: [
             function (grid_1_1) {
                 grid_1 = grid_1_1;
+            },
+            function (axes_1_1) {
+                axes_1 = axes_1_1;
             },
             function (line_1_1) {
                 line_1 = line_1_1;
@@ -111,9 +114,10 @@ System.register(["../actors/grid", "../actors/line", "../actors/quad", "../actor
                 }
                 create(type, name, layer, options) {
                     return __awaiter(this, void 0, void 0, function* () {
-                        var grid, line, quad, 
+                        var grid, axes, line, quad, 
                         quad_shm, 
                         sprite;
+                        console.log(`%%% request to create actor ${name} of type ${type}`);
                         try {
                             switch (type) {
                                 case 'grid':
@@ -122,6 +126,12 @@ System.register(["../actors/grid", "../actors/line", "../actors/quad", "../actor
                                     grid.position.z = -layer * layerDelta;
                                     layers[layer].add(grid);
                                     return grid;
+                                case 'axes':
+                                    axes = yield axes_1.Axes.create(options); 
+                                    actors[name] = axes;
+                                    axes.position.z = -layer * layerDelta;
+                                    layers[layer].add(axes);
+                                    return axes;
                                 case 'quad':
                                     quad = yield quad_1.Quad.create(options); 
                                     actors[name] = quad;
