@@ -2,9 +2,9 @@
 export var Line = {
   create: (options:any = {
     max_vertices: 200, 
-    drawCount:3, 
+    drawCount:200, 
     color: 0xff0000, 
-    linewidth: 10, 
+    linewidth: 30, 
     vertices: [0,0,0, -3,4,0, -6,1,0]
   }):Promise<THREE.Line> => {
 
@@ -22,8 +22,8 @@ export var Line = {
 
           try{
             line_g = new THREE.BufferGeometry();
-            console.log(`line: linewidth = ${options.linewidth}`);
-            line_m = new THREE.LineBasicMaterial(options.color, options.linewidth);
+            line_m = new THREE.LineBasicMaterial({color:options.color, 
+              linewidth:options.linewidth});
 
             // create custom attribute for BufferGeometry
             // (x,y,z) => 3 vertices per point
@@ -48,17 +48,6 @@ export var Line = {
               positions[i++] = 0.0;
             }
             line.geometry.attributes.position.needsUpdate = true;
-
-            // add line render function called by graphics service each frame
-            line['render'] = (options:any = {color:0x00ff00}):void => {
-              if(count++ % 1000 === 1){
-                if(flag = !flag){
-                  line_m.color = new THREE.Color(0x00ff00); 
-                }else{
-                  line_m.color = new THREE.Color(0xff0000); 
-                }
-              }
-            };
 
             resolve(line);
           }catch(e){

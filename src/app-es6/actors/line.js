@@ -8,9 +8,9 @@ System.register([], function (exports_1, context_1) {
             exports_1("Line", Line = {
                 create: (options = {
                         max_vertices: 200,
-                        drawCount: 3,
+                        drawCount: 200,
                         color: 0xff0000,
-                        linewidth: 10,
+                        linewidth: 30,
                         vertices: [0, 0, 0, -3, 4, 0, -6, 1, 0]
                     }) => {
                     console.log(`line.create() options= `);
@@ -18,8 +18,8 @@ System.register([], function (exports_1, context_1) {
                     var line_g, line_m, positions, drawCount, line, count = 0, flag = true, promise = new Promise((resolve, reject) => {
                         try {
                             line_g = new THREE.BufferGeometry();
-                            console.log(`line: linewidth = ${options.linewidth}`);
-                            line_m = new THREE.LineBasicMaterial(options.color, options.linewidth);
+                            line_m = new THREE.LineBasicMaterial({ color: options.color,
+                                linewidth: options.linewidth });
                             positions = new Float32Array(options.max_vertices * 3);
                             line_g.addAttribute('position', new THREE.BufferAttribute(positions, 3));
                             drawCount = options.drawCount;
@@ -35,16 +35,6 @@ System.register([], function (exports_1, context_1) {
                                 positions[i++] = 0.0;
                             }
                             line.geometry.attributes.position.needsUpdate = true;
-                            line['render'] = (options = { color: 0x00ff00 }) => {
-                                if (count++ % 1000 === 1) {
-                                    if (flag = !flag) {
-                                        line_m.color = new THREE.Color(0x00ff00);
-                                    }
-                                    else {
-                                        line_m.color = new THREE.Color(0xff0000);
-                                    }
-                                }
-                            };
                             resolve(line);
                         }
                         catch (e) {

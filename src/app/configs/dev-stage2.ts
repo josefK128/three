@@ -26,7 +26,7 @@ const config:Config = {
          size: 1000, divisions:1000, 
          centerLineColor: 0x000000, gridColor: 0x808000, 
          x: 0, y: 0, z: 0 }},
-       {name:'line0', type:'line', layer:0, options:undefined} 
+         {name:'line0', type:'line', layer:0, options:undefined} 
       ],
       [ {name:'line1', type:'line', layer:1, options:undefined} ],
       [ {name:'line2', type:'line', layer:2, options:undefined} ],
@@ -34,7 +34,8 @@ const config:Config = {
       [ {name:'line4', type:'line', layer:4, options:undefined} ],
       [ {name:'line5', type:'line', layer:5, options:undefined} ],
       [ {name:'line6', type:'line', layer:6, options:undefined} ],
-      [ {name:'axes7', type:'axes', layer:7, options:{size:3000}} ]
+      [ {name:'line7', type:'line', layer:7, options:undefined},
+        {name:'axes7', type:'axes', layer:7, options:{size:3000}} ]
     ]
   }
 

@@ -53,9 +53,7 @@ class Graphics {
 
     // depth
     nLayers = config.stage.layers.length;
-    console.log(`nLayers = ${nLayers}`);
     layerDelta = config.stage.layerDelta;
-    console.log(`layerDelta = ${layerDelta}`);
 
     // camera and light(s)
     camera = graphics.camera();
@@ -126,8 +124,7 @@ class Graphics {
         console.log(`^^^ graphics.scene():layer[${i}] scale s = ${s}`);
         layers[i] = new THREE.Group();
         layers[i].scale.set(s, s, 1.0);
-        console.log(`layers[${i}].scale = ${layers[i].scale.toArray()}`);
-        console.log(`adding layers[${i}] to stage`);
+        //console.log(`layers[${i}].scale = ${layers[i].scale.toArray()}`);
         stage.add(layers[i]);
       }
       return scene;
@@ -189,7 +186,6 @@ class Graphics {
         sprite:THREE.Sprite;
         
 
-    console.log(`%%% request to create actor ${name} of type ${type}`);
     try{
       switch(type){
         case 'grid':
@@ -199,9 +195,12 @@ class Graphics {
           layers[layer].add(grid);
           return grid;
 
+        // rotateY(PI) so X-axis points negative (time)
+        // and z-axis points positive depth (layer order)
         case 'axes':
           axes = await Axes.create(options);  // Axes.create() returns Promise
           graphics.addActor(name, axes, options);
+          //axes.rotateY(Math.PI);
           axes.position.z = -layer*layerDelta;
           layers[layer].add(axes);
           return axes;
@@ -296,18 +295,18 @@ class Graphics {
 
     // NOTE: layer[0] needs no adjustment - it is the z=0 projection plane
     // NOTE: layer[i].children is an array of actors
-    for(let i=1; i<nLayers; i++){
-      console.log(`layer is ${i}`);
-      for(let actor of layers[i].children){
-        // adjust grid positions so actors project correctly onto z=0 plane
-        console.log(`dolly-scaled actor is ${actor}`);
-        console.log(`dolly-scaled actor.z is ${actor.position.z}`);
-        actor.translateX(tx/cp.z * actor.position.z);
-        if(ty !== 0.0){
-          actor.translateY(ty/cp.z * actor.position.z);
-        }
-      }
-    }
+//    for(let i=1; i<nLayers; i++){
+//      console.log(`layer is ${i}`);
+//      for(let actor of layers[i].children){
+//        // adjust grid positions so actors project correctly onto z=0 plane
+//        console.log(`dolly-scaled actor is ${actor}`);
+//        console.log(`dolly-scaled actor.z is ${actor.position.z}`);
+//        actor.translateX(tx/cp.z * actor.position.z);
+//        if(ty !== 0.0){
+//          actor.translateY(ty/cp.z * actor.position.z);
+//        }
+//      }
+//    }
   }//dolly()
 
 }//Graphics

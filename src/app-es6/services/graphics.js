@@ -45,9 +45,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                         document.body.appendChild(stats.domElement);
                     }
                     nLayers = config.stage.layers.length;
-                    console.log(`nLayers = ${nLayers}`);
                     layerDelta = config.stage.layerDelta;
-                    console.log(`layerDelta = ${layerDelta}`);
                     camera = graphics.camera();
                     light.position.set(0, 10, 20);
                     camera.add(light);
@@ -84,8 +82,6 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                             console.log(`^^^ graphics.scene():layer[${i}] scale s = ${s}`);
                             layers[i] = new THREE.Group();
                             layers[i].scale.set(s, s, 1.0);
-                            console.log(`layers[${i}].scale = ${layers[i].scale.toArray()}`);
-                            console.log(`adding layers[${i}] to stage`);
                             stage.add(layers[i]);
                         }
                         return scene;
@@ -117,7 +113,6 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                         var grid, axes, line, quad, 
                         quad_shm, 
                         sprite;
-                        console.log(`%%% request to create actor ${name} of type ${type}`);
                         try {
                             switch (type) {
                                 case 'grid':
@@ -194,17 +189,6 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                     controls.target.set(lookAt.x, lookAt.y, lookAt.z);
                     console.log(`camera now located at [${cp.x}, ${cp.y}, ${cp.z}]`);
                     console.log(`camera looking at [${lookAt.x}, ${lookAt.y}, ${lookAt.z}]`);
-                    for (let i = 1; i < nLayers; i++) {
-                        console.log(`layer is ${i}`);
-                        for (let actor of layers[i].children) {
-                            console.log(`dolly-scaled actor is ${actor}`);
-                            console.log(`dolly-scaled actor.z is ${actor.position.z}`);
-                            actor.translateX(tx / cp.z * actor.position.z);
-                            if (ty !== 0.0) {
-                                actor.translateY(ty / cp.z * actor.position.z);
-                            }
-                        }
-                    }
                 } 
             }; 
             if (graphics === undefined) {

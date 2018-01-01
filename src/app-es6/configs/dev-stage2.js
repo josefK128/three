@@ -23,7 +23,8 @@ System.register([], function (exports_1, context_1) {
                         [{ name: 'line4', type: 'line', layer: 4, options: undefined }],
                         [{ name: 'line5', type: 'line', layer: 5, options: undefined }],
                         [{ name: 'line6', type: 'line', layer: 6, options: undefined }],
-                        [{ name: 'axes7', type: 'axes', layer: 7, options: { size: 3000 } }]
+                        [{ name: 'line7', type: 'line', layer: 7, options: undefined },
+                            { name: 'axes7', type: 'axes', layer: 7, options: { size: 3000 } }]
                     ]
                 }
             };
