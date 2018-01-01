@@ -29,7 +29,7 @@ export var Quad_shm = {
     width:1.0, 
     height:1.0,
     x:0.0,
-    y:6.0,
+    y:0.0,
     z:0.0, // set z by layer[i] inclusion
     color_gain: new THREE.Color(0x00ff00),   // green 
     color_loss: new THREE.Color(0xff0000)   // red 

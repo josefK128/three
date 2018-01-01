@@ -43,7 +43,7 @@ class Ui {
     dollyX_ = { dollyX_: -10.0 };
     zoomX_ = { zoomX_: -10.0 };
     scaleX_ = {scaleX_: -20};
-    symbolv = ['ETH', 'BTC', 'LTC', 'LBC', 'BST', 'UJO']; 
+    symbolv = ['ETH','ETC','BTC','BCH','LTC','LBC','XRP','ZEC','BST','UJO']; 
     symbols = {
       symbol: 'ETH',
     };

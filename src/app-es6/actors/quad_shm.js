@@ -26,7 +26,7 @@ System.register(["../shaders/vsh_vertices.glsl", "../shaders/fsh_color.glsl"], f
                         width: 1.0,
                         height: 1.0,
                         x: 0.0,
-                        y: 6.0,
+                        y: 0.0,
                         z: 0.0,
                         color_gain: new THREE.Color(0x00ff00),
                         color_loss: new THREE.Color(0xff0000) 
