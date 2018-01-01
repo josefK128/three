@@ -9,7 +9,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
         });
     };
     var __moduleName = context_1 && context_1.id;
-    var grid_1, axes_1, line_1, quad_1, quad_shm_1, sprite_1, graphics, gl, camera, lookAt, controls, scene, stage, layers, nLayers, layerDelta, stats, renderer, actors, clock, light, et, init_options, count, onWindowResize, Graphics;
+    var grid_1, axes_1, line_1, quad_1, quad_shm_1, sprite_1, graphics, gl, renderer, stats, clock, et, count, camera, lookAt, controls, light, scene, stage, layers, nLayers, layerDelta, actors, onWindowResize, Graphics;
     return {
         setters: [
             function (grid_1_1) {
@@ -32,7 +32,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
             }
         ],
         execute: function () {
-            lookAt = { x: 0.0, y: 0.0, z: 0.0 }, layers = [], actors = {}, clock = new THREE.Clock(), light = new THREE.PointLight(), et = 0, init_options = {}, count = 0, onWindowResize = () => {
+            clock = new THREE.Clock(), et = 0, count = 0, light = new THREE.PointLight(), layers = [], actors = {}, onWindowResize = () => {
                 let w = window.innerWidth, h = window.innerHeight;
                 camera.aspect = w / h;
                 camera.updateProjectionMatrix();
@@ -44,15 +44,17 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                         stats = new Stats();
                         document.body.appendChild(stats.domElement);
                     }
-                    nLayers = config.stage.layers.length;
-                    layerDelta = config.stage.layerDelta;
-                    camera = graphics.camera();
+                    renderer = graphics.renderer(document.getElementById('space'));
+                    renderer.setClearColor(0xffffff, 1);
+                    camera = graphics.camera(config.camera);
                     light.position.set(0, 10, 20);
                     camera.add(light);
                     controls = new THREE.OrbitControls(camera);
+                    lookAt = config.camera.lookAt;
+                    controls.target.set(lookAt.x, lookAt.y, lookAt.z);
+                    nLayers = config.stage.layers.length;
+                    layerDelta = config.stage.layerDelta;
                     scene = graphics.scene();
-                    renderer = graphics.renderer(document.getElementById('space'));
-                    renderer.setClearColor(0xffffff, 1);
                     window.addEventListener('resize', onWindowResize, false);
                 } 
                 animate() {
@@ -75,8 +77,9 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                         stage = new THREE.Group();
                         actors['stage'] = stage;
                         scene.add(stage);
-                        let d = camera.position.z; 
+                        let d = camera.position.z;
                         console.log(`\n^^^ graphics.scene(): camera.position.z = ${d}`);
+                        console.log(`\n^^^ graphics.scene(): nLayers = ${nLayers}`);
                         for (let i = 0; i < nLayers; i++) {
                             let s = (d + layerDelta * i) / d;
                             console.log(`^^^ graphics.scene():layer[${i}] scale s = ${s}`);
@@ -84,14 +87,17 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                             layers[i].scale.set(s, s, 1.0);
                             stage.add(layers[i]);
                         }
+                        console.log(`\nactors:`);
                         return scene;
                     }
                 } 
-                camera(fov = 90, aspect = window.innerWidth / window.innerHeight, near = 0.5, far = 1000.0, z = 10) {
-                    var w = window.innerWidth, h = window.innerHeight;
+                camera(camera_config) {
+                    var fov = camera_config['fov'], w = window.innerWidth, h = window.innerHeight, aspect = w / h, near = camera_config['near'], far = camera_config['far'], position = camera_config['position'], lookAt = camera_config['lookAt'];
                     if (camera === undefined) {
                         camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-                        camera.position.z = z;
+                        camera['position'].x = camera_config['position'].x;
+                        camera['position'].y = camera_config['position'].y;
+                        camera['position'].z = camera_config['position'].z;
                     }
                     return camera;
                 }
@@ -117,6 +123,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                             switch (type) {
                                 case 'grid':
                                     grid = yield grid_1.Grid.create(options); 
+                                    console.log(`grid = ${grid}`);
                                     graphics.addActor(name, grid, options);
                                     grid.position.z = -layer * layerDelta;
                                     layers[layer].add(grid);

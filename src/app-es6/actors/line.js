@@ -11,7 +11,7 @@ System.register([], function (exports_1, context_1) {
                         drawCount: 200,
                         color: 0xff0000,
                         linewidth: 30,
-                        vertices: [0, 0, 0, -3, 4, 0, -6, 1, 0]
+                        vertices: [0, 0, 0, -10, 80, 0, -15, 40, 0]
                     }) => {
                     console.log(`line.create() options= `);
                     console.dir(options);
@@ -29,10 +29,16 @@ System.register([], function (exports_1, context_1) {
                             for (let i = 0; i < options.vertices.length; i++) {
                                 positions[i] = options.vertices[i];
                             }
-                            for (let i = options.vertices.length; i < options.max_vertices * 3;) {
-                                positions[i++] = -i;
-                                positions[i++] = 8.0 * Math.random();
-                                positions[i++] = 0.0;
+                            for (let i = options.vertices.length; i < 3 * options.max_vertices; i++) {
+                                if (i % 3 === 0) {
+                                    positions[i] = -10 * (i / 3);
+                                }
+                                if (i % 3 === 1) {
+                                    positions[i] = 100.0 * Math.random();
+                                }
+                                if (i % 3 === 2) {
+                                    positions[i] = 0.0;
+                                }
                             }
                             line.geometry.attributes.position.needsUpdate = true;
                             resolve(line);

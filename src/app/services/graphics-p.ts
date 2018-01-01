@@ -13,24 +13,22 @@ import {Sprite} from '../actors/sprite';
 // closure vars
 var graphics:Graphics,
     gl:any,
-    renderer:THREE.WebGLRenderer,
-    stats:Stats,
-    clock:THREE.Clock = new THREE.Clock(),
-    et:number = 0,  // elapsedTime from clock  
-    count:number = 0,
-
     camera:THREE.PerspectiveCamera,
-    lookAt:any,
+    lookAt:any = {x:0.0, y:0.0, z:0.0},
     controls:THREE.OrbitControls,
-    light:THREE.PointLight = new THREE.PointLight(),
-
     scene:THREE.Scene,
     stage:THREE.Group,
     layers:THREE.Group[] = [],
     nLayers:number, 
     layerDelta:number,
+    stats:Stats,
+    renderer:THREE.WebGLRenderer,
     actors:object = {},
-
+    clock:THREE.Clock = new THREE.Clock(),
+    light:THREE.PointLight = new THREE.PointLight(),
+    et:number = 0,  // elapsedTime from clock  
+    init_options:object = {},
+    count:number = 0,
     onWindowResize = () => {
       let w = window.innerWidth,
           h = window.innerHeight;
@@ -40,7 +38,6 @@ var graphics:Graphics,
       camera.updateProjectionMatrix();
       renderer.setSize(w,h);
     };
-
 
 
 class Graphics {
@@ -54,25 +51,22 @@ class Graphics {
       document.body.appendChild(stats.domElement );  
     }
 
-    // WebGLRenderer
-    renderer = graphics.renderer(document.getElementById('space'));
-    renderer.setClearColor(0xffffff, 1);
+    // depth
+    nLayers = config.stage.layers.length;
+    layerDelta = config.stage.layerDelta;
 
     // camera and light(s)
-    camera = graphics.camera(config.camera);
+    camera = graphics.camera();
     light.position.set(0, 10, 20);
     camera.add(light);
     controls = new THREE.OrbitControls(camera);
-    lookAt = config.camera.lookAt;
-    controls.target.set(lookAt.x, lookAt.y, lookAt.z);
 
-
-    // scene - meta-container
-    // scene > stage(1) > layers(i) > actors(i,j)
-    // stage layers and depths
-    nLayers = config.stage.layers.length;
-    layerDelta = config.stage.layerDelta;
+    // scene
     scene = graphics.scene();
+
+    // WebGLRenderer
+    renderer = graphics.renderer(document.getElementById('space'));
+    renderer.setClearColor(0xffffff, 1);
 
     // resize renderer and adjust camera aspect ratio
     window.addEventListener( 'resize', onWindowResize, false );
@@ -123,9 +117,8 @@ class Graphics {
       // glyph-quads -> layers[1] z=-0.5 scale= (d+0.5)/d = 1.05
       // line ->        layers[2] z=-1.0 scale= (d+1.0)/d = 1.1
       // sprite ->      layers[3] z=-1.5 scale= (d+1.5)/d = 1.15
-      let d = camera.position.z;  
+      let d = camera.position.z;   // default=10.0
       console.log(`\n^^^ graphics.scene(): camera.position.z = ${d}`);
-      console.log(`\n^^^ graphics.scene(): nLayers = ${nLayers}`);
       for(let i=0; i<nLayers; i++){
         let s = (d+layerDelta*i)/d;
         console.log(`^^^ graphics.scene():layer[${i}] scale s = ${s}`);
@@ -134,29 +127,21 @@ class Graphics {
         //console.log(`layers[${i}].scale = ${layers[i].scale.toArray()}`);
         stage.add(layers[i]);
       }
-      console.log(`\nactors:`);
       return scene;
     }
   }//scene()
 
 
   // default camera
-  camera(camera_config:object):THREE.PerspectiveCamera {
+  camera(fov:number=90, aspect:number=window.innerWidth/window.innerHeight, near:number=0.5, far:number=1000.0, z:number=10):THREE.PerspectiveCamera {
 
-  var fov = camera_config['fov'],
-      w:number = window.innerWidth,
-      h:number = window.innerHeight,
-      aspect:number = w/h,
-      near = camera_config['near'],
-      far = camera_config['far'],
-      position = camera_config['position'],
-      lookAt = camera_config['lookAt'];
+  var w:number = window.innerWidth,
+      h:number = window.innerHeight;
 
     if(camera === undefined){
       camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-      camera['position'].x = camera_config['position'].x;
-      camera['position'].y = camera_config['position'].y;
-      camera['position'].z = camera_config['position'].z;
+      //camera.position.z = z;
+      camera.position.z = 100;
     }
     return camera;
   }
@@ -206,7 +191,6 @@ class Graphics {
       switch(type){
         case 'grid':
           grid = await Grid.create(options);  // Grid.create() returns Promise
-          console.log(`grid = ${grid}`);
           graphics.addActor(name, grid, options);
           grid.position.z = -layer*layerDelta;
           layers[layer].add(grid);
