@@ -1,7 +1,7 @@
 System.register([], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var ui, graphics, initial_view, flatten_view, railsv, rails, dollyX_, zoomX_, zoomY_, symbolv, symbols, layersv, layers, layername, show_layer, mod_present, add_present, add_past, gui, stop, events, Ui;
+    var ui, graphics, initial_view, flatten_view, railsv, rails, dollyX_, logscaleX_, logscaleY_, symbolv, symbols, layersv, layers, layername, show_layer, mod_present, add_present, add_past, gui, stop, events, Ui;
     return {
         setters: [],
         execute: function () {
@@ -13,9 +13,9 @@ System.register([], function (exports_1, context_1) {
                     flatten_view = { flatten_view: () => { console.log(`\nflatten_view`); } };
                     railsv = false; 
                     rails = { rails: false };
-                    dollyX_ = { dollyX_: -10.0 };
-                    zoomX_ = { zoomX_: -10.0 };
-                    zoomY_ = { zoomY_: -20 };
+                    dollyX_ = { dollyX_: -50.0 };
+                    logscaleX_ = { logscaleX_: 0.0 };
+                    logscaleY_ = { logscaleY_: 0.0 };
                     symbolv = ['ETH', 'ETC', 'BTC', 'BCH', 'LTC', 'LBC', 'XRP', 'ZEC', 'BST', 'UJO'];
                     symbols = {
                         symbol: 'ETH',
@@ -49,14 +49,14 @@ System.register([], function (exports_1, context_1) {
                         railsv = !railsv;
                         console.log(`\nrails boolean value set to ${railsv}`);
                     });
-                    gui.add(dollyX_, 'dollyX_', -190, -10).onChange(() => {
+                    gui.add(dollyX_, 'dollyX_', -5000, 50, 1).onChange(() => {
                         console.log(`current dollyX_ value = = ${dollyX_['dollyX_']}`);
                     });
-                    gui.add(zoomX_, 'zoomX_', -200, -20).onChange(() => {
-                        console.log(`current zoomX_ value = = ${zoomX_['zoomX_']}`);
+                    gui.add(logscaleX_, 'logscaleX_', -1.0, 1.0, 0.01).onChange(() => {
+                        console.log(`current logscaleX_ value = = ${logscaleX_['logscaleX_']}`);
                     });
-                    gui.add(zoomY_, 'zoomY_', -200, -20).onChange(() => {
-                        console.log(`current zoomY_ value = = ${zoomY_['zoomY_']}`);
+                    gui.add(logscaleY_, 'logscaleY_', -1.0, 1.0, 0.01).onChange(() => {
+                        console.log(`current logscaleY_ value = = ${logscaleY_['logscaleY_']}`);
                     });
                     gui.add(symbols, 'symbol', symbolv).onFinishChange(() => {
                         console.log(`\ncurrent symbol = ${symbols['symbol']}`);

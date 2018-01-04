@@ -13,8 +13,8 @@ var ui:Ui,
     railsv:boolean, 
     rails:object,
     dollyX_:object,
-    zoomX_:object,
-    zoomY_:object,
+    logscaleX_:object,
+    logscaleY_:object,
     symbolv:string[],
     symbols:object,
     layersv:boolean,
@@ -42,9 +42,9 @@ class Ui {
     flatten_view = { flatten_view:()=>{console.log(`\nflatten_view`);}};
     railsv = false;  // so initial rails=true
     rails = {rails: false};
-    dollyX_ = { dollyX_: -10.0 };
-    zoomX_ = { zoomX_: -10.0 };
-    zoomY_ = {zoomY_: -20};
+    dollyX_ = { dollyX_: -50.0 };
+    logscaleX_ = { logscaleX_: 0.0 };
+    logscaleY_ = {logscaleY_: 0.0};
     symbolv = ['ETH','ETC','BTC','BCH','LTC','LBC','XRP','ZEC','BST','UJO']; 
     symbols = {
       symbol: 'ETH',
@@ -98,17 +98,22 @@ class Ui {
         console.log(`\nrails boolean value set to ${railsv}`);
     });
 
-    gui.add(dollyX_, 'dollyX_', -190, -10).onChange(() => {
+
+    // initially dollyX_ = 0.0; camera.position.x=-50 camera.lookAt.x=-50
+    gui.add(dollyX_, 'dollyX_', -5000, 50, 1).onChange(() => {
         console.log(`current dollyX_ value = = ${dollyX_['dollyX_']}`);
     });
 
-    gui.add(zoomX_, 'zoomX_', -200, -20).onChange(() => {
-        console.log(`current zoomX_ value = = ${zoomX_['zoomX_']}`);
+    // initially logscaleX_ = 0.0
+    gui.add(logscaleX_, 'logscaleX_', -1.0 , 1.0, 0.01).onChange(() => {
+        console.log(`current logscaleX_ value = = ${logscaleX_['logscaleX_']}`);
     });
 
-    gui.add(zoomY_, 'zoomY_',-200, -20).onChange(() => {
-        console.log(`current zoomY_ value = = ${zoomY_['zoomY_']}`);
+    // initially logscaleY_ = 0.0
+    gui.add(logscaleY_, 'logscaleY_', -1.0, 1.0, 0.01).onChange(() => {
+        console.log(`current logscaleY_ value = = ${logscaleY_['logscaleY_']}`);
     });
+
 
     gui.add(symbols, 'symbol', symbolv ).onFinishChange(() => {
         console.log(`\ncurrent symbol = ${symbols['symbol']}`);
@@ -127,6 +132,8 @@ class Ui {
     });
 
 
+    // layers=true => load symbol data in successive layers (circularly)
+    // layers=false => load symbol data into level[0] and overwrite
     gui.add(layers, 'layers').onFinishChange(() => {
         layersv = !layersv;
         console.log(`\nlayers boolean value set to ${layersv}`);
