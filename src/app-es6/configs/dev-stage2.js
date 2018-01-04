@@ -16,7 +16,7 @@ System.register([], function (exports_1, context_1) {
                 },
                 stage: {
                     layerDelta: 5.0,
-                    show_layer: [true, true, true, true, true, true, true, true],
+                    layer_type: ['line', 'line', 'line', 'line', 'line', 'line', 'line', 'line'],
                     layers: [
                         [{ name: 'grid0', type: 'grid', layer: 0, options: {
                                     size: 10000, divisions: 1000,

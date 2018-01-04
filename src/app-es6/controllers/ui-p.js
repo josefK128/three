@@ -1,11 +1,11 @@
 System.register([], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var ui, graphics, initial_view, flatten_view, railsv, rails, dollyX_, logscaleX_, logscaleY_, symbolv, symbols, layersv, layers, layername, layer_typev, layer_type, mod_present, add_present, add_past, gui, stop, events, Ui;
+    var ui, graphics, initial_view, flatten_view, railsv, rails, dollyX_, logscaleX_, logscaleY_, symbolv, symbols, layersv, layers, layername, show_layer, mod_present, add_present, add_past, gui, stop, events, Ui;
     return {
         setters: [],
         execute: function () {
-            layername = [], layer_typev = [], layer_type = {};
+            layername = [], show_layer = {};
             Ui = class Ui {
                 init(_graphics, config = {}) {
                     graphics = _graphics;
@@ -22,10 +22,9 @@ System.register([], function (exports_1, context_1) {
                     };
                     layersv = true; 
                     layers = { layers: true };
-                    layer_typev = ["invisible", "ohlc", "candle", "line", "mountain"];
-                    for (let l = 0; l < config.stage.layer_type.length; l++) {
-                        layername[l] = `layer_type${l}`;
-                        layer_type[layername[l]] = { layer_typev: config.stage.layer_type[l] };
+                    for (let l = 0; l < config.stage.show_layer.length; l++) {
+                        layername[l] = `show_layer_${l}`;
+                        show_layer[layername[l]] = config.stage.show_layer[l];
                     }
                     mod_present = { mod_present: () => { console.log(`\nmod_present`); } };
                     add_present = { add_present: () => { console.log(`\nadd_present`); } };
@@ -76,9 +75,14 @@ System.register([], function (exports_1, context_1) {
                         console.log(`\nlayers boolean value set to ${layersv}`);
                     });
                     for (let l = 0; l < layername.length; l++) {
-                        gui.add(layer_type[layername[l]], 'layer_typev', layer_typev).onFinishChange(() => {
-                            console.log(`setting layer_type[${l}] = ${layer_type[layername[l]]['layer_typev']}`);
-                            graphics.layer_type(l, layer_type[layername[l]]['layer_typev']);
+                        gui.add(show_layer, layername[l]).onFinishChange(() => {
+                            config.stage.show_layer[l] = !config.stage.show_layer[l];
+                            if (config.stage.show_layer[l]) {
+                                graphics.showLayer(l);
+                            }
+                            else {
+                                graphics.hideLayer(l);
+                            }
                         });
                     }
                 } 

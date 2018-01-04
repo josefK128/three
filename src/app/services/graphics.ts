@@ -12,6 +12,7 @@ import {Sprite} from '../actors/sprite';
 
 // closure vars
 var graphics:Graphics,
+    config:Config,
     gl:any,
     renderer:THREE.WebGLRenderer,
     stats:Stats,
@@ -46,7 +47,10 @@ var graphics:Graphics,
 class Graphics {
 
   // init scene, camera, renderer  etc.
-  init(config:Config):void {
+  init(_config:Config):void {
+
+    // config
+    config = _config;
 
     // stats
     if(Stats){
@@ -140,12 +144,17 @@ class Graphics {
   }//scene()
 
 
-  showLayer(l:number):void {
-    layers[l].visible = true;
-  }
-
-  hideLayer(l:number):void {
-    layers[l].visible = false;
+  layer_type(l:number, type:string):void {
+    console.log(`graphics.layer_type(${l}, ${type})`);
+    config.stage.layer_type[l] = type;
+    if(type === 'invisible'){
+      console.log(`setting layers[${l}].visible = false`);
+      layers[l].visible = false;
+    }else{
+      console.log(`TBD: loading data for type = ${type} - currently 'line'`);
+      console.log(`setting layers[${l}].visible = true`);
+      layers[l].visible = true;
+    }
   }
 
 

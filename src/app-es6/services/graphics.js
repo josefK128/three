@@ -9,7 +9,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
         });
     };
     var __moduleName = context_1 && context_1.id;
-    var grid_1, axes_1, line_1, quad_1, quad_shm_1, sprite_1, graphics, gl, renderer, stats, clock, et, count, camera, lookAt, controls, light, scene, stage, layers, nLayers, layerDelta, actors, onWindowResize, Graphics;
+    var grid_1, axes_1, line_1, quad_1, quad_shm_1, sprite_1, graphics, config, gl, renderer, stats, clock, et, count, camera, lookAt, controls, light, scene, stage, layers, nLayers, layerDelta, actors, onWindowResize, Graphics;
     return {
         setters: [
             function (grid_1_1) {
@@ -39,7 +39,8 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                 renderer.setSize(w, h);
             };
             Graphics = class Graphics {
-                init(config) {
+                init(_config) {
+                    config = _config;
                     if (Stats) {
                         stats = new Stats();
                         document.body.appendChild(stats.domElement);
@@ -91,11 +92,18 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                         return scene;
                     }
                 } 
-                showLayer(l) {
-                    layers[l].visible = true;
-                }
-                hideLayer(l) {
-                    layers[l].visible = false;
+                layer_type(l, type) {
+                    console.log(`graphics.layer_type(${l}, ${type})`);
+                    config.stage.layer_type[l] = type;
+                    if (type === 'invisible') {
+                        console.log(`setting layers[${l}].visible = false`);
+                        layers[l].visible = false;
+                    }
+                    else {
+                        console.log(`TBD: loading data for type = ${type} - currently 'line'`);
+                        console.log(`setting layers[${l}].visible = true`);
+                        layers[l].visible = true;
+                    }
                 }
                 camera(camera_config) {
                     var fov = camera_config['fov'], w = window.innerWidth, h = window.innerHeight, aspect = w / h, near = camera_config['near'], far = camera_config['far'], position = camera_config['position'], lookAt = camera_config['lookAt'];

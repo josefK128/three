@@ -20,7 +20,8 @@ var ui:Ui,
     layersv:boolean,
     layers:object,
     layername:string[] = [],
-    show_layer:object = {},
+    layer_typev:string[] = [],
+    layer_type:object = {},
     mod_present:object,
     add_present:object,
     add_past:object,
@@ -51,9 +52,10 @@ class Ui {
     };
     layersv = true;  // so initial layers=false
     layers = {layers: true};
-    for(let l=0;  l<config.stage.show_layer.length; l++){
-      layername[l] = `show_layer_${l}`;
-      show_layer[layername[l]] = config.stage.show_layer[l];
+    layer_typev = ["invisible", "ohlc", "candle", "line", "mountain"];
+    for(let l=0;  l<config.stage.layer_type.length; l++){
+      layername[l] = `layer_type${l}`;
+      layer_type[layername[l]] = {layer_typev: config.stage.layer_type[l]};
     }
 
     mod_present = { mod_present:()=>{console.log(`\nmod_present`);}};
@@ -115,6 +117,10 @@ class Ui {
     });
 
 
+    //symbolv = ['ETH','ETC','BTC','BCH','LTC','LBC','XRP','ZEC','BST','UJO']; 
+    //symbols = {
+    //  symbol: 'ETH',
+    //};
     gui.add(symbols, 'symbol', symbolv ).onFinishChange(() => {
         console.log(`\ncurrent symbol = ${symbols['symbol']}`);
     });
@@ -141,13 +147,9 @@ class Ui {
 
     // show/hide layers
     for(let l=0; l<layername.length; l++){
-      gui.add(show_layer, layername[l]).onFinishChange(() => {
-        config.stage.show_layer[l] = !config.stage.show_layer[l];
-        if(config.stage.show_layer[l]){
-          graphics.showLayer(l);
-        }else{
-          graphics.hideLayer(l);
-        }
+      gui.add(layer_type[layername[l]], 'layer_typev', layer_typev).onFinishChange(() => {
+        console.log(`setting layer_type[${l}] = ${layer_type[layername[l]]['layer_typev']}`);
+        graphics.layer_type(l, layer_type[layername[l]]['layer_typev']);
       });
     }
 
