@@ -91,6 +91,12 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                         return scene;
                     }
                 } 
+                showLayer(l) {
+                    layers[l].visible = true;
+                }
+                hideLayer(l) {
+                    layers[l].visible = false;
+                }
                 camera(camera_config) {
                     var fov = camera_config['fov'], w = window.innerWidth, h = window.innerHeight, aspect = w / h, near = camera_config['near'], far = camera_config['far'], position = camera_config['position'], lookAt = camera_config['lookAt'];
                     if (camera === undefined) {

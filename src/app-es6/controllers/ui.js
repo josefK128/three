@@ -1,10 +1,11 @@
 System.register([], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var ui, graphics, initial_view, flatten_view, railsv, rails, dollyX_, zoomX_, scaleX_, symbolv, symbols, layersv, layers, mod_present, add_present, add_past, gui, stop, events, Ui;
+    var ui, graphics, initial_view, flatten_view, railsv, rails, dollyX_, zoomX_, zoomY_, symbolv, symbols, layersv, layers, layername, show_layer, mod_present, add_present, add_past, gui, stop, events, Ui;
     return {
         setters: [],
         execute: function () {
+            layername = [], show_layer = {};
             Ui = class Ui {
                 init(_graphics, config = {}) {
                     graphics = _graphics;
@@ -14,13 +15,17 @@ System.register([], function (exports_1, context_1) {
                     rails = { rails: false };
                     dollyX_ = { dollyX_: -10.0 };
                     zoomX_ = { zoomX_: -10.0 };
-                    scaleX_ = { scaleX_: -20 };
+                    zoomY_ = { zoomY_: -20 };
                     symbolv = ['ETH', 'ETC', 'BTC', 'BCH', 'LTC', 'LBC', 'XRP', 'ZEC', 'BST', 'UJO'];
                     symbols = {
                         symbol: 'ETH',
                     };
                     layersv = true; 
                     layers = { layers: true };
+                    for (let l = 0; l < config.stage.show_layer.length; l++) {
+                        layername[l] = `show_layer_${l}`;
+                        show_layer[layername[l]] = config.stage.show_layer[l];
+                    }
                     mod_present = { mod_present: () => { console.log(`\nmod_present`); } };
                     add_present = { add_present: () => { console.log(`\nadd_present`); } };
                     add_past = { add_past: () => { console.log(`\nadd_past`); } };
@@ -50,15 +55,11 @@ System.register([], function (exports_1, context_1) {
                     gui.add(zoomX_, 'zoomX_', -200, -20).onChange(() => {
                         console.log(`current zoomX_ value = = ${zoomX_['zoomX_']}`);
                     });
-                    gui.add(scaleX_, 'scaleX_', -200, -20).onChange(() => {
-                        console.log(`current scaleX_ value = = ${scaleX_['scaleX_']}`);
+                    gui.add(zoomY_, 'zoomY_', -200, -20).onChange(() => {
+                        console.log(`current zoomY_ value = = ${zoomY_['zoomY_']}`);
                     });
                     gui.add(symbols, 'symbol', symbolv).onFinishChange(() => {
                         console.log(`\ncurrent symbol = ${symbols['symbol']}`);
-                    });
-                    gui.add(layers, 'layers').onFinishChange(() => {
-                        layersv = !layersv;
-                        console.log(`\nlayers boolean value set to ${layersv}`);
                     });
                     gui.add(mod_present, 'mod_present').onFinishChange(() => {
                         console.log(`event: modify present glyph`);
@@ -69,6 +70,21 @@ System.register([], function (exports_1, context_1) {
                     gui.add(add_past, 'add_past').onFinishChange(() => {
                         console.log(`event: add to past array of glyphs`);
                     });
+                    gui.add(layers, 'layers').onFinishChange(() => {
+                        layersv = !layersv;
+                        console.log(`\nlayers boolean value set to ${layersv}`);
+                    });
+                    for (let l = 0; l < layername.length; l++) {
+                        gui.add(show_layer, layername[l]).onFinishChange(() => {
+                            config.stage.show_layer[l] = !config.stage.show_layer[l];
+                            if (config.stage.show_layer[l]) {
+                                graphics.showLayer(l);
+                            }
+                            else {
+                                graphics.hideLayer(l);
+                            }
+                        });
+                    }
                 } 
             }; 
             if (ui === undefined) {

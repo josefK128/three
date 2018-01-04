@@ -140,17 +140,26 @@ class Graphics {
   }//scene()
 
 
+  showLayer(l:number):void {
+    layers[l].visible = true;
+  }
+
+  hideLayer(l:number):void {
+    layers[l].visible = false;
+  }
+
+
   // default camera
   camera(camera_config:object):THREE.PerspectiveCamera {
 
-  var fov = camera_config['fov'],
-      w:number = window.innerWidth,
-      h:number = window.innerHeight,
-      aspect:number = w/h,
-      near = camera_config['near'],
-      far = camera_config['far'],
-      position = camera_config['position'],
-      lookAt = camera_config['lookAt'];
+    var fov = camera_config['fov'],
+        w:number = window.innerWidth,
+        h:number = window.innerHeight,
+        aspect:number = w/h,
+        near = camera_config['near'],
+        far = camera_config['far'],
+        position = camera_config['position'],
+        lookAt = camera_config['lookAt'];
 
     if(camera === undefined){
       camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
