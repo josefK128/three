@@ -63,12 +63,19 @@ class Graphics {
     renderer.setClearColor(0xffffff, 1);
 
     // camera and light(s)
+    console.log(`config.camera = `);
+    console.dir(config.camera);
     camera = graphics.camera(config.camera);
     light.position.set(0, 10, 20);
     camera.add(light);
     controls = new THREE.OrbitControls(camera);
     lookAt = config.camera.lookAt;
     controls.target.set(lookAt.x, lookAt.y, lookAt.z);
+
+    // attach to camera for easy future ref by other modules using graphics
+    camera['controls'] = controls;
+    camera['initial_position'] = config.camera.position;
+    camera['initial_lookAt'] = config.camera.lookAt;
 
 
     // scene - meta-container
@@ -144,33 +151,27 @@ class Graphics {
   }//scene()
 
 
-  layer_type(l:number, type:string):void {
-    console.log(`graphics.layer_type(${l}, ${type})`);
-    config.stage.layer_type[l] = type;
-    if(type === 'invisible'){
-      console.log(`setting layers[${l}].visible = false`);
-      layers[l].visible = false;
-    }else{
-      console.log(`TBD: loading data for type = ${type} - currently 'line'`);
-      console.log(`setting layers[${l}].visible = true`);
-      layers[l].visible = true;
-    }
-  }
-
-
   // default camera
   camera(camera_config:object):THREE.PerspectiveCamera {
 
-    var fov = camera_config['fov'],
-        w:number = window.innerWidth,
-        h:number = window.innerHeight,
-        aspect:number = w/h,
-        near = camera_config['near'],
-        far = camera_config['far'],
-        position = camera_config['position'],
-        lookAt = camera_config['lookAt'];
+    console.log(`camera_config = `);
+    console.dir(camera_config);
+    var fov:number,
+        w:number,
+        h:number, 
+        aspect:number,
+        near:number, 
+        far:number,
+        position:object;
 
     if(camera === undefined){
+      fov = camera_config['fov'];
+      w = window.innerWidth;
+      h = window.innerHeight;
+      aspect = w/h;
+      near = camera_config['near'];
+      far = camera_config['far'];
+      position = camera_config['position'];
       camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
       camera['position'].x = camera_config['position'].x;
       camera['position'].y = camera_config['position'].y;
@@ -200,6 +201,20 @@ class Graphics {
   // NOTE: program attachment is transitory! (if more than one shader set)
   getCurrentWebGLProgram():THREE.WebGLProgram {
     return gl.getParameter(gl.CURRENT_PROGRAM);
+  }
+
+
+  layer_type(l:number, type:string):void {
+    console.log(`graphics.layer_type(${l}, ${type})`);
+    config.stage.layer_type[l] = type;
+    if(type === 'invisible'){
+      console.log(`setting layers[${l}].visible = false`);
+      layers[l].visible = false;
+    }else{
+      console.log(`TBD: loading data for type = ${type} - currently 'line'`);
+      console.log(`setting layers[${l}].visible = true`);
+      layers[l].visible = true;
+    }
   }
 
 
@@ -299,34 +314,26 @@ class Graphics {
   // scale actor by name
   // NOTE: stage is an actor with anme 'stage' (see scene())
   scaleActor(actor:string, sx:number, sy:number, sz:number):void {
-    if(actors[actor]){
-      console.log(`%%% scaling actor = ${actor} sx=${sx} sy=${sy} sz=${sz}`);
-      
+
+    //console.log(`%%% scaling actor = ${actor} sx=${sx} sy=${sy} sz=${sz}`);
+    if(actors[actor]){      
       // set local scale of actor
       // RECALL: if actor is 'stage' - all actor-children are scaled by 
       // stage.scale but keep their individual local scales
       actors[actor].scale.set(sx, sy, sz);
-
-      // TMP! - modify local scale to sync effect of stage-scale
-      // RECALL: 'grid1' is NOT a child of stage
-      // scale vertical axis (Z) for grid (in XZ plane)
-      if(actor === 'stage'){    
-        actors['grid1'].scale.set(sx, sz, sy);
-      }
     }
   }
 
 
-  dollyX(tx:number = 0.0, ty:number = 0.0):void {
-    let cp = camera.position;
+  dollyX(tx:number = camera.position.x, ty:number = camera.position.y):void {
 
     // translate camera and set controls lookAt-target so camera remains
     // orthogonal to all layers
-    camera.translateX(tx);
-    lookAt.x += tx;
-    controls.target.set(lookAt.x, lookAt.y, lookAt.z);
-    console.log(`camera now located at [${cp.x}, ${cp.y}, ${cp.z}]`);
-    console.log(`camera looking at [${lookAt.x}, ${lookAt.y}, ${lookAt.z}]`);
+    camera.position.set(tx, ty, camera.position.z);
+    lookAt.x = tx;
+    lookAt.y = ty;
+    controls.target.set(lookAt.x, lookAt.y, 0.0);
+
 
     // NOTE: layer[0] needs no adjustment - it is the z=0 projection plane
     // NOTE: layer[i].children is an array of actors

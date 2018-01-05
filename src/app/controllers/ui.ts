@@ -5,16 +5,21 @@
 
 // closure vars
 var ui:Ui,
+    config:Config,
     graphics:any,
+    camera:THREE.PerspectiveCamera,
+    controls:any,
 
     // gui 
     initial_view:object,
-    flatten_view:object,
+    normalize_scale:object,
     railsv:boolean, 
     rails:object,
     dollyX_:object,
     logscaleX_:object,
     logscaleY_:object,
+    sx:number = 1.0,
+    sy:number = 1.0,
     symbolv:string[],
     symbols:object,
     layersv:boolean,
@@ -35,12 +40,15 @@ var ui:Ui,
 class Ui {
 
   // init scene, camera, renderer  etc.
-  init(_graphics:Graphics, config:Config = {}):void {
+  init(_graphics:Graphics, _config:Config = {}):void {
+    config = _config;
     graphics = _graphics;
+    camera = graphics.camera();
+    controls = camera['controls'];
 
     // gui 
     initial_view = {initial_view:()=>{console.log(`\ninitial_view`);}};
-    flatten_view = { flatten_view:()=>{console.log(`\nflatten_view`);}};
+    normalize_scale = {normalize_scale:()=>{console.log(`\nnormalize_scale`);}};
     railsv = false;  // so initial rails=true
     rails = {rails: false};
     dollyX_ = { dollyX_: -50.0 };
@@ -86,14 +94,27 @@ class Ui {
     }
 
 
+
     // build gui
     gui.add(initial_view, 'initial_view').onFinishChange(() => {
         console.log(`revert to initial_view`);
+        console.log(`initial_position.x = ${camera['initial_position'].x}`);
+        console.log(`initial_position.y = ${camera['initial_position'].y}`);
+        console.log(`initial_position.z = ${camera['initial_position'].z}`);
+        camera.position.set(camera['initial_position'].x, camera['initial_position'].y, camera['initial_position'].z);
+        controls.update();
+        console.log(`initial_lookAt.x = ${camera['initial_position'].x}`);
+        console.log(`initial_lookAt.y = ${camera['initial_position'].y}`);
+        controls.target.set(camera['initial_position'].x, camera['initial_position'].y, 0.0);
+        dollyX_['dollyX_'] = camera.position.x;
     });
 
-    gui.add(flatten_view, 'flatten_view').onFinishChange(() => {
-        console.log(`flatten the view to 2D orthogonal to camera.lookAt ray`);
+    gui.add(normalize_scale, 'normalize_scale').onFinishChange(() => {
+        logscaleX_['logscaleX_'] = 1.0;
+        logscaleY_['logscaleY_'] = 1.0;
+        graphics.scaleActor('stage', 1.0, 1.0, 1.0);
     });
+
 
     gui.add(rails, 'rails').onFinishChange(() => {
         railsv = !railsv;
@@ -103,18 +124,30 @@ class Ui {
 
     // initially dollyX_ = 0.0; camera.position.x=-50 camera.lookAt.x=-50
     gui.add(dollyX_, 'dollyX_', -5000, 50, 1).onChange(() => {
-        console.log(`current dollyX_ value = = ${dollyX_['dollyX_']}`);
-    });
+        graphics.dollyX(dollyX_['dollyX_']);
+    }).listen();
 
     // initially logscaleX_ = 0.0
-    gui.add(logscaleX_, 'logscaleX_', -1.0 , 1.0, 0.01).onChange(() => {
-        console.log(`current logscaleX_ value = = ${logscaleX_['logscaleX_']}`);
-    });
+    gui.add(logscaleX_, 'logscaleX_', -2.0 , 2.0, 0.01).onChange(() => {
+        // logscale lsx -> scale sx
+        let lsx = logscaleX_['logscaleX_'];
+
+        // scale stage using stage.scale.set(sx ,sy, 1.0)
+        sx = Math.exp(lsx);
+        //console.log(`current logscaleX_ lsx = ${lsx} sx = ${sx}`);
+        graphics.scaleActor('stage', sx, sy, 1.0);
+    }).listen();
 
     // initially logscaleY_ = 0.0
-    gui.add(logscaleY_, 'logscaleY_', -1.0, 1.0, 0.01).onChange(() => {
-        console.log(`current logscaleY_ value = = ${logscaleY_['logscaleY_']}`);
-    });
+    gui.add(logscaleY_, 'logscaleY_', -2.0, 2.0, 0.01).onChange(() => {
+        // logscale lsy -> scale sy
+        let lsy = logscaleY_['logscaleY_'];
+
+        // scale stage using stage.scale.set(sx ,sy, 1.0)
+        sy = Math.exp(lsy);
+        console.log(`current logscaleY_ lsy = ${lsy} sy = ${sy}`);
+        graphics.scaleActor('stage', sx, sy, 1.0);
+    }).listen();
 
 
     //symbolv = ['ETH','ETC','BTC','BCH','LTC','LBC','XRP','ZEC','BST','UJO']; 

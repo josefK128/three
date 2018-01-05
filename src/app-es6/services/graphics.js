@@ -47,12 +47,17 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                     }
                     renderer = graphics.renderer(document.getElementById('space'));
                     renderer.setClearColor(0xffffff, 1);
+                    console.log(`config.camera = `);
+                    console.dir(config.camera);
                     camera = graphics.camera(config.camera);
                     light.position.set(0, 10, 20);
                     camera.add(light);
                     controls = new THREE.OrbitControls(camera);
                     lookAt = config.camera.lookAt;
                     controls.target.set(lookAt.x, lookAt.y, lookAt.z);
+                    camera['controls'] = controls;
+                    camera['initial_position'] = config.camera.position;
+                    camera['initial_lookAt'] = config.camera.lookAt;
                     nLayers = config.stage.layers.length;
                     layerDelta = config.stage.layerDelta;
                     scene = graphics.scene();
@@ -92,22 +97,18 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                         return scene;
                     }
                 } 
-                layer_type(l, type) {
-                    console.log(`graphics.layer_type(${l}, ${type})`);
-                    config.stage.layer_type[l] = type;
-                    if (type === 'invisible') {
-                        console.log(`setting layers[${l}].visible = false`);
-                        layers[l].visible = false;
-                    }
-                    else {
-                        console.log(`TBD: loading data for type = ${type} - currently 'line'`);
-                        console.log(`setting layers[${l}].visible = true`);
-                        layers[l].visible = true;
-                    }
-                }
                 camera(camera_config) {
-                    var fov = camera_config['fov'], w = window.innerWidth, h = window.innerHeight, aspect = w / h, near = camera_config['near'], far = camera_config['far'], position = camera_config['position'], lookAt = camera_config['lookAt'];
+                    console.log(`camera_config = `);
+                    console.dir(camera_config);
+                    var fov, w, h, aspect, near, far, position;
                     if (camera === undefined) {
+                        fov = camera_config['fov'];
+                        w = window.innerWidth;
+                        h = window.innerHeight;
+                        aspect = w / h;
+                        near = camera_config['near'];
+                        far = camera_config['far'];
+                        position = camera_config['position'];
                         camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
                         camera['position'].x = camera_config['position'].x;
                         camera['position'].y = camera_config['position'].y;
@@ -127,6 +128,19 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                 }
                 getCurrentWebGLProgram() {
                     return gl.getParameter(gl.CURRENT_PROGRAM);
+                }
+                layer_type(l, type) {
+                    console.log(`graphics.layer_type(${l}, ${type})`);
+                    config.stage.layer_type[l] = type;
+                    if (type === 'invisible') {
+                        console.log(`setting layers[${l}].visible = false`);
+                        layers[l].visible = false;
+                    }
+                    else {
+                        console.log(`TBD: loading data for type = ${type} - currently 'line'`);
+                        console.log(`setting layers[${l}].visible = true`);
+                        layers[l].visible = true;
+                    }
                 }
                 create(type, name, layer, options) {
                     return __awaiter(this, void 0, void 0, function* () {
@@ -196,20 +210,14 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                 }
                 scaleActor(actor, sx, sy, sz) {
                     if (actors[actor]) {
-                        console.log(`%%% scaling actor = ${actor} sx=${sx} sy=${sy} sz=${sz}`);
                         actors[actor].scale.set(sx, sy, sz);
-                        if (actor === 'stage') {
-                            actors['grid1'].scale.set(sx, sz, sy);
-                        }
                     }
                 }
-                dollyX(tx = 0.0, ty = 0.0) {
-                    let cp = camera.position;
-                    camera.translateX(tx);
-                    lookAt.x += tx;
-                    controls.target.set(lookAt.x, lookAt.y, lookAt.z);
-                    console.log(`camera now located at [${cp.x}, ${cp.y}, ${cp.z}]`);
-                    console.log(`camera looking at [${lookAt.x}, ${lookAt.y}, ${lookAt.z}]`);
+                dollyX(tx = camera.position.x, ty = camera.position.y) {
+                    camera.position.set(tx, ty, camera.position.z);
+                    lookAt.x = tx;
+                    lookAt.y = ty;
+                    controls.target.set(lookAt.x, lookAt.y, 0.0);
                 } 
             }; 
             if (graphics === undefined) {
