@@ -57,7 +57,6 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                     controls.target.set(lookAt.x, lookAt.y, lookAt.z);
                     camera['controls'] = controls;
                     camera['initial_position'] = config.camera.position;
-                    camera['initial_lookAt'] = config.camera.lookAt;
                     nLayers = config.stage.layers.length;
                     layerDelta = config.stage.layerDelta;
                     scene = graphics.scene();
@@ -213,12 +212,35 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                         actors[actor].scale.set(sx, sy, sz);
                     }
                 }
-                dollyX(tx = camera.position.x, ty = camera.position.y) {
+                dollyX(tx = camera.position.x) {
+                    let ty = camera.position.y;
                     camera.position.set(tx, ty, camera.position.z);
                     lookAt.x = tx;
                     lookAt.y = ty;
-                    controls.target.set(lookAt.x, lookAt.y, 0.0);
+                    controls.target.set(tx, ty, 0.0);
                 } 
+                dollyY(ty = camera.position.y) {
+                    let tx = camera.position.x;
+                    camera.position.set(tx, ty, camera.position.z);
+                    lookAt.x = tx;
+                    lookAt.y = ty;
+                    controls.target.set(tx, ty, 0.0);
+                } 
+                pan(p) {
+                    console.log(`graphics.pan(${p})`);
+                    camera.rotation.x = p;
+                    camera.updateProjectionMatrix();
+                }
+                tilt(t) {
+                    console.log(`graphics.tilt(${t})`);
+                    camera.rotation.y = t;
+                    camera.updateProjectionMatrix();
+                }
+                zoom(_fov) {
+                    console.log(`graphics.zoom(${_fov})`);
+                    camera.fov = _fov;
+                    camera.updateProjectionMatrix();
+                }
             }; 
             if (graphics === undefined) {
                 exports_1("graphics", graphics = new Graphics());

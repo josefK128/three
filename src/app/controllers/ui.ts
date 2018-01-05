@@ -16,10 +16,14 @@ var ui:Ui,
     railsv:boolean, 
     rails:object,
     dollyX_:object,
+    dollyY_:object,
     logscaleX_:object,
     logscaleY_:object,
     sx:number = 1.0,
     sy:number = 1.0,
+    pan_:object,
+    tilt_:object,
+    zoom_:object,
     symbolv:string[],
     symbols:object,
     layersv:boolean,
@@ -51,9 +55,13 @@ class Ui {
     normalize_scale = {normalize_scale:()=>{console.log(`\nnormalize_scale`);}};
     railsv = false;  // so initial rails=true
     rails = {rails: false};
-    dollyX_ = { dollyX_: -50.0 };
+    dollyX_ = { dollyX_: -100.0 };
+    dollyY_ = { dollyY_: 80.0 };
     logscaleX_ = { logscaleX_: 0.0 };
     logscaleY_ = {logscaleY_: 0.0};
+    pan_ = { pan_: 0.0 };  // radians
+    tilt_ = { tilt_: 0.0 };  // radians
+    zoom_ = { zoom_: 90.0 };  // degrees
     symbolv = ['ETH','ETC','BTC','BCH','LTC','LBC','XRP','ZEC','BST','UJO']; 
     symbols = {
       symbol: 'ETH',
@@ -103,10 +111,15 @@ class Ui {
         console.log(`initial_position.z = ${camera['initial_position'].z}`);
         camera.position.set(camera['initial_position'].x, camera['initial_position'].y, camera['initial_position'].z);
         controls.update();
-        console.log(`initial_lookAt.x = ${camera['initial_position'].x}`);
-        console.log(`initial_lookAt.y = ${camera['initial_position'].y}`);
         controls.target.set(camera['initial_position'].x, camera['initial_position'].y, 0.0);
         dollyX_['dollyX_'] = camera.position.x;
+        dollyY_['dollyY_'] = camera.position.y;
+        graphics.pan(0.0);
+        graphics.tilt(0.0);
+        graphics.zoom(90.0);
+        pan_['pan_'] = 0.0;
+        tilt_['tilt_'] = 0.0;
+        zoom_['zoom_'] = 90.0;
     });
 
     gui.add(normalize_scale, 'normalize_scale').onFinishChange(() => {
@@ -122,10 +135,16 @@ class Ui {
     });
 
 
-    // initially dollyX_ = 0.0; camera.position.x=-50 camera.lookAt.x=-50
+    // initially dollyX_ = camera.position.x
     gui.add(dollyX_, 'dollyX_', -5000, 50, 1).onChange(() => {
         graphics.dollyX(dollyX_['dollyX_']);
     }).listen();
+
+    // initially dollyY_ = camera.position.y
+    gui.add(dollyY_, 'dollyY_', 0, 1000, 1).onChange(() => {
+        graphics.dollyY(dollyY_['dollyY_']);
+    }).listen();
+
 
     // initially logscaleX_ = 0.0
     gui.add(logscaleX_, 'logscaleX_', -2.0 , 2.0, 0.01).onChange(() => {
@@ -147,6 +166,22 @@ class Ui {
         sy = Math.exp(lsy);
         console.log(`current logscaleY_ lsy = ${lsy} sy = ${sy}`);
         graphics.scaleActor('stage', sx, sy, 1.0);
+    }).listen();
+
+
+    // initially pan_ = 0.0, range = [-PI/2, PI/2] radians
+    gui.add(pan_, 'pan_', -1.57, 1.57, .01).onChange(() => {
+        graphics.pan(pan_['pan_']);
+    }).listen();
+
+    // initially tilt_ = 0.0, range = [-PI/2, PI/2] radians
+    gui.add(tilt_, 'tilt_', -1.57, 1.57, .01).onChange(() => {
+      graphics.tilt(tilt_['tilt_']);
+    }).listen();
+
+    // initially zoom_ = 90.0, range = [30, 150] degrees
+    gui.add(zoom_, 'zoom_', 10, 170).onChange(() => {
+        graphics.zoom(zoom_['zoom_']);
     }).listen();
 
 

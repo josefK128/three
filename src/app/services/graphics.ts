@@ -75,7 +75,6 @@ class Graphics {
     // attach to camera for easy future ref by other modules using graphics
     camera['controls'] = controls;
     camera['initial_position'] = config.camera.position;
-    camera['initial_lookAt'] = config.camera.lookAt;
 
 
     // scene - meta-container
@@ -325,31 +324,50 @@ class Graphics {
   }
 
 
-  dollyX(tx:number = camera.position.x, ty:number = camera.position.y):void {
 
-    // translate camera and set controls lookAt-target so camera remains
-    // orthogonal to all layers
+  // translateX camera and set controls lookAt-target so camera remains
+  // orthogonal to all layers
+  dollyX(tx:number = camera.position.x):void {
+    let ty = camera.position.y;
+
     camera.position.set(tx, ty, camera.position.z);
     lookAt.x = tx;
     lookAt.y = ty;
-    controls.target.set(lookAt.x, lookAt.y, 0.0);
+    controls.target.set(tx, ty, 0.0);
+  }//dollyX()
 
 
-    // NOTE: layer[0] needs no adjustment - it is the z=0 projection plane
-    // NOTE: layer[i].children is an array of actors
-//    for(let i=1; i<nLayers; i++){
-//      console.log(`layer is ${i}`);
-//      for(let actor of layers[i].children){
-//        // adjust grid positions so actors project correctly onto z=0 plane
-//        console.log(`dolly-scaled actor is ${actor}`);
-//        console.log(`dolly-scaled actor.z is ${actor.position.z}`);
-//        actor.translateX(tx/cp.z * actor.position.z);
-//        if(ty !== 0.0){
-//          actor.translateY(ty/cp.z * actor.position.z);
-//        }
-//      }
-//    }
-  }//dolly()
+  // translateY camera and set controls lookAt-target so camera remains
+  // orthogonal to all layers
+  dollyY(ty:number = camera.position.y):void {
+    let tx = camera.position.x;
+
+    camera.position.set(tx, ty, camera.position.z);
+    lookAt.x = tx;
+    lookAt.y = ty;
+    controls.target.set(tx, ty, 0.0);
+  }//dollyY
+
+
+  // rotate camera around its y-axis
+  pan(p:number):void {
+    console.log(`graphics.pan(${p})`);
+    camera.rotation.x = p;
+    camera.updateProjectionMatrix();
+  }
+
+  // rotate camera around its x-axis
+  tilt(t:number):void {
+    console.log(`graphics.tilt(${t})`);
+    camera.rotation.y = t;
+    camera.updateProjectionMatrix();
+  }
+
+  // change camera fov
+  zoom(_fov:number):void {
+    camera.fov = _fov;
+    camera.updateProjectionMatrix();
+  }
 
 }//Graphics
 

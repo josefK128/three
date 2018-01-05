@@ -1,7 +1,7 @@
 System.register([], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var ui, config, graphics, camera, controls, initial_view, normalize_scale, railsv, rails, dollyX_, logscaleX_, logscaleY_, sx, sy, symbolv, symbols, layersv, layers, layername, layer_typev, layer_type, mod_present, add_present, add_past, gui, stop, events, Ui;
+    var ui, config, graphics, camera, controls, initial_view, normalize_scale, railsv, rails, dollyX_, dollyY_, logscaleX_, logscaleY_, sx, sy, pan_, tilt_, zoom_, symbolv, symbols, layersv, layers, layername, layer_typev, layer_type, mod_present, add_present, add_past, gui, stop, events, Ui;
     return {
         setters: [],
         execute: function () {
@@ -16,9 +16,13 @@ System.register([], function (exports_1, context_1) {
                     normalize_scale = { normalize_scale: () => { console.log(`\nnormalize_scale`); } };
                     railsv = false; 
                     rails = { rails: false };
-                    dollyX_ = { dollyX_: -50.0 };
+                    dollyX_ = { dollyX_: -100.0 };
+                    dollyY_ = { dollyY_: 80.0 };
                     logscaleX_ = { logscaleX_: 0.0 };
                     logscaleY_ = { logscaleY_: 0.0 };
+                    pan_ = { pan_: 0.0 }; 
+                    tilt_ = { tilt_: 0.0 }; 
+                    zoom_ = { zoom_: 90.0 }; 
                     symbolv = ['ETH', 'ETC', 'BTC', 'BCH', 'LTC', 'LBC', 'XRP', 'ZEC', 'BST', 'UJO'];
                     symbols = {
                         symbol: 'ETH',
@@ -50,10 +54,15 @@ System.register([], function (exports_1, context_1) {
                         console.log(`initial_position.z = ${camera['initial_position'].z}`);
                         camera.position.set(camera['initial_position'].x, camera['initial_position'].y, camera['initial_position'].z);
                         controls.update();
-                        console.log(`initial_lookAt.x = ${camera['initial_position'].x}`);
-                        console.log(`initial_lookAt.y = ${camera['initial_position'].y}`);
                         controls.target.set(camera['initial_position'].x, camera['initial_position'].y, 0.0);
                         dollyX_['dollyX_'] = camera.position.x;
+                        dollyY_['dollyY_'] = camera.position.y;
+                        graphics.pan(0.0);
+                        graphics.tilt(0.0);
+                        graphics.zoom(90.0);
+                        pan_['pan_'] = 0.0;
+                        tilt_['tilt_'] = 0.0;
+                        zoom_['zoom_'] = 90.0;
                     });
                     gui.add(normalize_scale, 'normalize_scale').onFinishChange(() => {
                         logscaleX_['logscaleX_'] = 1.0;
@@ -67,6 +76,9 @@ System.register([], function (exports_1, context_1) {
                     gui.add(dollyX_, 'dollyX_', -5000, 50, 1).onChange(() => {
                         graphics.dollyX(dollyX_['dollyX_']);
                     }).listen();
+                    gui.add(dollyY_, 'dollyY_', 0, 1000, 1).onChange(() => {
+                        graphics.dollyY(dollyY_['dollyY_']);
+                    }).listen();
                     gui.add(logscaleX_, 'logscaleX_', -2.0, 2.0, 0.01).onChange(() => {
                         let lsx = logscaleX_['logscaleX_'];
                         sx = Math.exp(lsx);
@@ -77,6 +89,15 @@ System.register([], function (exports_1, context_1) {
                         sy = Math.exp(lsy);
                         console.log(`current logscaleY_ lsy = ${lsy} sy = ${sy}`);
                         graphics.scaleActor('stage', sx, sy, 1.0);
+                    }).listen();
+                    gui.add(pan_, 'pan_', -1.57, 1.57, .01).onChange(() => {
+                        graphics.pan(pan_['pan_']);
+                    }).listen();
+                    gui.add(tilt_, 'tilt_', -1.57, 1.57, .01).onChange(() => {
+                        graphics.tilt(tilt_['tilt_']);
+                    }).listen();
+                    gui.add(zoom_, 'zoom_', 10, 170).onChange(() => {
+                        graphics.zoom(zoom_['zoom_']);
                     }).listen();
                     gui.add(symbols, 'symbol', symbolv).onFinishChange(() => {
                         console.log(`\ncurrent symbol = ${symbols['symbol']}`);
