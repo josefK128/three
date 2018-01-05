@@ -1,7 +1,7 @@
 System.register([], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var ui, config, graphics, camera, controls, initial_view, normalize_scale, railsv, rails, dollyX_, dollyY_, logscaleX_, logscaleY_, sx, sy, pan_, tilt_, zoom_, symbolv, symbols, layersv, layers, layername, layer_typev, layer_type, mod_present, add_present, add_past, gui, stop, events, Ui;
+    var ui, config, graphics, camera, initial_view, normalize_scale, normalize_pan_tilt, railsv, rails, dollyX_, dollyY_, logscaleX_, logscaleY_, sx, sy, pan_, tilt_, zoom_, symbolv, symbols, layersv, layers, layername, layer_typev, layer_type, mod_present, add_present, add_past, gui, stop, events, Ui;
     return {
         setters: [],
         execute: function () {
@@ -11,9 +11,9 @@ System.register([], function (exports_1, context_1) {
                     config = _config;
                     graphics = _graphics;
                     camera = graphics.camera();
-                    controls = camera['controls'];
                     initial_view = { initial_view: () => { console.log(`\ninitial_view`); } };
                     normalize_scale = { normalize_scale: () => { console.log(`\nnormalize_scale`); } };
+                    normalize_pan_tilt = { normalize_pan_tilt: () => { console.log(`\nnormalize_pan_tilt`); } };
                     railsv = false; 
                     rails = { rails: false };
                     dollyX_ = { dollyX_: -100.0 };
@@ -48,13 +48,8 @@ System.register([], function (exports_1, context_1) {
                         gui.domElement.addEventListener(e, stop, false);
                     }
                     gui.add(initial_view, 'initial_view').onFinishChange(() => {
-                        console.log(`revert to initial_view`);
-                        console.log(`initial_position.x = ${camera['initial_position'].x}`);
-                        console.log(`initial_position.y = ${camera['initial_position'].y}`);
-                        console.log(`initial_position.z = ${camera['initial_position'].z}`);
                         camera.position.set(camera['initial_position'].x, camera['initial_position'].y, camera['initial_position'].z);
-                        controls.update();
-                        controls.target.set(camera['initial_position'].x, camera['initial_position'].y, 0.0);
+                        camera.lookAt(camera['initial_position'].x, camera['initial_position'].y, 0.0);
                         dollyX_['dollyX_'] = camera.position.x;
                         dollyY_['dollyY_'] = camera.position.y;
                         graphics.pan(0.0);
@@ -69,9 +64,14 @@ System.register([], function (exports_1, context_1) {
                         logscaleY_['logscaleY_'] = 1.0;
                         graphics.scaleActor('stage', 1.0, 1.0, 1.0);
                     });
+                    gui.add(normalize_pan_tilt, 'normalize_pan_tilt').onFinishChange(() => {
+                        graphics.pan(0.0);
+                        graphics.tilt(0.0);
+                        pan_['pan_'] = 0.0;
+                        tilt_['tilt_'] = 0.0;
+                    });
                     gui.add(rails, 'rails').onFinishChange(() => {
                         railsv = !railsv;
-                        console.log(`\nrails boolean value set to ${railsv}`);
                     });
                     gui.add(dollyX_, 'dollyX_', -5000, 50, 1).onChange(() => {
                         graphics.dollyX(dollyX_['dollyX_']);
@@ -87,7 +87,6 @@ System.register([], function (exports_1, context_1) {
                     gui.add(logscaleY_, 'logscaleY_', -2.0, 2.0, 0.01).onChange(() => {
                         let lsy = logscaleY_['logscaleY_'];
                         sy = Math.exp(lsy);
-                        console.log(`current logscaleY_ lsy = ${lsy} sy = ${sy}`);
                         graphics.scaleActor('stage', sx, sy, 1.0);
                     }).listen();
                     gui.add(pan_, 'pan_', -1.57, 1.57, .01).onChange(() => {

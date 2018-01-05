@@ -16,7 +16,14 @@ const config:Config = {
     near:0.5,
     far:100000,
     position:{x:-100, y:80, z:100},
-    lookAt:{x:-100, y:80, z:0}
+    lookAt:{x:-100, y:80, z:0},
+    csphere:{
+      radius:100,
+      visible:true,
+      wireframe:true,
+      opacity:1.0,
+      color:0x00ff00
+    }
   },
 
 

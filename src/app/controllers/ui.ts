@@ -8,11 +8,11 @@ var ui:Ui,
     config:Config,
     graphics:any,
     camera:THREE.PerspectiveCamera,
-    controls:any,
 
     // gui 
     initial_view:object,
     normalize_scale:object,
+    normalize_pan_tilt:object,
     railsv:boolean, 
     rails:object,
     dollyX_:object,
@@ -48,11 +48,11 @@ class Ui {
     config = _config;
     graphics = _graphics;
     camera = graphics.camera();
-    controls = camera['controls'];
 
     // gui 
     initial_view = {initial_view:()=>{console.log(`\ninitial_view`);}};
     normalize_scale = {normalize_scale:()=>{console.log(`\nnormalize_scale`);}};
+    normalize_pan_tilt = {normalize_pan_tilt:()=>{console.log(`\nnormalize_pan_tilt`);}};
     railsv = false;  // so initial rails=true
     rails = {rails: false};
     dollyX_ = { dollyX_: -100.0 };
@@ -105,13 +105,8 @@ class Ui {
 
     // build gui
     gui.add(initial_view, 'initial_view').onFinishChange(() => {
-        console.log(`revert to initial_view`);
-        console.log(`initial_position.x = ${camera['initial_position'].x}`);
-        console.log(`initial_position.y = ${camera['initial_position'].y}`);
-        console.log(`initial_position.z = ${camera['initial_position'].z}`);
         camera.position.set(camera['initial_position'].x, camera['initial_position'].y, camera['initial_position'].z);
-        controls.update();
-        controls.target.set(camera['initial_position'].x, camera['initial_position'].y, 0.0);
+        camera.lookAt(camera['initial_position'].x, camera['initial_position'].y, 0.0);
         dollyX_['dollyX_'] = camera.position.x;
         dollyY_['dollyY_'] = camera.position.y;
         graphics.pan(0.0);
@@ -128,10 +123,16 @@ class Ui {
         graphics.scaleActor('stage', 1.0, 1.0, 1.0);
     });
 
+    gui.add(normalize_pan_tilt, 'normalize_pan_tilt').onFinishChange(() => {
+        graphics.pan(0.0);
+        graphics.tilt(0.0);
+        pan_['pan_'] = 0.0;
+        tilt_['tilt_'] = 0.0;
+    });
+
 
     gui.add(rails, 'rails').onFinishChange(() => {
         railsv = !railsv;
-        console.log(`\nrails boolean value set to ${railsv}`);
     });
 
 
@@ -153,7 +154,6 @@ class Ui {
 
         // scale stage using stage.scale.set(sx ,sy, 1.0)
         sx = Math.exp(lsx);
-        //console.log(`current logscaleX_ lsx = ${lsx} sx = ${sx}`);
         graphics.scaleActor('stage', sx, sy, 1.0);
     }).listen();
 
@@ -164,7 +164,6 @@ class Ui {
 
         // scale stage using stage.scale.set(sx ,sy, 1.0)
         sy = Math.exp(lsy);
-        console.log(`current logscaleY_ lsy = ${lsy} sy = ${sy}`);
         graphics.scaleActor('stage', sx, sy, 1.0);
     }).listen();
 
@@ -179,7 +178,7 @@ class Ui {
       graphics.tilt(tilt_['tilt_']);
     }).listen();
 
-    // initially zoom_ = 90.0, range = [30, 150] degrees
+    // initially zoom_ = 90.0, range = [10, 170] degrees
     gui.add(zoom_, 'zoom_', 10, 170).onChange(() => {
         graphics.zoom(zoom_['zoom_']);
     }).listen();

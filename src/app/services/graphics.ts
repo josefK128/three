@@ -22,7 +22,6 @@ var graphics:Graphics,
 
     camera:THREE.PerspectiveCamera,
     lookAt:any,
-    controls:THREE.OrbitControls,
     light:THREE.PointLight = new THREE.PointLight(),
 
     scene:THREE.Scene,
@@ -68,12 +67,10 @@ class Graphics {
     camera = graphics.camera(config.camera);
     light.position.set(0, 10, 20);
     camera.add(light);
-    controls = new THREE.OrbitControls(camera);
     lookAt = config.camera.lookAt;
-    controls.target.set(lookAt.x, lookAt.y, lookAt.z);
+    camera.lookAt(lookAt.x, lookAt.y, lookAt.z);
 
     // attach to camera for easy future ref by other modules using graphics
-    camera['controls'] = controls;
     camera['initial_position'] = config.camera.position;
 
 
@@ -104,7 +101,6 @@ class Graphics {
     if(stats){
       stats.update();
     }
-    controls.update();
     renderer.render( scene, camera );
   }
 
@@ -325,41 +321,37 @@ class Graphics {
 
 
 
-  // translateX camera and set controls lookAt-target so camera remains
-  // orthogonal to all layers
+  // translateX camera and set camera.lookAt so camera remains orthogonal to all layers
   dollyX(tx:number = camera.position.x):void {
     let ty = camera.position.y;
 
     camera.position.set(tx, ty, camera.position.z);
     lookAt.x = tx;
     lookAt.y = ty;
-    controls.target.set(tx, ty, 0.0);
+    camera.lookAt(tx, ty, 0.0);
   }//dollyX()
 
 
-  // translateY camera and set controls lookAt-target so camera remains
-  // orthogonal to all layers
+  // translateY camera and set camera.lookAt so camera remains orthogonal to all layers
   dollyY(ty:number = camera.position.y):void {
     let tx = camera.position.x;
 
     camera.position.set(tx, ty, camera.position.z);
     lookAt.x = tx;
     lookAt.y = ty;
-    controls.target.set(tx, ty, 0.0);
+    camera.lookAt(tx, ty, 0.0);
   }//dollyY
 
 
   // rotate camera around its y-axis
   pan(p:number):void {
-    console.log(`graphics.pan(${p})`);
-    camera.rotation.x = p;
+    camera.rotation.y = p;
     camera.updateProjectionMatrix();
   }
 
   // rotate camera around its x-axis
   tilt(t:number):void {
-    console.log(`graphics.tilt(${t})`);
-    camera.rotation.y = t;
+    camera.rotation.x = t;
     camera.updateProjectionMatrix();
   }
 

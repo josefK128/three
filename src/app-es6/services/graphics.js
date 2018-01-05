@@ -9,7 +9,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
         });
     };
     var __moduleName = context_1 && context_1.id;
-    var grid_1, axes_1, line_1, quad_1, quad_shm_1, sprite_1, graphics, config, gl, renderer, stats, clock, et, count, camera, lookAt, controls, light, scene, stage, layers, nLayers, layerDelta, actors, onWindowResize, Graphics;
+    var grid_1, axes_1, line_1, quad_1, quad_shm_1, sprite_1, graphics, config, gl, renderer, stats, clock, et, count, camera, lookAt, light, scene, stage, layers, nLayers, layerDelta, actors, onWindowResize, Graphics;
     return {
         setters: [
             function (grid_1_1) {
@@ -52,10 +52,8 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                     camera = graphics.camera(config.camera);
                     light.position.set(0, 10, 20);
                     camera.add(light);
-                    controls = new THREE.OrbitControls(camera);
                     lookAt = config.camera.lookAt;
-                    controls.target.set(lookAt.x, lookAt.y, lookAt.z);
-                    camera['controls'] = controls;
+                    camera.lookAt(lookAt.x, lookAt.y, lookAt.z);
                     camera['initial_position'] = config.camera.position;
                     nLayers = config.stage.layers.length;
                     layerDelta = config.stage.layerDelta;
@@ -73,7 +71,6 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                     if (stats) {
                         stats.update();
                     }
-                    controls.update();
                     renderer.render(scene, camera);
                 }
                 scene() {
@@ -217,27 +214,24 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                     camera.position.set(tx, ty, camera.position.z);
                     lookAt.x = tx;
                     lookAt.y = ty;
-                    controls.target.set(tx, ty, 0.0);
+                    camera.lookAt(tx, ty, 0.0);
                 } 
                 dollyY(ty = camera.position.y) {
                     let tx = camera.position.x;
                     camera.position.set(tx, ty, camera.position.z);
                     lookAt.x = tx;
                     lookAt.y = ty;
-                    controls.target.set(tx, ty, 0.0);
+                    camera.lookAt(tx, ty, 0.0);
                 } 
                 pan(p) {
-                    console.log(`graphics.pan(${p})`);
-                    camera.rotation.x = p;
+                    camera.rotation.y = p;
                     camera.updateProjectionMatrix();
                 }
                 tilt(t) {
-                    console.log(`graphics.tilt(${t})`);
-                    camera.rotation.y = t;
+                    camera.rotation.x = t;
                     camera.updateProjectionMatrix();
                 }
                 zoom(_fov) {
-                    console.log(`graphics.zoom(${_fov})`);
                     camera.fov = _fov;
                     camera.updateProjectionMatrix();
                 }
