@@ -133,6 +133,7 @@ class Ui {
 
     gui.add(rails, 'rails').onFinishChange(() => {
         railsv = !railsv;
+        console.log(`\nrails boolean value set to ${railsv}`);
     });
 
 

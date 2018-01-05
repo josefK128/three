@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>webgl bootstrap application</title>
+  <title>webgl generator test</title>
   <meta charset=utf-8>
   <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css'> 
+  <link rel="stylesheet" href="./styles/css/normalize.css" > 
   <link rel="stylesheet" href="./styles/css/space.css" > 
- </head>
+</head>
 
 <body>
   <canvas id='space'></canvas>
@@ -15,11 +15,12 @@
   <script src="./systemjs/systemjs-static-es6.config.js"></script>
   <!-- latest three.js release is 88 -->
   <script src="../../../three.js/build/three.js"></script> 
-  <script src="../../../three.js/examples/js/controls/OrbitControls.js"></script> 
   <script src="../../../three.js/examples/js/libs/stats.min.js"></script> 
+  <script src="../../../three.js/examples/js/libs/dat.gui.min.js"></script> 
+
 
   <script>
-    var _config = './app-es6/configs/dev-stage1';
+    var _config = './app-es6/configs/dev-stage2';
 
 
     // bootstrap application - central organizational fabric - space
@@ -32,9 +33,11 @@
         console.log(`config = `);
         console.dir(config);
 
-        // import and initialize bootstrap app 'space'
+        // import and config-initialize bootstrap app 'space'
         System.import(config._app)
           .then((Space) => {
+            console.log(`Space = `);
+            console.dir(space);
             Space.space.init(config);
           });
       });

@@ -72,6 +72,7 @@ System.register([], function (exports_1, context_1) {
                     });
                     gui.add(rails, 'rails').onFinishChange(() => {
                         railsv = !railsv;
+                        console.log(`\nrails boolean value set to ${railsv}`);
                     });
                     gui.add(dollyX_, 'dollyX_', -5000, 50, 1).onChange(() => {
                         graphics.dollyX(dollyX_['dollyX_']);
