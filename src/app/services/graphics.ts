@@ -4,10 +4,11 @@
 
 import {Grid} from '../actors/grid';
 import {Axes} from '../actors/axes';
+import {Ohlc} from '../actors/ohlc';
 import {Line} from '../actors/line';
+import {Sprite} from '../actors/sprite';
 import {Quad} from '../actors/quad';
 import {Quad_shm} from '../actors/quad_shm';
-import {Sprite} from '../actors/sprite';
 
 
 // closure vars
@@ -148,9 +149,6 @@ class Graphics {
 
   // default camera
   camera(camera_config:object):THREE.PerspectiveCamera {
-
-    console.log(`camera_config = `);
-    console.dir(camera_config);
     var fov:number,
         w:number,
         h:number, 
@@ -213,21 +211,15 @@ class Graphics {
   }
 
 
-  // create actor - give reference name
-  // place in appropriate layer
-  // let d = camera.position.z (default = 10.0)
-  // Then layer[i] is scaled by (d-layerZ[i])/d
-  // grid ->        layers[0] z=0.0 scale= (d-z)/d = 1.0
-  // glyph-quads -> layers[1] z=-0.5 scale= (d+0.5)/d = 1.05
-  // sprite ->      layers[2] z=-1.0 scale= (d+1.5)/d = 1.1
-  // line ->        layers[3] z=-1.5 scale= (d+1.0)/d = 1.15
+  // create actor - give reference name and place in appropriate layer
   async create(type:string, name:string, layer:number, options:any):Promise<THREE.Object3D> {
     var grid:THREE.GridHelper,
         axes:THREE.AxesHelper,
+        ohlc_tuple:object,
+        sprite:THREE.Sprite,
         line:THREE.Line,
         quad:THREE.Mesh,         // BufferGeometry & MeshBasicMaterial
-        quad_shm:THREE.Mesh,    // BufferGeometry & ShaderMaterial
-        sprite:THREE.Sprite;
+        quad_shm:THREE.Mesh;    // BufferGeometry & ShaderMaterial
         
 
     try{
@@ -250,19 +242,16 @@ class Graphics {
           layers[layer].add(axes);
           return axes;
 
-        case 'quad':
-          quad = await Quad.create(options);  // Quad.create() returns Promise
-          graphics.addActor(name, quad, options);
-          quad.position.z = -layer*layerDelta;
-          layers[layer].add(quad);
-          return quad;
-
-        case 'quad_shm':
-          quad_shm = await Quad_shm.create(options);  // Quad_shm.create() returns Promise
-          graphics.addActor(name, quad_shm, options);
-          quad_shm.position.z = -layer*layerDelta;
-          layers[layer].add(quad_shm);
-          return quad_shm;
+        // Ohlc.create() returns object {past:ohlc[], recent:ohlc[]}
+        case 'ohlc':
+          ohlc_tuple = Ohlc.create(-layer*layerDelta, options.data); 
+          console.log(`ohlc_tuple:`);
+          console.dir(ohlc_tuple);
+          //graphics.addActor(name, ohlc_past, options);
+          //graphics.addActor(name, ohlc_recent, options);
+          //layers[layer].add(ohlc_past);
+          //layers[layer].add(ohlc_recent);
+          return ohlc_tuple;
 
         case 'sprite':
           sprite = await Sprite.create(options);  // Sprite.create() returns Promise
@@ -277,6 +266,21 @@ class Graphics {
           line.position.z = -layer*layerDelta;
           layers[layer].add(line);
           return line;
+
+
+        case 'quad':
+          quad = await Quad.create(options);  // Quad.create() returns Promise
+          graphics.addActor(name, quad, options);
+          quad.position.z = -layer*layerDelta;
+          layers[layer].add(quad);
+          return quad;
+
+        case 'quad_shm':
+          quad_shm = await Quad_shm.create(options);  // Quad_shm.create() returns Promise
+          graphics.addActor(name, quad_shm, options);
+          quad_shm.position.z = -layer*layerDelta;
+          layers[layer].add(quad_shm);
+          return quad_shm;
 
 
         default:

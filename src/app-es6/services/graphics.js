@@ -1,4 +1,4 @@
-System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actors/quad", "../actors/quad_shm", "../actors/sprite"], function (exports_1, context_1) {
+System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actors/line", "../actors/sprite", "../actors/quad", "../actors/quad_shm"], function (exports_1, context_1) {
     "use strict";
     var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         return new (P || (P = Promise))(function (resolve, reject) {
@@ -9,7 +9,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
         });
     };
     var __moduleName = context_1 && context_1.id;
-    var grid_1, axes_1, line_1, quad_1, quad_shm_1, sprite_1, graphics, config, gl, renderer, stats, clock, et, count, camera, lookAt, light, scene, stage, layers, nLayers, layerDelta, actors, onWindowResize, Graphics;
+    var grid_1, axes_1, ohlc_1, line_1, sprite_1, quad_1, quad_shm_1, graphics, config, gl, renderer, stats, clock, et, count, camera, lookAt, light, scene, stage, layers, nLayers, layerDelta, actors, onWindowResize, Graphics;
     return {
         setters: [
             function (grid_1_1) {
@@ -18,17 +18,20 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
             function (axes_1_1) {
                 axes_1 = axes_1_1;
             },
+            function (ohlc_1_1) {
+                ohlc_1 = ohlc_1_1;
+            },
             function (line_1_1) {
                 line_1 = line_1_1;
+            },
+            function (sprite_1_1) {
+                sprite_1 = sprite_1_1;
             },
             function (quad_1_1) {
                 quad_1 = quad_1_1;
             },
             function (quad_shm_1_1) {
                 quad_shm_1 = quad_shm_1_1;
-            },
-            function (sprite_1_1) {
-                sprite_1 = sprite_1_1;
             }
         ],
         execute: function () {
@@ -94,8 +97,6 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                     }
                 } 
                 camera(camera_config) {
-                    console.log(`camera_config = `);
-                    console.dir(camera_config);
                     var fov, w, h, aspect, near, far, position;
                     if (camera === undefined) {
                         fov = camera_config['fov'];
@@ -140,9 +141,8 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                 }
                 create(type, name, layer, options) {
                     return __awaiter(this, void 0, void 0, function* () {
-                        var grid, axes, line, quad, 
-                        quad_shm, 
-                        sprite;
+                        var grid, axes, ohlc_tuple, sprite, line, quad, 
+                        quad_shm; 
                         try {
                             switch (type) {
                                 case 'grid':
@@ -158,18 +158,11 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                                     axes.position.z = -layer * layerDelta;
                                     layers[layer].add(axes);
                                     return axes;
-                                case 'quad':
-                                    quad = yield quad_1.Quad.create(options); 
-                                    graphics.addActor(name, quad, options);
-                                    quad.position.z = -layer * layerDelta;
-                                    layers[layer].add(quad);
-                                    return quad;
-                                case 'quad_shm':
-                                    quad_shm = yield quad_shm_1.Quad_shm.create(options); 
-                                    graphics.addActor(name, quad_shm, options);
-                                    quad_shm.position.z = -layer * layerDelta;
-                                    layers[layer].add(quad_shm);
-                                    return quad_shm;
+                                case 'ohlc':
+                                    ohlc_tuple = ohlc_1.Ohlc.create(-layer * layerDelta, options.data);
+                                    console.log(`ohlc_tuple:`);
+                                    console.dir(ohlc_tuple);
+                                    return ohlc_tuple;
                                 case 'sprite':
                                     sprite = yield sprite_1.Sprite.create(options); 
                                     graphics.addActor(name, sprite, options);
@@ -182,6 +175,18 @@ System.register(["../actors/grid", "../actors/axes", "../actors/line", "../actor
                                     line.position.z = -layer * layerDelta;
                                     layers[layer].add(line);
                                     return line;
+                                case 'quad':
+                                    quad = yield quad_1.Quad.create(options); 
+                                    graphics.addActor(name, quad, options);
+                                    quad.position.z = -layer * layerDelta;
+                                    layers[layer].add(quad);
+                                    return quad;
+                                case 'quad_shm':
+                                    quad_shm = yield quad_shm_1.Quad_shm.create(options); 
+                                    graphics.addActor(name, quad_shm, options);
+                                    quad_shm.position.z = -layer * layerDelta;
+                                    layers[layer].add(quad_shm);
+                                    return quad_shm;
                                 default:
                                     console.log(`%%% failed to create actor of type ${type}`);
                             }

@@ -24,7 +24,7 @@ class Space {
     // NOTE: initially use default options
     for(let layer of config.stage['layers']){
       for(let actor of layer){
-        //graphics.create('grid', 'grid1', 0, undefined);
+        //exp: graphics.create('grid', 'grid1', 0, undefined);
         graphics.create(actor['type'], actor['name'], actor['layer'], actor['options']);
       }
     }

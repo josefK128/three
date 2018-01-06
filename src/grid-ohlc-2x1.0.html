@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>grid ohlc 2x1.0</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css'> 
+    <link rel="stylesheet" href="./styles/css/space.css" > 
+  </head>
+
+
+  <body>
+    <canvas id='space'></canvas>
+
+    <script src="../node_modules/systemjs/dist/system.src.js"></script>
+    <script src="./systemjs/systemjs-static-es6.config.js"></script>
+    <!-- latest three.js release is 88 -->
+    <script src="../../../three.js/build/three.js"></script> 
+    <script src="../../../three.js/examples/js/controls/OrbitControls.js"></script> 
+
+    <script>
+      var scene,
+          canvas,
+          renderer,
+          camera, 
+          controls,
+          light,
+          group_glyph,
+          grid_glyph,
+          group_line,
+          grid_line,
+          barL,
+          barR,
+
+          //---------------------------
+          // create ohlc-bar actor
+          // options data values o,h,l,c
+          create = (open, high, low, close) => {
+            var actor = new THREE.Group(),
+                // values derived from open, high, low and close
+                dhl = Math.max(high-low, 1.0),
+                yhl = (high + low)*0.5,
+                glyph_color = open > close ? 'red' : 'green',
+
+                // actor - three components
+                // [1] quad: high-low
+                quad_g,
+                quad_m,
+                quad,
+      
+                // [2a] pointO: opening
+                vertices
+                pointO_g,
+                pointO_m,
+                pointO,
+      
+                // [2b] pointC: close
+                pointC_g,
+                pointC_m,
+                pointC;
+    
+            //diagnostics
+            console.log(`o = ${open}  h = ${high}  l = ${low}  c = ${close}`); 
+            console.log(`glyph_color = ${glyph_color}`);
+            console.log(`dhl = Math.max(high-low,1.0) = ${dhl}`);
+            console.log(`yhl = (high+low)*0.5 = ${yhl}`);
+    
+            // three components:
+            // [1] quad: high-low
+            quad_g = new THREE.PlaneBufferGeometry(2, dhl);
+            quad_m = new THREE.MeshBasicMaterial({color:glyph_color, transparent:false});
+            quad = new THREE.Mesh(quad_g, quad_m);
+            quad.position.y = yhl;
+            quad.position.z = -0.01;
+            actor.add(quad);
+            
+            // [2a] pointO: open
+            pointO_g = new THREE.BufferGeometry();
+            vertices = new Float32Array( [
+               -1.0, open, -0.02
+            ] );
+            pointO_g.addAttribute('position', new THREE.BufferAttribute(vertices,3));
+            //pointO_g.vertices.push(new THREE.Vector3( 0, 0, 0)); // THREE.Geometry
+            pointO_m = new THREE.PointsMaterial( {size: 2, color:glyph_color,
+                transparent:false, sizeAttenuation:true} );
+            pointO = new THREE.Points( pointO_g, pointO_m );
+            actor.add( pointO );       
+    
+            // [2b] pointC: close
+            pointC_g = new THREE.BufferGeometry();
+            vertices = new Float32Array( [
+               1.0, close, -0.02
+            ] );
+            pointC_g.addAttribute('position', new THREE.BufferAttribute(vertices,3));
+            //pointC_g.vertices.push(new THREE.Vector3( 0, 0, 0)); // THREE.Geometry
+            pointC_m = new THREE.PointsMaterial( {size: 2, color:glyph_color,
+                transparent:false, sizeAttenuation:true} );
+            pointC = new THREE.Points( pointC_g, pointC_m );
+            actor.add( pointC );              
+
+            return actor;
+          },
+          //---------------------------
+
+
+          init = () => {
+            // 3D-framework
+            canvas = document.getElementById('space');
+            renderer = new THREE.WebGLRenderer({canvas:canvas});
+            renderer.setPixelRatio( window.devicePixelRatio );
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, .001, 1000 );
+            controls = new THREE.OrbitControls(camera);
+            controls.target.set(0.0, 0.0, 0.0);
+    
+            camera.position.z = 10;
+            scene = new THREE.Scene();
+            light = new THREE.PointLight();
+            light.position.set( 0, 100, 200 );
+            camera.add(light);  // ever-present 'headlight'
+            scene.add( light );
+            scene.add( new THREE.PointLightHelper( light, 10 ) ); // sphere on light
+            window.addEventListener( 'resize', onWindowResize, false );
+    
+            // grid_glyph
+            group_glyph = new THREE.Group();
+            grid_glyph = new THREE.GridHelper(10, 10, 0x0000ff, 0x808080 );
+            grid_glyph.position.y = 0;
+            grid_glyph.position.x = 0;
+            grid_glyph.position.z = 0;
+            grid_glyph.rotateX(Math.PI/2.0);
+            group_glyph.add(grid_glyph);
+            scene.add( group_glyph );
+    
+            // ohlc-bar actor-left
+            barL = create(3.0, 6.0, -4.0, -2.0);  // red
+            barR = create(-1.0, 8.0, -3.0, 3.0);   // green
+            barL.position.x = -2.5;
+            barR.position.x = 2.5;
+            scene.add(barL);
+            scene.add(barR);
+          },//init
+
+          animate = () => {
+            requestAnimationFrame( animate );
+            controls.update();
+            renderer.render( scene, camera );
+          },
+
+          onWindowResize = () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize( window.innerWidth, window.innerHeight );
+          };
+
+
+      // action
+      init();
+      animate();
+
+    </script>
+  </body>
+</html>
