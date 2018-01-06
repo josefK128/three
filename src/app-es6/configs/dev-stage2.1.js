@@ -25,6 +25,7 @@ System.register([], function (exports_1, context_1) {
                                 } },
                             { name: 'ohlc0', type: 'ohlc', layer: 0, options: {
                                     first_dynamic_index: 0,
+                                    xpositions: [0.0, -0.5, -1.0],
                                     data: [3.0, 6.0, -4.0, -2.0,
                                         -1.0, 8.0, -3.0, 3.0,
                                         2.0, 9.0, -1.0, 2.0

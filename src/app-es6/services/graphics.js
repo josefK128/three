@@ -141,7 +141,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                 }
                 create(type, name, layer, options) {
                     return __awaiter(this, void 0, void 0, function* () {
-                        var grid, axes, ohlc_tuple, sprite, line, quad, 
+                        var grid, axes, ohlc_tuple, ohlc_past, ohlc_recent, sprite, line, quad, 
                         quad_shm; 
                         try {
                             switch (type) {
@@ -151,42 +151,59 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                                     graphics.addActor(name, grid, options);
                                     grid.position.z = -layer * layerDelta;
                                     layers[layer].add(grid);
-                                    return grid;
+                                    break;
                                 case 'axes':
                                     axes = yield axes_1.Axes.create(options); 
                                     graphics.addActor(name, axes, options);
                                     axes.position.z = -layer * layerDelta;
                                     layers[layer].add(axes);
-                                    return axes;
+                                    break;
                                 case 'ohlc':
-                                    ohlc_tuple = ohlc_1.Ohlc.create(-layer * layerDelta, options);
-                                    console.log(`ohlc_tuple:`);
-                                    console.dir(ohlc_tuple);
-                                    return ohlc_tuple;
+                                    ohlc_1.Ohlc.create(-layer * layerDelta, layers[layer], options)
+                                        .then((tuple) => {
+                                        console.log(`Graphics.create - ohlc_tuple:`);
+                                        console.dir(tuple);
+                                        ohlc_past = name + '_past';
+                                        ohlc_recent = name + '_recent';
+                                        console.log(`ohlc past name = ${ohlc_past}`);
+                                        console.log(`ohlc recent name = ${ohlc_recent}`);
+                                        console.log(`tuple['past'] = ${tuple['past']}`);
+                                        console.log(`tuple['recent'] = ${tuple['recent']}`);
+                                        graphics.addActor(ohlc_past, tuple['past'], options);
+                                        graphics.addActor(ohlc_recent, tuple['recent'], options);
+                                        for (let p in actors) {
+                                            console.log(`actors[${p}] = ${actors[p]}`);
+                                        }
+                                        console.log(`graphics.actor(${ohlc_past}):`);
+                                        console.dir(graphics.actor(ohlc_past));
+                                        console.log(`graphics.actor(${ohlc_recent}):`);
+                                        console.dir(graphics.actor(ohlc_recent));
+                                    });
+                                    break;
                                 case 'sprite':
                                     sprite = yield sprite_1.Sprite.create(options); 
                                     graphics.addActor(name, sprite, options);
                                     sprite.position.z = -layer * layerDelta;
                                     layers[layer].add(sprite);
-                                    return sprite;
+                                    break;
                                 case 'line':
                                     line = yield line_1.Line.create(options); 
                                     graphics.addActor(name, line, options);
                                     line.position.z = -layer * layerDelta;
                                     layers[layer].add(line);
-                                    return line;
+                                    break;
                                 case 'quad':
                                     quad = yield quad_1.Quad.create(options); 
                                     graphics.addActor(name, quad, options);
                                     quad.position.z = -layer * layerDelta;
                                     layers[layer].add(quad);
-                                    return quad;
+                                    break;
                                 case 'quad_shm':
                                     quad_shm = yield quad_shm_1.Quad_shm.create(options); 
                                     graphics.addActor(name, quad_shm, options);
                                     quad_shm.position.z = -layer * layerDelta;
                                     layers[layer].add(quad_shm);
-                                    return quad_shm;
+                                    break;
                                 default:
                                     console.log(`%%% failed to create actor of type ${type}`);
                             }
@@ -197,8 +214,8 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                     });
                 } 
                 addActor(name, actor, options) {
-                    actor.name = name;
-                    actor.userData = options;
+                    actor['name'] = name;
+                    actor['userData'] = options;
                     actors[name] = actor;
                 }
                 actor(name) {

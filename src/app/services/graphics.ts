@@ -216,6 +216,8 @@ class Graphics {
     var grid:THREE.GridHelper,
         axes:THREE.AxesHelper,
         ohlc_tuple:object,
+        ohlc_past:string,
+        ohlc_recent:string,
         sprite:THREE.Sprite,
         line:THREE.Line,
         quad:THREE.Mesh,         // BufferGeometry & MeshBasicMaterial
@@ -230,7 +232,7 @@ class Graphics {
           graphics.addActor(name, grid, options);
           grid.position.z = -layer*layerDelta;
           layers[layer].add(grid);
-          return grid;
+          break;
 
         // rotateY(PI) so X-axis points negative (time)
         // and z-axis points positive depth (layer order)
@@ -240,34 +242,49 @@ class Graphics {
           //axes.rotateY(Math.PI);
           axes.position.z = -layer*layerDelta;
           layers[layer].add(axes);
-          return axes;
+          break;
 
         // Ohlc.create() returns {ohlc_past:ohlc[], ohlc_recent:ohlc[]}
         // these are distinct actors with convention-defined names:
         // 'ohlc<K>_past' and 'ohlc<K>_recent' where K = layer index (exp:0)
         case 'ohlc':
-          ohlc_tuple = Ohlc.create(-layer*layerDelta, options); 
-          console.log(`ohlc_tuple:`);
-          console.dir(ohlc_tuple);
-          //graphics.addActor(name+'_past', ohlc_past, options);
-          //graphics.addActor(name+'_recent', ohlc_recent, options);
-          //layers[layer].add(ohlc_past);
-          //layers[layer].add(ohlc_recent);
-          return ohlc_tuple;
+          Ohlc.create(-layer*layerDelta, layers[layer], options)
+            .then((tuple) => {
+              console.log(`Graphics.create - ohlc_tuple:`);
+              console.dir(tuple);
+    
+              // add two actos arrays returned in ohlc_tuple
+              ohlc_past = name+'_past';
+              ohlc_recent = name+'_recent';
+              console.log(`ohlc past name = ${ohlc_past}`);
+              console.log(`ohlc recent name = ${ohlc_recent}`);
+              console.log(`tuple['past'] = ${tuple['past']}`);
+              console.log(`tuple['recent'] = ${tuple['recent']}`);
+              graphics.addActor(ohlc_past, tuple['past'], options);
+              graphics.addActor(ohlc_recent, tuple['recent'], options);
+              for(let p in actors){
+                console.log(`actors[${p}] = ${actors[p]}`);
+              }
+              console.log(`graphics.actor(${ohlc_past}):`);
+              console.dir(graphics.actor(ohlc_past));
+              console.log(`graphics.actor(${ohlc_recent}):`);
+              console.dir(graphics.actor(ohlc_recent));
+            });
+          break;
 
         case 'sprite':
           sprite = await Sprite.create(options);  // Sprite.create() returns Promise
           graphics.addActor(name, sprite, options);
           sprite.position.z = -layer*layerDelta;
           layers[layer].add(sprite);
-          return sprite;
+          break;
 
         case 'line':
           line = await Line.create(options);  // Line.create() returns Promise
           graphics.addActor(name, line, options);
           line.position.z = -layer*layerDelta;
           layers[layer].add(line);
-          return line;
+          break;
 
 
         case 'quad':
@@ -275,15 +292,14 @@ class Graphics {
           graphics.addActor(name, quad, options);
           quad.position.z = -layer*layerDelta;
           layers[layer].add(quad);
-          return quad;
+          break;
 
         case 'quad_shm':
           quad_shm = await Quad_shm.create(options);  // Quad_shm.create() returns Promise
           graphics.addActor(name, quad_shm, options);
           quad_shm.position.z = -layer*layerDelta;
           layers[layer].add(quad_shm);
-          return quad_shm;
-
+          break;
 
         default:
           console.log(`%%% failed to create actor of type ${type}`);
@@ -296,14 +312,17 @@ class Graphics {
 
   // add actor to actors by name
   // NOTE: options should be non-transient data - currently NOT updated
-  addActor(name:string, actor:THREE.Object3D, options:object):void {
-    actor.name = name;
-    actor.userData = options;
+  addActor(name:string, actor:any, options:object):void {
+    actor['name'] = name;
+    actor['userData'] = options;
+    //console.log(`addActor: name = ${name}`);
+    //console.log(`addActor: actor = ${actor}`);
+    //console.log(`addActor: options = ${options}`);
     actors[name] = actor;
   }
 
   // get actor by name
-  actor(name:string):THREE.Object3D {
+  actor(name:string):any {
     if(actors[name]){
       return actors[name];
     }else{
