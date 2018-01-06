@@ -38,8 +38,11 @@ const config:Config = {
           centerLineColor: 0x000000, gridColor: 0x808000, 
           x: 0, y: 0, z: 0 }},
         {name:'ohlc0', type:'ohlc', layer:0, options:{
+          first_dynamic_index:0,
           data:[3.0,6.0,-4.0,-2.0, 
-                -1.0,8.0,-3.0,3.0]
+                -1.0,8.0,-3.0,3.0,
+                2.0,9.0,-1.0,2.0
+          ]
         }}
       ],
       [ {name:'line1', type:'line', layer:1, options:{

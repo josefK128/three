@@ -242,13 +242,15 @@ class Graphics {
           layers[layer].add(axes);
           return axes;
 
-        // Ohlc.create() returns object {past:ohlc[], recent:ohlc[]}
+        // Ohlc.create() returns {ohlc_past:ohlc[], ohlc_recent:ohlc[]}
+        // these are distinct actors with convention-defined names:
+        // 'ohlc<K>_past' and 'ohlc<K>_recent' where K = layer index (exp:0)
         case 'ohlc':
-          ohlc_tuple = Ohlc.create(-layer*layerDelta, options.data); 
+          ohlc_tuple = Ohlc.create(-layer*layerDelta, options); 
           console.log(`ohlc_tuple:`);
           console.dir(ohlc_tuple);
-          //graphics.addActor(name, ohlc_past, options);
-          //graphics.addActor(name, ohlc_recent, options);
+          //graphics.addActor(name+'_past', ohlc_past, options);
+          //graphics.addActor(name+'_recent', ohlc_recent, options);
           //layers[layer].add(ohlc_past);
           //layers[layer].add(ohlc_recent);
           return ohlc_tuple;

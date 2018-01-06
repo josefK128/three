@@ -159,7 +159,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                                     layers[layer].add(axes);
                                     return axes;
                                 case 'ohlc':
-                                    ohlc_tuple = ohlc_1.Ohlc.create(-layer * layerDelta, options.data);
+                                    ohlc_tuple = ohlc_1.Ohlc.create(-layer * layerDelta, options);
                                     console.log(`ohlc_tuple:`);
                                     console.dir(ohlc_tuple);
                                     return ohlc_tuple;

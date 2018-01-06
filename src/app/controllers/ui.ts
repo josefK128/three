@@ -12,6 +12,7 @@ var ui:Ui,
     // gui 
     initial_view:object,
     normalize_scale:object,
+    normalize_zoom:object,
     normalize_pan_tilt:object,
     railsv:boolean, 
     rails:object,
@@ -52,11 +53,12 @@ class Ui {
     // gui 
     initial_view = {initial_view:()=>{console.log(`\ninitial_view`);}};
     normalize_scale = {normalize_scale:()=>{console.log(`\nnormalize_scale`);}};
+    normalize_zoom = {normalize_zoom:()=>{console.log(`\nnormalize_zoom`);}};
     normalize_pan_tilt = {normalize_pan_tilt:()=>{console.log(`\nnormalize_pan_tilt`);}};
     railsv = false;  // so initial rails=true
     rails = {rails: false};
-    dollyX_ = { dollyX_: -100.0 };
-    dollyY_ = { dollyY_: 80.0 };
+    dollyX_ = { dollyX_: camera.position.x };
+    dollyY_ = { dollyY_: camera.position.y };
     logscaleX_ = { logscaleX_: 0.0 };
     logscaleY_ = {logscaleY_: 0.0};
     pan_ = { pan_: 0.0 };  // radians
@@ -121,6 +123,11 @@ class Ui {
         logscaleX_['logscaleX_'] = 1.0;
         logscaleY_['logscaleY_'] = 1.0;
         graphics.scaleActor('stage', 1.0, 1.0, 1.0);
+    });
+
+    gui.add(normalize_zoom, 'normalize_zoom').onFinishChange(() => {
+        zoom_['zoom_'] = 90.0;
+        graphics.zoom(90.0);
     });
 
     gui.add(normalize_pan_tilt, 'normalize_pan_tilt').onFinishChange(() => {

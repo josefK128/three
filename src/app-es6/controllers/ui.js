@@ -1,7 +1,7 @@
 System.register([], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var ui, config, graphics, camera, initial_view, normalize_scale, normalize_pan_tilt, railsv, rails, dollyX_, dollyY_, logscaleX_, logscaleY_, sx, sy, pan_, tilt_, zoom_, symbolv, symbols, layersv, layers, layername, layer_typev, layer_type, mod_present, add_present, add_past, gui, stop, events, Ui;
+    var ui, config, graphics, camera, initial_view, normalize_scale, normalize_zoom, normalize_pan_tilt, railsv, rails, dollyX_, dollyY_, logscaleX_, logscaleY_, sx, sy, pan_, tilt_, zoom_, symbolv, symbols, layersv, layers, layername, layer_typev, layer_type, mod_present, add_present, add_past, gui, stop, events, Ui;
     return {
         setters: [],
         execute: function () {
@@ -13,11 +13,12 @@ System.register([], function (exports_1, context_1) {
                     camera = graphics.camera();
                     initial_view = { initial_view: () => { console.log(`\ninitial_view`); } };
                     normalize_scale = { normalize_scale: () => { console.log(`\nnormalize_scale`); } };
+                    normalize_zoom = { normalize_zoom: () => { console.log(`\nnormalize_zoom`); } };
                     normalize_pan_tilt = { normalize_pan_tilt: () => { console.log(`\nnormalize_pan_tilt`); } };
                     railsv = false; 
                     rails = { rails: false };
-                    dollyX_ = { dollyX_: -100.0 };
-                    dollyY_ = { dollyY_: 80.0 };
+                    dollyX_ = { dollyX_: camera.position.x };
+                    dollyY_ = { dollyY_: camera.position.y };
                     logscaleX_ = { logscaleX_: 0.0 };
                     logscaleY_ = { logscaleY_: 0.0 };
                     pan_ = { pan_: 0.0 }; 
@@ -63,6 +64,10 @@ System.register([], function (exports_1, context_1) {
                         logscaleX_['logscaleX_'] = 1.0;
                         logscaleY_['logscaleY_'] = 1.0;
                         graphics.scaleActor('stage', 1.0, 1.0, 1.0);
+                    });
+                    gui.add(normalize_zoom, 'normalize_zoom').onFinishChange(() => {
+                        zoom_['zoom_'] = 90.0;
+                        graphics.zoom(90.0);
                     });
                     gui.add(normalize_pan_tilt, 'normalize_pan_tilt').onFinishChange(() => {
                         graphics.pan(0.0);
