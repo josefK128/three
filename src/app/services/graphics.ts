@@ -197,6 +197,11 @@ class Graphics {
   }
 
 
+  layer(i:index=0):THREE.Group {
+    return layers[i];
+  }
+
+
   layer_type(l:number, type:string):void {
     console.log(`graphics.layer_type(${l}, ${type})`);
     config.stage.layer_type[l] = type;
@@ -319,6 +324,11 @@ class Graphics {
     //console.log(`addActor: actor = ${actor}`);
     //console.log(`addActor: options = ${options}`);
     actors[name] = actor;
+  }
+
+  // get actors
+  actors():object {
+    return actors;
   }
 
   // get actor by name

@@ -1,11 +1,16 @@
-System.register([], function (exports_1, context_1) {
+System.register(["../services/data"], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var ui, config, graphics, camera, data_options, initial_view, normalize_scale, normalize_zoom, normalize_pan_tilt, railsv, rails, dollyX_, dollyY_, logscaleX_, logscaleY_, sx, sy, pan_, tilt_, zoom_, symbolv, symbols, layersv, layers, layername, layer_typev, layer_type, mod_present, add_present, add_past, gui, stop, events, Ui;
+    var data_1, ui, config, graphics, camera, ohlc_options, current_layer, initial_view, normalize_scale, normalize_zoom, normalize_pan_tilt, railsv, rails, dollyX_, dollyY_, logscaleX_, logscaleY_, sx, sy, pan_, tilt_, zoom_, symbolv, symbols, layersv, layers, layername, layer_typev, layer_type, mod_present, add_present, add_past, gui, stop, events, Ui;
     return {
-        setters: [],
+        setters: [
+            function (data_1_1) {
+                data_1 = data_1_1;
+            }
+        ],
         execute: function () {
-            data_options = {}, sx = 1.0, sy = 1.0, layername = [], layer_typev = [], layer_type = {};
+            ohlc_options = {}, 
+            current_layer = 0, sx = 1.0, sy = 1.0, layername = [], layer_typev = [], layer_type = {};
             Ui = class Ui {
                 init(_graphics, _config = {}) {
                     config = _config;
@@ -47,6 +52,9 @@ System.register([], function (exports_1, context_1) {
                     console.dir(gui.domElement);
                     for (let e of events) {
                         gui.domElement.addEventListener(e, stop, false);
+                    }
+                    for (let s of symbolv) {
+                        ohlc_options[s] = data_1.data.synthesize();
                     }
                     gui.add(initial_view, 'initial_view').onFinishChange(() => {
                         camera.position.set(camera['initial_position'].x, camera['initial_position'].y, camera['initial_position'].z);
@@ -105,10 +113,27 @@ System.register([], function (exports_1, context_1) {
                         graphics.zoom(zoom_['zoom_']);
                     }).listen();
                     gui.add(symbols, 'symbol', symbolv).onFinishChange(() => {
-                        console.log(`\ncurrent symbol = ${symbols['symbol']}`);
+                        var current_symbol = symbols['symbol'];
+                        console.log(`\ncurrent_symbol = ${current_symbol}`);
+                        console.log(`\ncurrent_layer = ${current_layer}`);
+                        console.log(`ohlc_options[${current_symbol}] = `);
+                        console.dir(ohlc_options[current_symbol]);
+                        graphics.create('ohlc', `ohlc${current_layer}`, current_layer, ohlc_options[current_symbol]);
+                        if (layersv === false) {
+                            current_layer = (current_layer + 1) % config.stage.layers.length;
+                            console.log(`after increment current_layer = ${current_layer}`);
+                        }
                     });
                     gui.add(mod_present, 'mod_present').onFinishChange(() => {
                         console.log(`event: modify present glyph`);
+                        var layer, children = [], layer_length = 0;
+                        layer = graphics.layer(current_layer);
+                        console.log(`layer = `);
+                        console.dir(layer);
+                        layer_length = layer.children.length;
+                        console.log(`layer[${current_layer}].children.length = ${layer_length}`);
+                        console.log(`graphics.actors() returns:`);
+                        console.dir(graphics.actors());
                     });
                     gui.add(add_present, 'add_present').onFinishChange(() => {
                         console.log(`event: add to present array of glyphs`);
@@ -118,7 +143,10 @@ System.register([], function (exports_1, context_1) {
                     });
                     gui.add(layers, 'layers').onFinishChange(() => {
                         layersv = !layersv;
-                        console.log(`\nlayers boolean value set to ${layersv}`);
+                        if (layersv === false) {
+                            current_layer = 0;
+                        }
+                        console.log(`\nlayers set to ${layersv} current_layer = ${current_layer}`);
                     });
                     for (let l = 0; l < layername.length; l++) {
                         gui.add(layer_type[layername[l]], 'layer_typev', layer_typev).onFinishChange(() => {

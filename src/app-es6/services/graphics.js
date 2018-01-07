@@ -126,6 +126,9 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                 getCurrentWebGLProgram() {
                     return gl.getParameter(gl.CURRENT_PROGRAM);
                 }
+                layer(i = 0) {
+                    return layers[i];
+                }
                 layer_type(l, type) {
                     console.log(`graphics.layer_type(${l}, ${type})`);
                     config.stage.layer_type[l] = type;
@@ -217,6 +220,9 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                     actor['name'] = name;
                     actor['userData'] = options;
                     actors[name] = actor;
+                }
+                actors() {
+                    return actors;
                 }
                 actor(name) {
                     if (actors[name]) {

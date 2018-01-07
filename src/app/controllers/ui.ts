@@ -13,7 +13,11 @@ var ui:Ui,
     camera:THREE.PerspectiveCamera,
 
     // symbol options objects
-    data_options:object = {},
+    ohlc_options:object = {},
+
+    // layer in which to insert new symbol glyphs based on ohlc_option[symbol]
+    // (data-service synthesized) data
+    current_layer:number = 0,
     
     // gui 
     initial_view:object,
@@ -110,23 +114,20 @@ class Ui {
     }
 
 
-
-
-
     // initialize symbol data-option objects for use as 'options' arg in 
     // graphics.create(ohlc/candle, name, layer, options)
     //
-    // data.synthesize(first_dynamic_index:number, 
-    //                 nglyphs:number, 
-    //                 deltaX:number, 
-    //                 meanY:number):object 
+    // data.synthesize(first_dynamic_index:number=0, 
+    //                 nglyphs:number=100, 
+    //                 deltaX:number=5, 
+    //                 meanO:number=60,
+    //                 meanH:number=100,
+    //                 meanL:number=20,
+    //                 meanC:number=60):object 
     //
-    //for(let s of symbolv){
-    //  data_options[s] = data.synthesize(0, 20, 0.5, 100.0);
-    //}
-
-
-
+    for(let s of symbolv){
+      ohlc_options[s] = data.synthesize();
+    }
 
 
     // build gui
@@ -221,12 +222,43 @@ class Ui {
     //  symbol: 'ETH',
     //};
     gui.add(symbols, 'symbol', symbolv ).onFinishChange(() => {
-        console.log(`\ncurrent symbol = ${symbols['symbol']}`);
+        var current_symbol = symbols['symbol'];
+
+        console.log(`\ncurrent_symbol = ${current_symbol}`);
+        console.log(`\ncurrent_layer = ${current_layer}`);
+        console.log(`ohlc_options[${current_symbol}] = `);
+        console.dir(ohlc_options[current_symbol]);
+
+        // graphics.create(type, name, layer, options)
+        graphics.create('ohlc', `ohlc${current_layer}`, current_layer, ohlc_options[current_symbol]);
+
+        // if layersv===false advance current_layers 
+        if(layersv === false){
+          current_layer = (current_layer+1)%config.stage.layers.length;
+          console.log(`after increment current_layer = ${current_layer}`);
+        }
     });
 
 
     gui.add(mod_present, 'mod_present').onFinishChange(() => {
         console.log(`event: modify present glyph`);
+        var layer:THREE.Group,
+            children=[],
+            layer_length=0;
+
+        layer = graphics.layer(current_layer);
+        console.log(`layer = `);
+        console.dir(layer);
+        
+        
+        layer_length = layer.children.length;
+        console.log(`layer[${current_layer}].children.length = ${layer_length}`);
+
+        console.log(`graphics.actors() returns:`);
+        console.dir(graphics.actors());
+
+        //console.log(`removing last child`);
+        //layer.remove(layer.children[layer_length-1]); 
     });
 
     gui.add(add_present, 'add_present').onFinishChange(() => {
@@ -240,9 +272,13 @@ class Ui {
 
     // layers=true => load symbol data in successive layers (circularly)
     // layers=false => load symbol data into level[0] and overwrite
+    // layers=false => reset current_layer=0
     gui.add(layers, 'layers').onFinishChange(() => {
-        layersv = !layersv;
-        console.log(`\nlayers boolean value set to ${layersv}`);
+      layersv = !layersv;
+      if(layersv === false){
+        current_layer = 0;
+      }
+      console.log(`\nlayers set to ${layersv} current_layer = ${current_layer}`);
     });
 
     // show/hide layers
