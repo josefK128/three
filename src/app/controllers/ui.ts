@@ -169,12 +169,12 @@ class Ui {
 
 
     // initially dollyX_ = camera.position.x
-    gui.add(dollyX_, 'dollyX_', -5000, 50, 1).onChange(() => {
+    gui.add(dollyX_, 'dollyX_', -5000, 50, 0.01).onChange(() => {
         graphics.dollyX(dollyX_['dollyX_']);
     }).listen();
 
     // initially dollyY_ = camera.position.y
-    gui.add(dollyY_, 'dollyY_', 0, 1000, 1).onChange(() => {
+    gui.add(dollyY_, 'dollyY_', 0, 1000, 0.01).onChange(() => {
         graphics.dollyY(dollyY_['dollyY_']);
     }).listen();
 

@@ -8,7 +8,6 @@
 //
 // arguments to create are:
 // depth:number - z-depth at which to create the set of glyphs
-//  depth = -layer * config.layerDepth
 // layer:number - index of layer which is the parent THREE.Group of glyph set
 // options:object containing
 //   first_dynamic_index:number (see above)
@@ -40,12 +39,9 @@ export var Ohlc = {
         data:number[] = options['data'],
 
         // constants needed in each iteration loop
-        // glyph={quad,quadO,quadC} is set behind possible grid on same layer
-        // 'arm' components (quadO,quadC} are set behind quad to avoid
-        // possible 'depth-flickering' of overlapping planes at identical depth
         halfwidth:number = width*0.5,
-        quad_depth:number = depth-0.01,
-        quadOC_depth:number = depth-0.02,
+        quad_depth:number = -0.01,
+        quadOC_depth:number = -0.02,
 
         // rays past and recent-'future' in data-set
         // these are the 'time-rays' returnd in the promise resolution
@@ -99,12 +95,11 @@ export var Ohlc = {
         
               // three components:
               // [1] quad: high-low
-              // NOTE: quad.position.x = 0 by default
               quad_g = new THREE.PlaneBufferGeometry(width, dhl);
               quad_m = new THREE.MeshBasicMaterial({color:glyph_color, transparent:false});
               quad = new THREE.Mesh(quad_g, quad_m);
               quad.position.y = yhl;
-              quad.position.z = quad_depth;
+              quad.position.z = depth-0.01;
               actor.add(quad);
               
               // [2a] quadO: open
@@ -112,18 +107,18 @@ export var Ohlc = {
               quadO_g = new THREE.PlaneBufferGeometry(width, width);
               quadO_m = new THREE.MeshBasicMaterial( {color:glyph_color, transparent:false} );
               quadO = new THREE.Mesh(quadO_g, quadO_m);
-              quadO.position.x = -halfwidth;
+              quadO.position.x = -0.5*width;
               quadO.position.y = open;
-              quadO.position.z = quadOC_depth;
+              quadO.position.z = depth-0.02;
               actor.add( quadO );       
             
               // [2b] quadC: close
               quadC_g = new THREE.PlaneBufferGeometry(width, width);
               quadC_m = new THREE.MeshBasicMaterial( {color:glyph_color, transparent:false} );
               quadC = new THREE.Mesh(quadC_g, quadC_m);
-              quadC.position.x = halfwidth;
+              quadC.position.x = 0.5*width;
               quadC.position.y = close;
-              quadC.position.z = quadOC_depth;
+              quadC.position.z = depth-0.02;
               actor.add( quadC );  
         
         

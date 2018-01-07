@@ -10,7 +10,7 @@ System.register([], function (exports_1, context_1) {
                     console.log(`ohlc.create() depth=${depth} layer=${layer} options= `);
                     console.dir(options);
                     var nglyphs = options['data'].length / 4, first_dynamic_index = options['first_dynamic_index'], width = options['width'], xpositions = options['xpositions'], data = options['data'], 
-                    halfwidth = width * 0.5, quad_depth = depth - 0.01, quadOC_depth = depth - 0.02, 
+                    halfwidth = width * 0.5, quad_depth = -0.01, quadOC_depth = -0.02, 
                     past = [], recent = [], 
                     actor, open, high, low, close, 
                     last_static_index = first_dynamic_index + 1, dhl, yhl, glyph_color, 
@@ -31,22 +31,22 @@ System.register([], function (exports_1, context_1) {
                                 quad_m = new THREE.MeshBasicMaterial({ color: glyph_color, transparent: false });
                                 quad = new THREE.Mesh(quad_g, quad_m);
                                 quad.position.y = yhl;
-                                quad.position.z = quad_depth;
+                                quad.position.z = depth - 0.01;
                                 actor.add(quad);
                                 console.log(`width = ${width}`);
                                 quadO_g = new THREE.PlaneBufferGeometry(width, width);
                                 quadO_m = new THREE.MeshBasicMaterial({ color: glyph_color, transparent: false });
                                 quadO = new THREE.Mesh(quadO_g, quadO_m);
-                                quadO.position.x = -halfwidth;
+                                quadO.position.x = -0.5 * width;
                                 quadO.position.y = open;
-                                quadO.position.z = quadOC_depth;
+                                quadO.position.z = depth - 0.02;
                                 actor.add(quadO);
                                 quadC_g = new THREE.PlaneBufferGeometry(width, width);
                                 quadC_m = new THREE.MeshBasicMaterial({ color: glyph_color, transparent: false });
                                 quadC = new THREE.Mesh(quadC_g, quadC_m);
-                                quadC.position.x = halfwidth;
+                                quadC.position.x = 0.5 * width;
                                 quadC.position.y = close;
-                                quadC.position.z = quadOC_depth;
+                                quadC.position.z = depth - 0.02;
                                 actor.add(quadC);
                                 actor.position.x = xpositions[i];
                                 layer.add(actor);

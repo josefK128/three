@@ -79,10 +79,10 @@ System.register([], function (exports_1, context_1) {
                         railsv = !railsv;
                         console.log(`\nrails boolean value set to ${railsv}`);
                     });
-                    gui.add(dollyX_, 'dollyX_', -5000, 50, 1).onChange(() => {
+                    gui.add(dollyX_, 'dollyX_', -5000, 50, 0.01).onChange(() => {
                         graphics.dollyX(dollyX_['dollyX_']);
                     }).listen();
-                    gui.add(dollyY_, 'dollyY_', 0, 1000, 1).onChange(() => {
+                    gui.add(dollyY_, 'dollyY_', 0, 1000, 0.01).onChange(() => {
                         graphics.dollyY(dollyY_['dollyY_']);
                     }).listen();
                     gui.add(logscaleX_, 'logscaleX_', -2.0, 2.0, 0.01).onChange(() => {
