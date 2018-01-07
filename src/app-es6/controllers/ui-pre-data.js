@@ -1,11 +1,11 @@
 System.register([], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var ui, config, graphics, camera, data_options, initial_view, normalize_scale, normalize_zoom, normalize_pan_tilt, railsv, rails, dollyX_, dollyY_, logscaleX_, logscaleY_, sx, sy, pan_, tilt_, zoom_, symbolv, symbols, layersv, layers, layername, layer_typev, layer_type, mod_present, add_present, add_past, gui, stop, events, Ui;
+    var ui, config, graphics, camera, initial_view, normalize_scale, normalize_zoom, normalize_pan_tilt, railsv, rails, dollyX_, dollyY_, logscaleX_, logscaleY_, sx, sy, pan_, tilt_, zoom_, symbolv, symbols, layersv, layers, layername, layer_typev, layer_type, mod_present, add_present, add_past, gui, stop, events, Ui;
     return {
         setters: [],
         execute: function () {
-            data_options = {}, sx = 1.0, sy = 1.0, layername = [], layer_typev = [], layer_type = {};
+            sx = 1.0, sy = 1.0, layername = [], layer_typev = [], layer_type = {};
             Ui = class Ui {
                 init(_graphics, _config = {}) {
                     config = _config;

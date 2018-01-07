@@ -96,6 +96,10 @@
             pointC = new THREE.Points( pointC_g, pointC_m );
             actor.add( pointC );              
 
+            setTimeout(() => {
+                actor.scale.set(3.0, 1.0, 1.0);
+            }, 5000);
+
             return actor;
           },
           //---------------------------

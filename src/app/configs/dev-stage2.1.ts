@@ -34,15 +34,16 @@ const config:Config = {
     layer_type: ['line','line','line','line','line','line','line','line'],
     layers: [
       [ {name:'grid0', type:'grid', layer:0, options:{ 
-          size: 10000, divisions:1000, 
+          size: 200000, divisions:20000, 
           centerLineColor: 0x000000, gridColor: 0x808000, 
           x: 0, y: 0, z: 0 }},
         {name:'ohlc0', type:'ohlc', layer:0, options:{
           first_dynamic_index:0,
-          xpositions: [0.0, -0.5, -1.0],
-          data:[3.0,6.0,-4.0,-2.0, 
-                -1.0,8.0,-3.0,3.0,
-                2.0,9.0,-1.0,2.0
+          width: 2.0,
+          xpositions: [0.0, -5.0, -10.0],
+          data:[30.0,60.0,-40.0,-20.0, 
+                -10.0,80.0,-30.0,30.0,
+                40.0,90.0,-10.0,20.0
           ]
         }}
       ],

@@ -2,6 +2,9 @@
 // usage is by dependency injection or possibly by import:
 // import {ui} from './controllers/ui';
 
+// tmp - generate data-options for graphics.create(type, name, layer, options)
+import {data} from '../services/data';
+
 
 // closure vars
 var ui:Ui,
@@ -9,6 +12,9 @@ var ui:Ui,
     graphics:any,
     camera:THREE.PerspectiveCamera,
 
+    // symbol options objects
+    data_options:object = {},
+    
     // gui 
     initial_view:object,
     normalize_scale:object,
@@ -49,6 +55,7 @@ class Ui {
     config = _config;
     graphics = _graphics;
     camera = graphics.camera();
+
 
     // gui 
     initial_view = {initial_view:()=>{console.log(`\ninitial_view`);}};
@@ -95,13 +102,30 @@ class Ui {
     //"touchmove", "touchstart"];
     events = ["mousedown"];
 
-
     // prevent events propagation through gui.domElement
     console.log(`\n gui.domElement = `);
     console.dir(gui.domElement);
     for(let e of events){
       gui.domElement.addEventListener(e, stop, false);
     }
+
+
+
+
+
+    // initialize symbol data-option objects for use as 'options' arg in 
+    // graphics.create(ohlc/candle, name, layer, options)
+    //
+    // data.synthesize(first_dynamic_index:number, 
+    //                 nglyphs:number, 
+    //                 deltaX:number, 
+    //                 meanY:number):object 
+    //
+    //for(let s of symbolv){
+    //  data_options[s] = data.synthesize(0, 20, 0.5, 100.0);
+    //}
+
+
 
 
 
@@ -199,6 +223,7 @@ class Ui {
     gui.add(symbols, 'symbol', symbolv ).onFinishChange(() => {
         console.log(`\ncurrent symbol = ${symbols['symbol']}`);
     });
+
 
     gui.add(mod_present, 'mod_present').onFinishChange(() => {
         console.log(`event: modify present glyph`);

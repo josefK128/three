@@ -11,9 +11,11 @@ export var Ohlc = {
     
     var nglyphs = options['data'].length/4,
         first_dynamic_index:number = options['first_dynamic_index'],
-        last_static_index:number = first_dynamic_index + 1,
+        width:number = options['width'],
         xpositions:number[] = options['xpositions'],
         data:number[] = options['data'],
+
+        // rays past and recent-'future' in data-set
         past:THREE.Group[] = [],
         recent:THREE.Group[] = [],
 
@@ -25,6 +27,7 @@ export var Ohlc = {
         close:number,
   
         // values derived from open, high, low and close
+        last_static_index:number = first_dynamic_index + 1,
         dhl:number,
         yhl:number,
         glyph_color:string,
@@ -35,16 +38,16 @@ export var Ohlc = {
         quad_m:THREE.Material,
         quad:THREE.Mesh,
   
-        // [2a] pointO: opening
+        // [2a] quadO: opening
         vertices:Float32Array,
-        pointO_g:THREE.BufferGeometry,
-        pointO_m:THREE.PointsMaterial,
-        pointO:THREE.Point,
+        quadO_g:THREE.PlaneBufferGeometry,
+        quadO_m:THREE.Material,
+        quadO:THREE.Mesh,
   
-        // [2b] pointC: close
-        pointC_g:THREE.BufferGeometry,
-        pointC_m:THREE.PointsMaterial,
-        pointC:THREE.Point,
+        // [2b] quadC: close
+        quadC_g:THREE.PlaneBufferGeometry,
+        quadC_m:THREE.Material,
+        quadC:THREE.Mesh,
 
         promise = new Promise((resolve, reject) => {
           try{
@@ -63,36 +66,31 @@ export var Ohlc = {
         
               // three components:
               // [1] quad: high-low
-              quad_g = new THREE.PlaneBufferGeometry(0.2, dhl);
+              quad_g = new THREE.PlaneBufferGeometry(width, dhl);
               quad_m = new THREE.MeshBasicMaterial({color:glyph_color, transparent:false});
               quad = new THREE.Mesh(quad_g, quad_m);
               quad.position.y = yhl;
               quad.position.z = depth-0.01;
               actor.add(quad);
               
-              // [2a] pointO: open
-              pointO_g = new THREE.BufferGeometry();
-              vertices = new Float32Array( [
-                 -0.1, open, depth-0.02
-              ] );
-              pointO_g.addAttribute('position', new THREE.BufferAttribute(vertices,3));
-              //pointO_g.vertices.push(new THREE.Vector3( 0, 0, 0)); // THREE.Geometry
-              pointO_m = new THREE.PointsMaterial( {size: 0.2, color:glyph_color,
-                  transparent:false, sizeAttenuation:true} );
-              pointO = new THREE.Points( pointO_g, pointO_m );
-              actor.add( pointO );       
+              // [2a] quadO: open
+              console.log(`width = ${width}`);
+              quadO_g = new THREE.PlaneBufferGeometry(width, width);
+              quadO_m = new THREE.MeshBasicMaterial( {color:glyph_color, transparent:false} );
+              quadO = new THREE.Mesh(quadO_g, quadO_m);
+              quadO.position.x = -0.5*width;
+              quadO.position.y = open;
+              quadO.position.z = depth-0.02;
+              actor.add( quadO );       
             
-              // [2b] pointC: close
-              pointC_g = new THREE.BufferGeometry();
-              vertices = new Float32Array( [
-                 0.1, close, depth-0.02
-              ] );
-              pointC_g.addAttribute('position', new THREE.BufferAttribute(vertices,3));
-              //pointC_g.vertices.push(new THREE.Vector3( 0, 0, 0)); // THREE.Geometry
-              pointC_m = new THREE.PointsMaterial( {size: 0.2, color:glyph_color,
-                  transparent:false, sizeAttenuation:true} );
-              pointC = new THREE.Points( pointC_g, pointC_m );
-              actor.add( pointC );  
+              // [2b] quadC: close
+              quadC_g = new THREE.PlaneBufferGeometry(width, width);
+              quadC_m = new THREE.MeshBasicMaterial( {color:glyph_color, transparent:false} );
+              quadC = new THREE.Mesh(quadC_g, quadC_m);
+              quadC.position.x = 0.5*width;
+              quadC.position.y = close;
+              quadC.position.z = depth-0.02;
+              actor.add( quadC );  
         
         
               // set position.x from xpositions array and add to layer
