@@ -144,7 +144,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                 }
                 create(type, name, layer, options) {
                     return __awaiter(this, void 0, void 0, function* () {
-                        var grid, axes, ohlc_tuple, ohlc_past, ohlc_recent, sprite, line, quad, 
+                        var grid, axes, past_ray, recent_ray, sprite, line, quad, 
                         quad_shm; 
                         try {
                             switch (type) {
@@ -164,23 +164,23 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                                 case 'ohlc':
                                     ohlc_1.Ohlc.create(-layer * layerDelta, layers[layer], options)
                                         .then((tuple) => {
-                                        console.log(`Graphics.create - ohlc_tuple:`);
+                                        console.log(`Ohlc.create resolves to tuple = `);
                                         console.dir(tuple);
-                                        ohlc_past = name + '_past';
-                                        ohlc_recent = name + '_recent';
-                                        console.log(`ohlc past name = ${ohlc_past}`);
-                                        console.log(`ohlc recent name = ${ohlc_recent}`);
+                                        past_ray = `${options['symbol']}${layer}_past`;
+                                        recent_ray = `${options['symbol']}${layer}_recent`;
+                                        console.log(`past_ray = ${past_ray}`);
+                                        console.log(`recent_ray = ${recent_ray}`);
                                         console.log(`tuple['past'] = ${tuple['past']}`);
                                         console.log(`tuple['recent'] = ${tuple['recent']}`);
-                                        graphics.addActor(ohlc_past, tuple['past'], options);
-                                        graphics.addActor(ohlc_recent, tuple['recent'], options);
+                                        graphics.addActor(past_ray, tuple['past'], options);
+                                        graphics.addActor(recent_ray, tuple['recent'], options);
                                         for (let p in actors) {
                                             console.log(`actors[${p}] = ${actors[p]}`);
                                         }
-                                        console.log(`graphics.actor(${ohlc_past}):`);
-                                        console.dir(graphics.actor(ohlc_past));
-                                        console.log(`graphics.actor(${ohlc_recent}):`);
-                                        console.dir(graphics.actor(ohlc_recent));
+                                        console.log(`graphics.actor(${past_ray}):`);
+                                        console.dir(graphics.actor(past_ray));
+                                        console.log(`graphics.actor(${recent_ray}):`);
+                                        console.dir(graphics.actor(recent_ray));
                                     });
                                     break;
                                 case 'sprite':

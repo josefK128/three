@@ -33,7 +33,8 @@ export var Ohlc = {
     console.log(`ohlc.create() depth=${depth} layer=${layer} options= `);
     console.dir(options);
     
-    var nglyphs = options['data'].length/4,
+    var symbol:string = options['symbol'],
+        nglyphs:number = options['data'].length/4,
         first_dynamic_index:number = options['first_dynamic_index'],
         width:number = options['width'],
         xpositions:number[] = options['xpositions'],
@@ -108,7 +109,6 @@ export var Ohlc = {
               actor.add(quad);
               
               // [2a] quadO: open
-              console.log(`width = ${width}`);
               quadO_g = new THREE.PlaneBufferGeometry(width, width);
               quadO_m = new THREE.MeshBasicMaterial( {color:glyph_color, transparent:false} );
               quadO = new THREE.Mesh(quadO_g, quadO_m);
@@ -129,27 +129,23 @@ export var Ohlc = {
         
               // set position.x from xpositions array and add to layer
               actor.position.x = xpositions[i];
+              actor.name = `${symbol}${i}`;
+              //console.log(`actor.name = ${actor.name}`);
               layer.add(actor);
         
               // add to static 'past' or dynamic 'recent' arrays of actors(THREE.Group)
-              console.log(`ohlc for-loop: i = ${i}`);
-              console.log(`actor[${i}].position.x = ${actor.position.x}`);
+              //console.log(`ohlc for-loop: i = ${i}`);
+              //console.log(`actor[${i}].position.x = ${actor.position.x}`);
               if(i <= first_dynamic_index){
-                console.log(`ohlc: recent[${first_dynamic_index-i}] = ${actor}`);
+                //console.log(`ohlc: recent[${first_dynamic_index-i}] = ${actor}`);
                 recent[first_dynamic_index - i] = actor;
               }else{
-                console.log(`ohlc: past[${i-last_static_index}] = ${actor}`);
+                //console.log(`ohlc: past[${i-last_static_index}] = ${actor}`);
                 past[i - last_static_index] = actor;
               }  
 
             }//for-loop
         
-            // diagnostics - tmp
-            console.log(`ohlc: - past:`);
-            console.dir(past);
-            console.log(`ohlc - recent:`);
-            console.dir(recent);
-           
             resolve({past:past, recent:recent});
 
           }catch(e){

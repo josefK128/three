@@ -220,9 +220,8 @@ class Graphics {
   async create(type:string, name:string, layer:number, options:any):Promise<THREE.Object3D> {
     var grid:THREE.GridHelper,
         axes:THREE.AxesHelper,
-        ohlc_tuple:object,
-        ohlc_past:string,
-        ohlc_recent:string,
+        past_ray:string,
+        recent_ray:string,
         sprite:THREE.Sprite,
         line:THREE.Line,
         quad:THREE.Mesh,         // BufferGeometry & MeshBasicMaterial
@@ -251,29 +250,30 @@ class Graphics {
 
         // Ohlc.create() returns {ohlc_past:ohlc[], ohlc_recent:ohlc[]}
         // these are distinct actors with convention-defined names:
-        // 'ohlc<K>_past' and 'ohlc<K>_recent' where K = layer index (exp:0)
+        // '<symbol><layer>_past' and '<symbol><layer>_recent'
+        // For exp: ETH0_past, ETH0_recent
         case 'ohlc':
           Ohlc.create(-layer*layerDelta, layers[layer], options)
             .then((tuple) => {
-              console.log(`Graphics.create - ohlc_tuple:`);
+              console.log(`Ohlc.create resolves to tuple = `);
               console.dir(tuple);
     
-              // add two actos arrays returned in ohlc_tuple
-              ohlc_past = name+'_past';
-              ohlc_recent = name+'_recent';
-              console.log(`ohlc past name = ${ohlc_past}`);
-              console.log(`ohlc recent name = ${ohlc_recent}`);
+              // add two glyph-arrays passed in tuple as actors for future ref
+              past_ray = `${options['symbol']}${layer}_past`;
+              recent_ray = `${options['symbol']}${layer}_recent`;
+              console.log(`past_ray = ${past_ray}`);
+              console.log(`recent_ray = ${recent_ray}`);
               console.log(`tuple['past'] = ${tuple['past']}`);
               console.log(`tuple['recent'] = ${tuple['recent']}`);
-              graphics.addActor(ohlc_past, tuple['past'], options);
-              graphics.addActor(ohlc_recent, tuple['recent'], options);
+              graphics.addActor(past_ray, tuple['past'], options);
+              graphics.addActor(recent_ray, tuple['recent'], options);
               for(let p in actors){
                 console.log(`actors[${p}] = ${actors[p]}`);
               }
-              console.log(`graphics.actor(${ohlc_past}):`);
-              console.dir(graphics.actor(ohlc_past));
-              console.log(`graphics.actor(${ohlc_recent}):`);
-              console.dir(graphics.actor(ohlc_recent));
+              console.log(`graphics.actor(${past_ray}):`);
+              console.dir(graphics.actor(past_ray));
+              console.log(`graphics.actor(${recent_ray}):`);
+              console.dir(graphics.actor(recent_ray));
             });
           break;
 

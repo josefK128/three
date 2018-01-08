@@ -14,6 +14,7 @@ var ui:Ui,
 
     // symbol options objects
     ohlc_options:object = {},
+    current_symbol:string,
 
     // layer in which to insert new symbol glyphs based on ohlc_option[symbol]
     // (data-service synthesized) data
@@ -79,8 +80,8 @@ class Ui {
     symbols = {
       symbol: 'ETH',
     };
-    layersv = true;  // so initial layers=false
-    layers = {layers: true};
+    layersv = false; 
+    layers = {layers: layersv};
     layer_typev = ["invisible", "ohlc", "candle", "line", "mountain"];
     for(let l=0;  l<config.stage.layer_type.length; l++){
       layername[l] = `layer_type${l}`;
@@ -114,6 +115,9 @@ class Ui {
     }
 
 
+    // initialize currrent_symbol
+    current_symbol = symbols['symbol'];
+
     // initialize symbol data-option objects for use as 'options' arg in 
     // graphics.create(ohlc/candle, name, layer, options)
     //
@@ -126,7 +130,16 @@ class Ui {
     //                 meanC:number=60):object 
     //
     for(let s of symbolv){
-      ohlc_options[s] = data.synthesize();
+      ohlc_options[s] = data.synthesize(s);
+    }
+
+    // initialize layers[0]  
+    console.log(`%%% ui creating glyphs for layer 0`);
+    graphics.create('ohlc', 'ohlc0', 0, ohlc_options[current_symbol]);
+    console.log(`\n%%% ui layers[0] initialized for ${current_symbol} as:`);
+    console.dir(graphics.layer(0));
+    for(let child of graphics.layer(0).children){
+      console.log(`layer0 contains Group actor ${child.name}`);
     }
 
 
@@ -222,18 +235,39 @@ class Ui {
     //  symbol: 'ETH',
     //};
     gui.add(symbols, 'symbol', symbolv ).onFinishChange(() => {
-        var current_symbol = symbols['symbol'];
+        var filtered_children:any[],
+            layer:THREE.Group, 
+            layer_length:number;
 
-        console.log(`\ncurrent_symbol = ${current_symbol}`);
-        console.log(`\ncurrent_layer = ${current_layer}`);
-        console.log(`ohlc_options[${current_symbol}] = `);
-        console.dir(ohlc_options[current_symbol]);
+        console.log(`\n\n%%% changing symbols!!!!`);
+        console.log(`current_symbol = ${current_symbol}`);
+        console.log(`current_layer = ${current_layer}`);
+
+        layer = graphics.layer(current_layer);
+        //console.log(`layer = `);
+        //console.dir(layer);
+        
+        layer_length = layer.children.length;
+        console.log(`layer[${current_layer}].children.length = ${layer_length}`);
+        //console.log(`children = `);
+        //console.dir(layer.children);
+
+        console.log(`removing ${current_symbol} children`);
+        filtered_children = layer.children.filter(child => !child.name.startsWith(current_symbol));
+        //console.log(`filtered_children = `);
+        //console.dir(filtered_children);
+        layer.children = filtered_children;
+
+
+        // update current_symbol
+        current_symbol = symbols['symbol'];
 
         // graphics.create(type, name, layer, options)
+        console.log(`\n%%% ui creating glyphs for ${current_symbol}`);
         graphics.create('ohlc', `ohlc${current_layer}`, current_layer, ohlc_options[current_symbol]);
 
-        // if layersv===false advance current_layers 
-        if(layersv === false){
+        // if layersv===true advance current_layers 
+        if(layersv === true){
           current_layer = (current_layer+1)%config.stage.layers.length;
           console.log(`after increment current_layer = ${current_layer}`);
         }
@@ -242,23 +276,6 @@ class Ui {
 
     gui.add(mod_present, 'mod_present').onFinishChange(() => {
         console.log(`event: modify present glyph`);
-        var layer:THREE.Group,
-            children=[],
-            layer_length=0;
-
-        layer = graphics.layer(current_layer);
-        console.log(`layer = `);
-        console.dir(layer);
-        
-        
-        layer_length = layer.children.length;
-        console.log(`layer[${current_layer}].children.length = ${layer_length}`);
-
-        console.log(`graphics.actors() returns:`);
-        console.dir(graphics.actors());
-
-        //console.log(`removing last child`);
-        //layer.remove(layer.children[layer_length-1]); 
     });
 
     gui.add(add_present, 'add_present').onFinishChange(() => {

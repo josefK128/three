@@ -9,7 +9,7 @@ System.register([], function (exports_1, context_1) {
                 create: (depth, layer, options) => {
                     console.log(`ohlc.create() depth=${depth} layer=${layer} options= `);
                     console.dir(options);
-                    var nglyphs = options['data'].length / 4, first_dynamic_index = options['first_dynamic_index'], width = options['width'], xpositions = options['xpositions'], data = options['data'], 
+                    var symbol = options['symbol'], nglyphs = options['data'].length / 4, first_dynamic_index = options['first_dynamic_index'], width = options['width'], xpositions = options['xpositions'], data = options['data'], 
                     halfwidth = width * 0.5, quad_depth = depth - 0.01, quadOC_depth = depth - 0.02, 
                     past = [], recent = [], 
                     actor, open, high, low, close, 
@@ -33,7 +33,6 @@ System.register([], function (exports_1, context_1) {
                                 quad.position.y = yhl;
                                 quad.position.z = quad_depth;
                                 actor.add(quad);
-                                console.log(`width = ${width}`);
                                 quadO_g = new THREE.PlaneBufferGeometry(width, width);
                                 quadO_m = new THREE.MeshBasicMaterial({ color: glyph_color, transparent: false });
                                 quadO = new THREE.Mesh(quadO_g, quadO_m);
@@ -49,22 +48,15 @@ System.register([], function (exports_1, context_1) {
                                 quadC.position.z = quadOC_depth;
                                 actor.add(quadC);
                                 actor.position.x = xpositions[i];
+                                actor.name = `${symbol}${i}`;
                                 layer.add(actor);
-                                console.log(`ohlc for-loop: i = ${i}`);
-                                console.log(`actor[${i}].position.x = ${actor.position.x}`);
                                 if (i <= first_dynamic_index) {
-                                    console.log(`ohlc: recent[${first_dynamic_index - i}] = ${actor}`);
                                     recent[first_dynamic_index - i] = actor;
                                 }
                                 else {
-                                    console.log(`ohlc: past[${i - last_static_index}] = ${actor}`);
                                     past[i - last_static_index] = actor;
                                 }
                             } 
-                            console.log(`ohlc: - past:`);
-                            console.dir(past);
-                            console.log(`ohlc - recent:`);
-                            console.dir(recent);
                             resolve({ past: past, recent: recent });
                         }
                         catch (e) {

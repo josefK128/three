@@ -17,13 +17,6 @@ const config:Config = {
     far:100000,
     position:{x:-100, y:80, z:100},
     lookAt:{x:-100, y:80, z:0},
-    csphere:{
-      radius:100,
-      visible:true,
-      wireframe:true,
-      opacity:1.0,
-      color:0x00ff00
-    }
   },
 
 
@@ -43,13 +36,7 @@ const config:Config = {
       [ {name:'grid0', type:'grid', layer:0, options:{ 
           size: 10000, divisions:1000, 
           centerLineColor: 0x000000, gridColor: 0x808000, 
-          x: 0, y: 0, z: 0 }},
-        {name:'line0', type:'line', layer:0, options:{
-          max_vertices: 500, 
-          drawCount:500, 
-          color: 0xff00ff, 
-          linewidth: 30, 
-          vertices: [0,0,0, -10,30,0, -20,80,0]}}
+          x: 0, y: 0, z: 0 }}
       ],
       [ {name:'line1', type:'line', layer:1, options:{
           max_vertices: 500, 

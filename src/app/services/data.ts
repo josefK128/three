@@ -19,10 +19,11 @@ var data:Data;
 
 class Data {
 
-synthesize(first_dynamic_index:number=0, nglyphs:number=10, deltaX:number=5, meanO:number=60, meanH:number=100, meanL:number=20, meanC:number=60):object { 
+synthesize(symbol:string, first_dynamic_index:number=0, nglyphs:number=10, deltaX:number=5, meanO:number=60, meanH:number=100, meanL:number=20, meanC:number=60):object { 
 
     var xpositions:number[]=[],
-        data:number[]=[];
+        data:number[]=[],
+        i,j:number;
 
     // diagnostics
 //    console.log(`\ndata.synthesize:`);
@@ -34,34 +35,20 @@ synthesize(first_dynamic_index:number=0, nglyphs:number=10, deltaX:number=5, mea
 //    console.log(`meanL = ${meanL}`);
 //    console.log(`meanC = ${meanC}`);
 
-
     // generate xpositions:number[nglyphs] and data:number[4*nglyphs]
-    for(let i=0; i<nglyphs; i++){
+    for(i=0; i<nglyphs; i++){
       xpositions[i] = -i*deltaX;
-
-      switch(i%4){
-        case 0:
-            data[i] = meanO + 10*Math.random() - 5.0;
-            break;
-        case 1:
-            data[i] = meanH + 10*Math.random() - 5.0;
-            break;
-        case 2:
-            data[i] = meanL + 10*Math.random() - 5.0;
-            break;
-        case 3:
-            data[i] = meanC + 10*Math.random() - 5.0;
-            break;
-        default:
-        console.log(`error in ${i} mod4 !!!!`);
-      }
+      j = 4*i;
+      data[j] = meanO + 20*Math.random() - 10.0;
+      data[j+1] = meanH + 10*Math.random() - 5.0;
+      data[j+2] = meanL + 10*Math.random() - 5.0;
+      data[j+3] = meanC + 20*Math.random() - 10.0;
     }
 
-    return {first_dynamic_index:first_dynamic_index, width:deltaX*0.4, xpositions:xpositions, data:data};
+    return {symbol:symbol, first_dynamic_index:first_dynamic_index, width:deltaX*0.4, xpositions:xpositions, data:data};
 
   }//synthesize
 }//Data
-
 
 
 // enforce singleton export

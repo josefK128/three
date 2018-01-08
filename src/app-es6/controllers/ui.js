@@ -1,7 +1,7 @@
 System.register(["../services/data"], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var data_1, ui, config, graphics, camera, ohlc_options, current_layer, initial_view, normalize_scale, normalize_zoom, normalize_pan_tilt, railsv, rails, dollyX_, dollyY_, logscaleX_, logscaleY_, sx, sy, pan_, tilt_, zoom_, symbolv, symbols, layersv, layers, layername, layer_typev, layer_type, mod_present, add_present, add_past, gui, stop, events, Ui;
+    var data_1, ui, config, graphics, camera, ohlc_options, current_symbol, current_layer, initial_view, normalize_scale, normalize_zoom, normalize_pan_tilt, railsv, rails, dollyX_, dollyY_, logscaleX_, logscaleY_, sx, sy, pan_, tilt_, zoom_, symbolv, symbols, layersv, layers, layername, layer_typev, layer_type, mod_present, add_present, add_past, gui, stop, events, Ui;
     return {
         setters: [
             function (data_1_1) {
@@ -33,8 +33,8 @@ System.register(["../services/data"], function (exports_1, context_1) {
                     symbols = {
                         symbol: 'ETH',
                     };
-                    layersv = true; 
-                    layers = { layers: true };
+                    layersv = false;
+                    layers = { layers: layersv };
                     layer_typev = ["invisible", "ohlc", "candle", "line", "mountain"];
                     for (let l = 0; l < config.stage.layer_type.length; l++) {
                         layername[l] = `layer_type${l}`;
@@ -53,8 +53,16 @@ System.register(["../services/data"], function (exports_1, context_1) {
                     for (let e of events) {
                         gui.domElement.addEventListener(e, stop, false);
                     }
+                    current_symbol = symbols['symbol'];
                     for (let s of symbolv) {
-                        ohlc_options[s] = data_1.data.synthesize();
+                        ohlc_options[s] = data_1.data.synthesize(s);
+                    }
+                    console.log(`%%% ui creating glyphs for layer 0`);
+                    graphics.create('ohlc', 'ohlc0', 0, ohlc_options[current_symbol]);
+                    console.log(`\n%%% ui layers[0] initialized for ${current_symbol} as:`);
+                    console.dir(graphics.layer(0));
+                    for (let child of graphics.layer(0).children) {
+                        console.log(`layer0 contains Group actor ${child.name}`);
                     }
                     gui.add(initial_view, 'initial_view').onFinishChange(() => {
                         camera.position.set(camera['initial_position'].x, camera['initial_position'].y, camera['initial_position'].z);
@@ -113,27 +121,42 @@ System.register(["../services/data"], function (exports_1, context_1) {
                         graphics.zoom(zoom_['zoom_']);
                     }).listen();
                     gui.add(symbols, 'symbol', symbolv).onFinishChange(() => {
-                        var current_symbol = symbols['symbol'];
-                        console.log(`\ncurrent_symbol = ${current_symbol}`);
-                        console.log(`\ncurrent_layer = ${current_layer}`);
-                        console.log(`ohlc_options[${current_symbol}] = `);
-                        console.dir(ohlc_options[current_symbol]);
+                        var filtered_children, layer, layer_length;
+                        console.log(`\n\n%%% changing symbols!!!!`);
+                        console.log(`current_symbol = ${current_symbol}`);
+                        console.log(`current_layer = ${current_layer}`);
+                        layer = graphics.layer(current_layer);
+                        layer_length = layer.children.length;
+                        console.log(`layer[${current_layer}].children.length = ${layer_length}`);
+                        console.log(`removing ${current_symbol} children`);
+                        filtered_children = layer.children.filter(child => !child.name.startsWith(current_symbol));
+                        layer.children = filtered_children;
+                        current_symbol = symbols['symbol'];
+                        console.log(`\n%%% ui creating glyphs for ${current_symbol}`);
                         graphics.create('ohlc', `ohlc${current_layer}`, current_layer, ohlc_options[current_symbol]);
-                        if (layersv === false) {
+                        if (layersv === true) {
                             current_layer = (current_layer + 1) % config.stage.layers.length;
                             console.log(`after increment current_layer = ${current_layer}`);
                         }
                     });
                     gui.add(mod_present, 'mod_present').onFinishChange(() => {
                         console.log(`event: modify present glyph`);
-                        var layer, children = [], layer_length = 0;
+                        var layer, children = [], filtered_children, layer_length = 0, index = 0;
                         layer = graphics.layer(current_layer);
                         console.log(`layer = `);
                         console.dir(layer);
-                        layer_length = layer.children.length;
+                        children = layer.children;
+                        layer_length = children.length;
                         console.log(`layer[${current_layer}].children.length = ${layer_length}`);
+                        console.log(`children = `);
+                        console.dir(children);
                         console.log(`graphics.actors() returns:`);
                         console.dir(graphics.actors());
+                        console.log(`removing ${current_symbol} children`);
+                        filtered_children = children.filter(child => !child.name.startsWith(current_symbol));
+                        console.log(`filtered_children = `);
+                        console.dir(filtered_children);
+                        layer.children = filtered_children;
                     });
                     gui.add(add_present, 'add_present').onFinishChange(() => {
                         console.log(`event: add to present array of glyphs`);

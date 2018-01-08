@@ -25,6 +25,7 @@ class Space {
     for(let layer of config.stage['layers']){
       for(let actor of layer){
         //exp: graphics.create('grid', 'grid1', 0, undefined);
+        console.log(`layer ${actor['layer']}:creating actor ${actor['name']} type = ${actor['type']}`);
         graphics.create(actor['type'], actor['name'], actor['layer'], actor['options']);
       }
     }
