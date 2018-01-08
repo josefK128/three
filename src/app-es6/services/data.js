@@ -6,7 +6,7 @@ System.register([], function (exports_1, context_1) {
         setters: [],
         execute: function () {
             Data = class Data {
-                synthesize(symbol, first_dynamic_index = 0, nglyphs = 10, deltaX = 5, meanO = 60, meanH = 100, meanL = 20, meanC = 60) {
+                synthesize(symbol, first_dynamic_index = 0, nglyphs = 10000, deltaX = 5, meanO = 60, meanH = 100, meanL = 20, meanC = 60) {
                     var xpositions = [], data = [], i, j;
                     for (i = 0; i < nglyphs; i++) {
                         xpositions[i] = -i * deltaX;

@@ -19,7 +19,7 @@ System.register([], function (exports_1, context_1) {
                     layer_type: ['line', 'line', 'line', 'line', 'line', 'line', 'line', 'line'],
                     layers: [
                         [{ name: 'grid0', type: 'grid', layer: 0, options: {
-                                    size: 10000, divisions: 1000,
+                                    size: 100000, divisions: 10000,
                                     centerLineColor: 0x000000, gridColor: 0x808000,
                                     x: 0, y: 0, z: 0
                                 } }

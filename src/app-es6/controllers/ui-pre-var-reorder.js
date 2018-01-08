@@ -95,7 +95,7 @@ System.register(["../services/data"], function (exports_1, context_1) {
                         railsv = !railsv;
                         console.log(`\nrails boolean value set to ${railsv}`);
                     });
-                    gui.add(dollyX_, 'dollyX_', -50000, 50, 0.01).onChange(() => {
+                    gui.add(dollyX_, 'dollyX_', -5000, 50, 0.01).onChange(() => {
                         graphics.dollyX(dollyX_['dollyX_']);
                     }).listen();
                     gui.add(dollyY_, 'dollyY_', 0, 1000, 0.01).onChange(() => {
@@ -154,6 +154,13 @@ System.register(["../services/data"], function (exports_1, context_1) {
                     });
                     gui.add(add_past, 'add_past').onFinishChange(() => {
                         console.log(`event: add to past array of glyphs`);
+                    });
+                    gui.add(layers, 'layers').onFinishChange(() => {
+                        layersv = !layersv;
+                        if (layersv === false) {
+                            current_layer = 0;
+                        }
+                        console.log(`\nlayers set to ${layersv} current_layer = ${current_layer}`);
                     });
                     for (let l = 0; l < layername.length; l++) {
                         gui.add(layer_type[layername[l]], 'layer_typev', layer_typev).onFinishChange(() => {

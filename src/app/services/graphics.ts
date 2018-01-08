@@ -255,25 +255,25 @@ class Graphics {
         case 'ohlc':
           Ohlc.create(-layer*layerDelta, layers[layer], options)
             .then((tuple) => {
-              console.log(`Ohlc.create resolves to tuple = `);
-              console.dir(tuple);
+              //console.log(`Ohlc.create resolves to tuple = `);
+              //console.dir(tuple);
     
               // add two glyph-arrays passed in tuple as actors for future ref
               past_ray = `${options['symbol']}${layer}_past`;
               recent_ray = `${options['symbol']}${layer}_recent`;
               console.log(`past_ray = ${past_ray}`);
               console.log(`recent_ray = ${recent_ray}`);
-              console.log(`tuple['past'] = ${tuple['past']}`);
-              console.log(`tuple['recent'] = ${tuple['recent']}`);
+              //console.log(`tuple['past'] = ${tuple['past']}`);
+              //console.log(`tuple['recent'] = ${tuple['recent']}`);
               graphics.addActor(past_ray, tuple['past'], options);
               graphics.addActor(recent_ray, tuple['recent'], options);
-              for(let p in actors){
-                console.log(`actors[${p}] = ${actors[p]}`);
-              }
-              console.log(`graphics.actor(${past_ray}):`);
-              console.dir(graphics.actor(past_ray));
-              console.log(`graphics.actor(${recent_ray}):`);
-              console.dir(graphics.actor(recent_ray));
+              //for(let p in actors){
+              //  console.log(`actors[${p}] = ${actors[p]}`);
+              //}
+              //console.log(`graphics.actor(${past_ray}):`);
+              //console.dir(graphics.actor(past_ray));
+              //console.log(`graphics.actor(${recent_ray}):`);
+              //console.dir(graphics.actor(recent_ray));
             });
           break;
 

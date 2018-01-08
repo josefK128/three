@@ -107,6 +107,12 @@ class Ui {
     //"touchmove", "touchstart"];
     events = ["mousedown"];
 
+
+
+
+
+
+
     // prevent events propagation through gui.domElement
     console.log(`\n gui.domElement = `);
     console.dir(gui.domElement);
@@ -187,7 +193,7 @@ class Ui {
 
 
     // initially dollyX_ = camera.position.x
-    gui.add(dollyX_, 'dollyX_', -5000, 50, 0.01).onChange(() => {
+    gui.add(dollyX_, 'dollyX_', -50000, 50, 0.01).onChange(() => {
         graphics.dollyX(dollyX_['dollyX_']);
     }).listen();
 
@@ -262,6 +268,10 @@ class Ui {
         //console.dir(filtered_children);
         layer.children = filtered_children;
 
+        // remove actors <symbol><layer>_past and <symbol><layer_recent
+        // NOTE: these arrays follow strict naming convention!
+        graphics.removeActor(`${current_symbol}${current_layer}_past`);
+        graphics.removeActor(`${current_symbol}${current_layer}_recent`);
 
         // update current_symbol
         current_symbol = symbols['symbol'];
@@ -300,16 +310,19 @@ class Ui {
     });
 
 
+    // DISABLE - NOT USEFUL
     // layers=true => load symbol data in successive layers (circularly)
     // layers=false => load symbol data into level[0] and overwrite
     // layers=false => reset current_layer=0
-    gui.add(layers, 'layers').onFinishChange(() => {
-      layersv = !layersv;
-      if(layersv === false){
-        current_layer = 0;
-      }
-      console.log(`\nlayers set to ${layersv} current_layer = ${current_layer}`);
-    });
+//    gui.add(layers, 'layers').onFinishChange(() => {
+//      layersv = !layersv;
+//      if(layersv === false){
+//      current_layer = 0;      // set layers=f => load all glyph sets at layer0
+//      }else{
+//        current_layer = 1;  // set layers=t => load next glyph set at layer1
+//      }
+//      console.log(`\nlayers set to ${layersv} current_layer = ${current_layer}`);
+//    });
 
 
     // show/hide layers and display layer_type

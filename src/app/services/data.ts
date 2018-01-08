@@ -1,5 +1,5 @@
 // data.ts - data-synthesis service - singleton
-// method data.synthesize(first_dynamic_index:number=0, nglyphs:number=10,
+// method data.synthesize(first_dynamic_index:number=0, nglyphs:number=10000,
 //   deltaX:number=5, meanO:number=60, meanH:number=100, meanL:number=20,
 //   meanC:number=60) 
 // returns options object {first_dynamic_index, width, xpositions, data}
@@ -19,7 +19,7 @@ var data:Data;
 
 class Data {
 
-synthesize(symbol:string, first_dynamic_index:number=0, nglyphs:number=10, deltaX:number=5, meanO:number=60, meanH:number=100, meanL:number=20, meanC:number=60):object { 
+synthesize(symbol:string, first_dynamic_index:number=0, nglyphs:number=10000, deltaX:number=5, meanO:number=60, meanH:number=100, meanL:number=20, meanC:number=60):object { 
 
     var xpositions:number[]=[],
         data:number[]=[],
