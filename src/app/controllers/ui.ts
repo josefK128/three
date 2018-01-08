@@ -314,15 +314,15 @@ class Ui {
     // layers=true => load symbol data in successive layers (circularly)
     // layers=false => load symbol data into level[0] and overwrite
     // layers=false => reset current_layer=0
-//    gui.add(layers, 'layers').onFinishChange(() => {
-//      layersv = !layersv;
-//      if(layersv === false){
-//      current_layer = 0;      // set layers=f => load all glyph sets at layer0
-//      }else{
-//        current_layer = 1;  // set layers=t => load next glyph set at layer1
-//      }
-//      console.log(`\nlayers set to ${layersv} current_layer = ${current_layer}`);
-//    });
+    gui.add(layers, 'layers').onFinishChange(() => {
+      layersv = !layersv;
+      if(layersv === false){
+      current_layer = 0;      // set layers=f => load all glyph sets at layer0
+      }else{
+        current_layer = 1;  // set layers=t => load next glyph set at layer1
+      }
+      console.log(`\nlayers set to ${layersv} current_layer = ${current_layer}`);
+    });
 
 
     // show/hide layers and display layer_type

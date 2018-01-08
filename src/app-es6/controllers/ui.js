@@ -155,6 +155,16 @@ System.register(["../services/data"], function (exports_1, context_1) {
                     gui.add(add_past, 'add_past').onFinishChange(() => {
                         console.log(`event: add to past array of glyphs`);
                     });
+                    gui.add(layers, 'layers').onFinishChange(() => {
+                        layersv = !layersv;
+                        if (layersv === false) {
+                            current_layer = 0; 
+                        }
+                        else {
+                            current_layer = 1; 
+                        }
+                        console.log(`\nlayers set to ${layersv} current_layer = ${current_layer}`);
+                    });
                     for (let l = 0; l < layername.length; l++) {
                         gui.add(layer_type[layername[l]], 'layer_typev', layer_typev).onFinishChange(() => {
                             console.log(`setting layer_type[${l}] = ${layer_type[layername[l]]['layer_typev']}`);
