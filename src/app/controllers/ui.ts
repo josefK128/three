@@ -253,6 +253,7 @@ class Ui {
         }
         pivot.rotation.x = pitch_['pitch_'];
     }).onFinishChange(() => {
+        pitch_['pitch_'] = 0.0;
         graphics.scene().remove(pivot);
         pivot.remove(camera);
         pivot = undefined;

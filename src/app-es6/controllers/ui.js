@@ -130,6 +130,7 @@ System.register(["../services/data"], function (exports_1, context_1) {
                         }
                         pivot.rotation.x = pitch_['pitch_'];
                     }).onFinishChange(() => {
+                        pitch_['pitch_'] = 0.0;
                         graphics.scene().remove(pivot);
                         pivot.remove(camera);
                         pivot = undefined;
