@@ -326,6 +326,24 @@ class Graphics {
     actors[name] = actor;
   }
 
+  removeActor(name:string):void {
+    var filtered_actors;
+
+    console.log(`removeActor: name = ${name}`);
+    console.log(`before removal of ${name} actors = `);
+    for(let nm of Object.keys(actors)){
+      console.log(`actors contains name ${nm}`);
+    }
+    if(actors[name]){
+      console.log(`removeActor: name = ${name}`);
+      delete actors[name];
+      console.log(`after removal of ${name} actors = `);
+      console.dir(actors);
+    }else{
+      console.log(`actor with name = ${name} not found!`);
+    }
+  }
+
   // get actors
   actors():object {
     return actors;

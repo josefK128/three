@@ -138,9 +138,13 @@ class Ui {
     graphics.create('ohlc', 'ohlc0', 0, ohlc_options[current_symbol]);
     console.log(`\n%%% ui layers[0] initialized for ${current_symbol} as:`);
     console.dir(graphics.layer(0));
-    for(let child of graphics.layer(0).children){
-      console.log(`layer0 contains Group actor ${child.name}`);
-    }
+    //for(let child of graphics.layer(0).children){
+    //  console.log(`layer0 contains Group actor ${child.name}`);
+    //}
+    // modify layer_typev for current_layer
+    console.log(`setting layer_typev[0] = 'ohlc'`);
+    graphics.layer_type(0, 'ohlc');
+    layer_type[layername[0]]['layer_typev'] = 'ohlc';
 
 
     // build gui
@@ -266,6 +270,11 @@ class Ui {
         console.log(`\n%%% ui creating glyphs for ${current_symbol}`);
         graphics.create('ohlc', `ohlc${current_layer}`, current_layer, ohlc_options[current_symbol]);
 
+        // modify layer_typev for current_layer
+        console.log(`setting layer_typev[${current_layer}] = 'ohlc'`);
+        graphics.layer_type(current_layer, 'ohlc');
+        layer_type[layername[current_layer]]['layer_typev'] = 'ohlc';
+
         // if layersv===true advance current_layers 
         if(layersv === true){
           current_layer = (current_layer+1)%config.stage.layers.length;
@@ -276,6 +285,10 @@ class Ui {
 
     gui.add(mod_present, 'mod_present').onFinishChange(() => {
         console.log(`event: modify present glyph`);
+
+        // modify layer_typev for current_layer
+        console.log(`removing actor name = 'ETH0_past'`);
+        graphics.removeActor('ETH0_past');
     });
 
     gui.add(add_present, 'add_present').onFinishChange(() => {
@@ -298,12 +311,13 @@ class Ui {
       console.log(`\nlayers set to ${layersv} current_layer = ${current_layer}`);
     });
 
-    // show/hide layers
+
+    // show/hide layers and display layer_type
     for(let l=0; l<layername.length; l++){
       gui.add(layer_type[layername[l]], 'layer_typev', layer_typev).onFinishChange(() => {
         console.log(`setting layer_type[${l}] = ${layer_type[layername[l]]['layer_typev']}`);
         graphics.layer_type(l, layer_type[layername[l]]['layer_typev']);
-      });
+      }).listen();
     }
 
   }//init

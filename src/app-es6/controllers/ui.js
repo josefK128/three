@@ -61,9 +61,9 @@ System.register(["../services/data"], function (exports_1, context_1) {
                     graphics.create('ohlc', 'ohlc0', 0, ohlc_options[current_symbol]);
                     console.log(`\n%%% ui layers[0] initialized for ${current_symbol} as:`);
                     console.dir(graphics.layer(0));
-                    for (let child of graphics.layer(0).children) {
-                        console.log(`layer0 contains Group actor ${child.name}`);
-                    }
+                    console.log(`setting layer_typev[0] = 'ohlc'`);
+                    graphics.layer_type(0, 'ohlc');
+                    layer_type[layername[0]]['layer_typev'] = 'ohlc';
                     gui.add(initial_view, 'initial_view').onFinishChange(() => {
                         camera.position.set(camera['initial_position'].x, camera['initial_position'].y, camera['initial_position'].z);
                         camera.lookAt(camera['initial_position'].x, camera['initial_position'].y, 0.0);
@@ -134,6 +134,9 @@ System.register(["../services/data"], function (exports_1, context_1) {
                         current_symbol = symbols['symbol'];
                         console.log(`\n%%% ui creating glyphs for ${current_symbol}`);
                         graphics.create('ohlc', `ohlc${current_layer}`, current_layer, ohlc_options[current_symbol]);
+                        console.log(`setting layer_typev[${current_layer}] = 'ohlc'`);
+                        graphics.layer_type(current_layer, 'ohlc');
+                        layer_type[layername[current_layer]]['layer_typev'] = 'ohlc';
                         if (layersv === true) {
                             current_layer = (current_layer + 1) % config.stage.layers.length;
                             console.log(`after increment current_layer = ${current_layer}`);
@@ -141,22 +144,8 @@ System.register(["../services/data"], function (exports_1, context_1) {
                     });
                     gui.add(mod_present, 'mod_present').onFinishChange(() => {
                         console.log(`event: modify present glyph`);
-                        var layer, children = [], filtered_children, layer_length = 0, index = 0;
-                        layer = graphics.layer(current_layer);
-                        console.log(`layer = `);
-                        console.dir(layer);
-                        children = layer.children;
-                        layer_length = children.length;
-                        console.log(`layer[${current_layer}].children.length = ${layer_length}`);
-                        console.log(`children = `);
-                        console.dir(children);
-                        console.log(`graphics.actors() returns:`);
-                        console.dir(graphics.actors());
-                        console.log(`removing ${current_symbol} children`);
-                        filtered_children = children.filter(child => !child.name.startsWith(current_symbol));
-                        console.log(`filtered_children = `);
-                        console.dir(filtered_children);
-                        layer.children = filtered_children;
+                        console.log(`removing actor name = 'ETH0_past'`);
+                        graphics.removeActor('ETH0_past');
                     });
                     gui.add(add_present, 'add_present').onFinishChange(() => {
                         console.log(`event: add to present array of glyphs`);
@@ -175,7 +164,7 @@ System.register(["../services/data"], function (exports_1, context_1) {
                         gui.add(layer_type[layername[l]], 'layer_typev', layer_typev).onFinishChange(() => {
                             console.log(`setting layer_type[${l}] = ${layer_type[layername[l]]['layer_typev']}`);
                             graphics.layer_type(l, layer_type[layername[l]]['layer_typev']);
-                        });
+                        }).listen();
                     }
                 } 
             }; 

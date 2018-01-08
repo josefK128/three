@@ -221,6 +221,23 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                     actor['userData'] = options;
                     actors[name] = actor;
                 }
+                removeActor(name) {
+                    var filtered_actors;
+                    console.log(`removeActor: name = ${name}`);
+                    console.log(`before removal of ${name} actors = `);
+                    for (let nm of Object.keys(actors)) {
+                        console.log(`actors contains name ${nm}`);
+                    }
+                    if (actors[name]) {
+                        console.log(`removeActor: name = ${name}`);
+                        delete actors[name];
+                        console.log(`after removal of ${name} actors = `);
+                        console.dir(actors);
+                    }
+                    else {
+                        console.log(`actor with name = ${name} not found!`);
+                    }
+                }
                 actors() {
                     return actors;
                 }
