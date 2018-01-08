@@ -92,9 +92,8 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                             layers[i].scale.set(s, s, 1.0);
                             stage.add(layers[i]);
                         }
-                        console.log(`\nactors:`);
-                        return scene;
                     }
+                    return scene;
                 } 
                 camera(camera_config) {
                     var fov, w, h, aspect, near, far, position;

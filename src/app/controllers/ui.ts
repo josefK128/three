@@ -11,6 +11,7 @@ var ui:Ui,
     config:Config,
     graphics:any,
     camera:THREE.PerspectiveCamera,
+    pivot:THREE.Object3D,
 
     // symbol options objects
     ohlc_options:object = {},
@@ -36,6 +37,7 @@ var ui:Ui,
     pan_:object,
     tilt_:object,
     zoom_:object,
+    pitch_:object,
     symbolv:string[],
     symbols:object,
     layersv:boolean,
@@ -76,6 +78,7 @@ class Ui {
     pan_ = { pan_: 0.0 };  // radians
     tilt_ = { tilt_: 0.0 };  // radians
     zoom_ = { zoom_: 90.0 };  // degrees
+    pitch_ = { pitch_: 0.0 };  // radians
     symbolv = ['ETH','ETC','BTC','BCH','LTC','LBC','XRP','ZEC','BST','UJO']; 
     symbols = {
       symbol: 'ETH',
@@ -179,10 +182,10 @@ class Ui {
     });
 
     gui.add(normalize_pan_tilt, 'normalize_pan_tilt').onFinishChange(() => {
-        graphics.pan(0.0);
-        graphics.tilt(0.0);
-        pan_['pan_'] = 0.0;
+        pivot.rotation.x = 0.0;
+        pivot.rotation.y = 0.0;
         tilt_['tilt_'] = 0.0;
+        pan_['pan_'] = 0.0;
     });
 
 
@@ -237,6 +240,22 @@ class Ui {
     // initially zoom_ = 90.0, range = [10, 170] degrees
     gui.add(zoom_, 'zoom_', 10, 170).onChange(() => {
         graphics.zoom(zoom_['zoom_']);
+    }).listen();
+
+    // initially pitch_ = 0.0, range = [-PI/2, PI/2] radians
+    gui.add(pitch_, 'pitch_', -1.57, 1.57, .01).onChange(() => {
+        if(pivot === undefined){
+          pivot = new THREE.Object3D();
+          pivot.position.x = camera.position.x;
+          //pivot.position.y = camera.position.y;
+          pivot.add(camera);
+          graphics.scene().add(pivot);
+        }
+        pivot.rotation.x = pitch_['pitch_'];
+    }).onFinishChange(() => {
+        graphics.scene().remove(pivot);
+        pivot.remove(camera);
+        pivot = undefined;
     }).listen();
 
 

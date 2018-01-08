@@ -1,7 +1,7 @@
 System.register(["../services/data"], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var data_1, ui, config, graphics, camera, ohlc_options, current_symbol, current_layer, initial_view, normalize_scale, normalize_zoom, normalize_pan_tilt, railsv, rails, dollyX_, dollyY_, logscaleX_, logscaleY_, sx, sy, pan_, tilt_, zoom_, symbolv, symbols, layersv, layers, layername, layer_typev, layer_type, mod_present, add_present, add_past, gui, stop, events, Ui;
+    var data_1, ui, config, graphics, camera, pivot, ohlc_options, current_symbol, current_layer, initial_view, normalize_scale, normalize_zoom, normalize_pan_tilt, railsv, rails, dollyX_, dollyY_, logscaleX_, logscaleY_, sx, sy, pan_, tilt_, zoom_, pitch_, symbolv, symbols, layersv, layers, layername, layer_typev, layer_type, mod_present, add_present, add_past, gui, stop, events, Ui;
     return {
         setters: [
             function (data_1_1) {
@@ -29,6 +29,7 @@ System.register(["../services/data"], function (exports_1, context_1) {
                     pan_ = { pan_: 0.0 }; 
                     tilt_ = { tilt_: 0.0 }; 
                     zoom_ = { zoom_: 90.0 }; 
+                    pitch_ = { pitch_: 0.0 }; 
                     symbolv = ['ETH', 'ETC', 'BTC', 'BCH', 'LTC', 'LBC', 'XRP', 'ZEC', 'BST', 'UJO'];
                     symbols = {
                         symbol: 'ETH',
@@ -86,10 +87,10 @@ System.register(["../services/data"], function (exports_1, context_1) {
                         graphics.zoom(90.0);
                     });
                     gui.add(normalize_pan_tilt, 'normalize_pan_tilt').onFinishChange(() => {
-                        graphics.pan(0.0);
-                        graphics.tilt(0.0);
-                        pan_['pan_'] = 0.0;
+                        pivot.rotation.x = 0.0;
+                        pivot.rotation.y = 0.0;
                         tilt_['tilt_'] = 0.0;
+                        pan_['pan_'] = 0.0;
                     });
                     gui.add(rails, 'rails').onFinishChange(() => {
                         railsv = !railsv;
@@ -119,6 +120,19 @@ System.register(["../services/data"], function (exports_1, context_1) {
                     }).listen();
                     gui.add(zoom_, 'zoom_', 10, 170).onChange(() => {
                         graphics.zoom(zoom_['zoom_']);
+                    }).listen();
+                    gui.add(pitch_, 'pitch_', -1.57, 1.57, .01).onChange(() => {
+                        if (pivot === undefined) {
+                            pivot = new THREE.Object3D();
+                            pivot.position.x = camera.position.x;
+                            pivot.add(camera);
+                            graphics.scene().add(pivot);
+                        }
+                        pivot.rotation.x = pitch_['pitch_'];
+                    }).onFinishChange(() => {
+                        graphics.scene().remove(pivot);
+                        pivot.remove(camera);
+                        pivot = undefined;
                     }).listen();
                     gui.add(symbols, 'symbol', symbolv).onFinishChange(() => {
                         var filtered_children, layer, layer_length;

@@ -141,9 +141,8 @@ class Graphics {
         //console.log(`layers[${i}].scale = ${layers[i].scale.toArray()}`);
         stage.add(layers[i]);
       }
-      console.log(`\nactors:`);
-      return scene;
     }
+    return scene;
   }//scene()
 
 
