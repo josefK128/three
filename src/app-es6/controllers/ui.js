@@ -112,7 +112,7 @@ System.register(["../services/data"], function (exports_1, context_1) {
                         sy = Math.exp(lsy);
                         graphics.scaleActor('stage', sx, sy, 1.0);
                     }).listen();
-                    gui.add(pan_, 'pan_', -1.57, 1.57, .01).onChange(() => {
+                    gui.add(pan_, 'pan_', -0.4, 0.4, .01).onChange(() => {
                         graphics.pan(pan_['pan_']);
                     }).listen();
                     gui.add(tilt_, 'tilt_', -1.57, 1.57, .01).onChange(() => {

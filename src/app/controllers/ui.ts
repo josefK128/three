@@ -228,7 +228,7 @@ class Ui {
 
 
     // initially pan_ = 0.0, range = [-PI/2, PI/2] radians
-    gui.add(pan_, 'pan_', -1.57, 1.57, .01).onChange(() => {
+    gui.add(pan_, 'pan_', -0.4, 0.4, .01).onChange(() => {
         graphics.pan(pan_['pan_']);
     }).listen();
 
