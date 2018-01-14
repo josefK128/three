@@ -1,4 +1,4 @@
-System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actors/line", "../actors/sprite", "../actors/quad", "../actors/quad_shm"], function (exports_1, context_1) {
+System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actors/study", "../actors/sprite", "../actors/quad", "../actors/quad_shm"], function (exports_1, context_1) {
     "use strict";
     var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         return new (P || (P = Promise))(function (resolve, reject) {
@@ -9,7 +9,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
         });
     };
     var __moduleName = context_1 && context_1.id;
-    var grid_1, axes_1, ohlc_1, line_1, sprite_1, quad_1, quad_shm_1, graphics, config, gl, renderer, stats, clock, et, count, camera, lookAt, light, scene, stage, layers, nLayers, layerDelta, actors, onWindowResize, Graphics;
+    var grid_1, axes_1, ohlc_1, study_1, sprite_1, quad_1, quad_shm_1, graphics, config, gl, renderer, stats, clock, et, count, camera, lookAt, light, scene, stage, layers, nLayers, layerDelta, actors, onWindowResize, Graphics;
     return {
         setters: [
             function (grid_1_1) {
@@ -21,8 +21,8 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
             function (ohlc_1_1) {
                 ohlc_1 = ohlc_1_1;
             },
-            function (line_1_1) {
-                line_1 = line_1_1;
+            function (study_1_1) {
+                study_1 = study_1_1;
             },
             function (sprite_1_1) {
                 sprite_1 = sprite_1_1;
@@ -130,7 +130,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                 layer(i = 0) {
                     return layers[i];
                 }
-                layer_type(l, type) {
+                layer_type(l, type, options = {}) {
                     console.log(`graphics.layer_type(${l}, ${type})`);
                     config.stage.layer_type[l] = type;
                     if (type === 'invisible') {
@@ -138,14 +138,15 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                         layers[l].visible = false;
                     }
                     else {
-                        console.log(`TBD: loading data for type = ${type} - currently 'line'`);
+                        console.log(`TBD: creating actor ${type}${l} of type = ${type} using options=${options}:`);
+                        console.dir(options);
                         console.log(`setting layers[${l}].visible = true`);
                         layers[l].visible = true;
                     }
                 }
                 create(type, name, layer, options) {
                     return __awaiter(this, void 0, void 0, function* () {
-                        var grid, axes, past_ray, recent_ray, line, sprite, quad, 
+                        var grid, axes, past_ray, recent_ray, study, sprite, quad, 
                         quad_shm; 
                         try {
                             switch (type) {
@@ -173,11 +174,11 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                                         graphics.addActor(recent_ray, tuple['recent'], options);
                                     });
                                     break;
-                                case 'line':
-                                    line = yield line_1.Line.create(options); 
-                                    graphics.addActor(name, line, options);
-                                    line.position.z = -layer * layerDelta;
-                                    layers[layer].add(line);
+                                case 'study':
+                                    study = yield study_1.Study.create(options); 
+                                    graphics.addActor(name, study, options);
+                                    study.position.z = -layer * layerDelta;
+                                    layers[layer].add(study);
                                     break;
                                 case 'sprite':
                                     sprite = yield sprite_1.Sprite.create(options); 

@@ -88,7 +88,7 @@ class Ui {
     };
     layersv = false; 
     layers = {layers: layersv};
-    layer_typev = ["invisible", "ohlc", "candle", "line", "mountain"];
+    layer_typev = ["invisible", "ohlc", "candle", "lineOp", "lineH", "lineL","lineC", "mountainOp", "mountainH", "mountainL", "mountainC", "study"];
     for(let l=0;  l<config.stage.layer_type.length; l++){
       layername[l] = `layer_type${l}`;
       layer_type[layername[l]] = {layer_typev: config.stage.layer_type[l]};
@@ -350,8 +350,8 @@ class Ui {
     // show/hide layers and display layer_type
     for(let l=0; l<layername.length; l++){
       gui.add(layer_type[layername[l]], 'layer_typev', layer_typev).onFinishChange(() => {
-        console.log(`setting layer_type[${l}] = ${layer_type[layername[l]]['layer_typev']}`);
-        graphics.layer_type(l, layer_type[layername[l]]['layer_typev']);
+        let ltype = layer_type[layername[l]]['layer_typev'];
+        graphics.layer_type(l, ltype, ohlc_options[current_symbol]);
       }).listen();
     }
 

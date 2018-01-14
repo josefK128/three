@@ -5,7 +5,7 @@
 import {Grid} from '../actors/grid';
 import {Axes} from '../actors/axes';
 import {Ohlc} from '../actors/ohlc';
-import {Line} from '../actors/line';
+import {Study} from '../actors/study';
 import {Sprite} from '../actors/sprite';
 import {Quad} from '../actors/quad';
 import {Quad_shm} from '../actors/quad_shm';
@@ -203,14 +203,15 @@ class Graphics {
   }
 
 
-  layer_type(l:number, type:string):void {
+  layer_type(l:number, type:string, options:object={}):void {
     console.log(`graphics.layer_type(${l}, ${type})`);
     config.stage.layer_type[l] = type;
     if(type === 'invisible'){
       console.log(`setting layers[${l}].visible = false`);
       layers[l].visible = false;
     }else{
-      console.log(`TBD: loading data for type = ${type} - currently 'line'`);
+    console.log(`TBD: creating actor ${type}${l} of type = ${type} using options=${options}:`);
+      console.dir(options);
       console.log(`setting layers[${l}].visible = true`);
       layers[l].visible = true;
     }
@@ -223,7 +224,7 @@ class Graphics {
         axes:THREE.AxesHelper,
         past_ray:string,
         recent_ray:string,
-        line:THREE.Line,
+        study:THREE.Line,
         sprite:THREE.Sprite,
         quad:THREE.Mesh,         // BufferGeometry & MeshBasicMaterial
         quad_shm:THREE.Mesh;    // BufferGeometry & ShaderMaterial
@@ -278,11 +279,11 @@ class Graphics {
             });
           break;
 
-        case 'line':
-          line = await Line.create(options);  // Line.create() returns Promise
-          graphics.addActor(name, line, options);
-          line.position.z = -layer*layerDelta;
-          layers[layer].add(line);
+        case 'study':
+          study = await Study.create(options); // Study.create() returns Promise
+          graphics.addActor(name, study, options);
+          study.position.z = -layer*layerDelta;
+          layers[layer].add(study);
           break;
 
         case 'sprite':
