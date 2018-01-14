@@ -11,6 +11,9 @@ var ui:Ui,
     config:Config,
     graphics:any,
     camera:THREE.PerspectiveCamera,
+    // pivot is a temporary Object3D on the x-axis with child camera
+    // Then 'pitch' rotations around x-axis will move the camera in a 
+    // semi-circle around the x-axis and clearly show layers in 3D perspective
     pivot:THREE.Object3D,
 
     // symbol options objects
@@ -251,6 +254,7 @@ class Ui {
         }
         pivot.rotation.x = pitch_['pitch_'];
     }).onFinishChange(() => {
+        pivot.rotation.x = 0.0;
         pitch_['pitch_'] = 0.0;
         graphics.scene().remove(pivot);
         pivot.remove(camera);
