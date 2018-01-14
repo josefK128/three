@@ -195,6 +195,15 @@ System.register(["../services/data"], function (exports_1, context_1) {
                             if (ltype.endsWith('C')) {
                                 ohlc_options[current_symbol]['subset'] = 'C';
                             }
+                            if (ltype.startsWith('line')) {
+                                ltype = 'line';
+                            }
+                            if (ltype.startsWith('mountain')) {
+                                ltype = 'mountain';
+                            }
+                            if (ltype.startsWith('study')) {
+                                ltype = 'study';
+                            }
                             graphics.layer_type(l, ltype, ohlc_options[current_symbol]);
                         }).listen();
                     }

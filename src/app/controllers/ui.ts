@@ -365,6 +365,17 @@ class Ui {
         }
         //TBD - expand for studies?
 
+        // set ltype to 'stem' of ltype - i.e. remove leaf Op|H|L|C
+        if(ltype.startsWith('line')){
+          ltype = 'line';
+        }
+        if(ltype.startsWith('mountain')){
+          ltype = 'mountain';
+        }
+        if(ltype.startsWith('study')){
+          ltype = 'study';
+        }
+
         graphics.layer_type(l, ltype, ohlc_options[current_symbol]);
       }).listen();
     }
