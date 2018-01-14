@@ -55,6 +55,9 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                     camera = graphics.camera(config.camera);
                     light.position.set(0, 10, 20);
                     camera.add(light);
+                    camera.position.x = config.camera.position.x;
+                    camera.position.y = config.camera.position.y;
+                    camera.position.z = config.camera.position.z;
                     lookAt = config.camera.lookAt;
                     camera.lookAt(lookAt.x, lookAt.y, lookAt.z);
                     camera['initial_position'] = config.camera.position;
@@ -104,7 +107,6 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                         aspect = w / h;
                         near = camera_config['near'];
                         far = camera_config['far'];
-                        position = camera_config['position'];
                         camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
                         camera['position'].x = camera_config['position'].x;
                         camera['position'].y = camera_config['position'].y;

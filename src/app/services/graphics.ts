@@ -68,6 +68,9 @@ class Graphics {
     camera = graphics.camera(config.camera);
     light.position.set(0, 10, 20);
     camera.add(light);
+    camera.position.x = config.camera.position.x;
+    camera.position.y = config.camera.position.y;
+    camera.position.z = config.camera.position.z;
     lookAt = config.camera.lookAt;
     camera.lookAt(lookAt.x, lookAt.y, lookAt.z);
 
@@ -163,7 +166,6 @@ class Graphics {
       aspect = w/h;
       near = camera_config['near'];
       far = camera_config['far'];
-      position = camera_config['position'];
       camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
       camera['position'].x = camera_config['position'].x;
       camera['position'].y = camera_config['position'].y;
@@ -196,7 +198,7 @@ class Graphics {
   }
 
 
-  layer(i:index=0):THREE.Group {
+  layer(i:number=0):THREE.Group {
     return layers[i];
   }
 

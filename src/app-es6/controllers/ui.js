@@ -87,8 +87,8 @@ System.register(["../services/data"], function (exports_1, context_1) {
                         graphics.zoom(90.0);
                     });
                     gui.add(normalize_pan_tilt, 'normalize_pan_tilt').onFinishChange(() => {
-                        pivot.rotation.x = 0.0;
-                        pivot.rotation.y = 0.0;
+                        graphics.pan(0.0);
+                        graphics.tilt(0.0);
                         tilt_['tilt_'] = 0.0;
                         pan_['pan_'] = 0.0;
                     });
@@ -124,7 +124,6 @@ System.register(["../services/data"], function (exports_1, context_1) {
                     gui.add(pitch_, 'pitch_', -1.57, 1.57, .01).onChange(() => {
                         if (pivot === undefined) {
                             pivot = new THREE.Object3D();
-                            pivot.position.x = camera.position.x;
                             pivot.add(camera);
                             graphics.scene().add(pivot);
                         }
