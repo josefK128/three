@@ -351,6 +351,20 @@ class Ui {
     for(let l=0; l<layername.length; l++){
       gui.add(layer_type[layername[l]], 'layer_typev', layer_typev).onFinishChange(() => {
         let ltype = layer_type[layername[l]]['layer_typev'];
+        if(ltype.endsWith('Op')){
+          ohlc_options[current_symbol]['subset'] = 'Op';
+        }
+        if(ltype.endsWith('H')){
+          ohlc_options[current_symbol]['subset'] = 'H';
+        }
+        if(ltype.endsWith('L')){
+          ohlc_options[current_symbol]['subset'] = 'L';
+        }
+        if(ltype.endsWith('C')){
+          ohlc_options[current_symbol]['subset'] = 'C';
+        }
+        //TBD - expand for studies?
+
         graphics.layer_type(l, ltype, ohlc_options[current_symbol]);
       }).listen();
     }

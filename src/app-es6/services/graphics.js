@@ -138,8 +138,9 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                         layers[l].visible = false;
                     }
                     else {
-                        console.log(`TBD: creating actor ${type}${l} of type = ${type} using options=${options}:`);
+                        console.log(`graphics.create(${type},${type}${l}, ${l}, options:`);
                         console.dir(options);
+                        graphics.create(type, `${type}${l}`, l, options);
                         console.log(`setting layers[${l}].visible = true`);
                         layers[l].visible = true;
                     }
