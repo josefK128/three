@@ -223,8 +223,8 @@ class Graphics {
         axes:THREE.AxesHelper,
         past_ray:string,
         recent_ray:string,
-        sprite:THREE.Sprite,
         line:THREE.Line,
+        sprite:THREE.Sprite,
         quad:THREE.Mesh,         // BufferGeometry & MeshBasicMaterial
         quad_shm:THREE.Mesh;    // BufferGeometry & ShaderMaterial
         
@@ -278,13 +278,6 @@ class Graphics {
             });
           break;
 
-        case 'sprite':
-          sprite = await Sprite.create(options);  // Sprite.create() returns Promise
-          graphics.addActor(name, sprite, options);
-          sprite.position.z = -layer*layerDelta;
-          layers[layer].add(sprite);
-          break;
-
         case 'line':
           line = await Line.create(options);  // Line.create() returns Promise
           graphics.addActor(name, line, options);
@@ -292,6 +285,12 @@ class Graphics {
           layers[layer].add(line);
           break;
 
+        case 'sprite':
+          sprite = await Sprite.create(options);  // Sprite.create() returns Promise
+          graphics.addActor(name, sprite, options);
+          sprite.position.z = -layer*layerDelta;
+          layers[layer].add(sprite);
+          break;
 
         case 'quad':
           quad = await Quad.create(options);  // Quad.create() returns Promise

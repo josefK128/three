@@ -87,10 +87,10 @@ System.register(["../services/data"], function (exports_1, context_1) {
                         graphics.zoom(90.0);
                     });
                     gui.add(normalize_pan_tilt, 'normalize_pan_tilt').onFinishChange(() => {
-                        graphics.pan(0.0);
-                        graphics.tilt(0.0);
                         tilt_['tilt_'] = 0.0;
                         pan_['pan_'] = 0.0;
+                        graphics.pan(0.0);
+                        graphics.tilt(0.0);
                     });
                     gui.add(rails, 'rails').onFinishChange(() => {
                         railsv = !railsv;
@@ -129,6 +129,7 @@ System.register(["../services/data"], function (exports_1, context_1) {
                         }
                         pivot.rotation.x = pitch_['pitch_'];
                     }).onFinishChange(() => {
+                        pivot.rotation.x = 0.0;
                         pitch_['pitch_'] = 0.0;
                         graphics.scene().remove(pivot);
                         pivot.remove(camera);

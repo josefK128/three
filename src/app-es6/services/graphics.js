@@ -145,7 +145,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                 }
                 create(type, name, layer, options) {
                     return __awaiter(this, void 0, void 0, function* () {
-                        var grid, axes, past_ray, recent_ray, sprite, line, quad, 
+                        var grid, axes, past_ray, recent_ray, line, sprite, quad, 
                         quad_shm; 
                         try {
                             switch (type) {
@@ -173,17 +173,17 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                                         graphics.addActor(recent_ray, tuple['recent'], options);
                                     });
                                     break;
-                                case 'sprite':
-                                    sprite = yield sprite_1.Sprite.create(options); 
-                                    graphics.addActor(name, sprite, options);
-                                    sprite.position.z = -layer * layerDelta;
-                                    layers[layer].add(sprite);
-                                    break;
                                 case 'line':
                                     line = yield line_1.Line.create(options); 
                                     graphics.addActor(name, line, options);
                                     line.position.z = -layer * layerDelta;
                                     layers[layer].add(line);
+                                    break;
+                                case 'sprite':
+                                    sprite = yield sprite_1.Sprite.create(options); 
+                                    graphics.addActor(name, sprite, options);
+                                    sprite.position.z = -layer * layerDelta;
+                                    layers[layer].add(sprite);
                                     break;
                                 case 'quad':
                                     quad = yield quad_1.Quad.create(options); 

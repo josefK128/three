@@ -6,7 +6,7 @@ System.register([], function (exports_1, context_1) {
         setters: [],
         execute: function () {
             config = {
-                _app: './app-es6/space2',
+                _app: './app-es6/space',
                 camera: {
                     fov: 90,
                     near: 0.5,

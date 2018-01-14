@@ -1,13 +1,13 @@
 // dev-stage2.ts - simple test configuration
 
-import {Config} from './config-stage2.interface';
+import {Config} from './config-dev.interface';
 
 
 // for space.ts initialization
 const config:Config = {
 
   // controller app url
-  _app: './app-es6/space2',
+  _app: './app-es6/space',
 
 
   // camera

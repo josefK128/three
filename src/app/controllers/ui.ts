@@ -127,7 +127,7 @@ class Ui {
     }
 
 
-    // initialize currrent_symbol
+    // initialize current_symbol
     current_symbol = symbols['symbol'];
 
     // initialize symbol data-option objects for use as 'options' arg in 
