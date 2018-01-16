@@ -148,8 +148,10 @@ class Ui {
     // initialize layers[0]  
     // modify layer_typev for current_layer
     console.log(`setting layer_typev[0] = 'ohlc'`);
-    graphics.layer_type(0, 'ohlc', ohlc_options[current_symbol]);
-    layer_type[layername[0]]['layer_typev'] = 'ohlc';
+    //graphics.layer_type(0, 'ohlc', ohlc_options[current_symbol]);
+    graphics.layer_type(0, 'candle', ohlc_options[current_symbol]);
+    //layer_type[layername[0]]['layer_typev'] = 'ohlc';
+    layer_type[layername[0]]['layer_typev'] = 'candle';
     console.log(`\n%%% ui layers[0] initialized for ${current_symbol} as:`);
     console.dir(graphics.layer(0));
 

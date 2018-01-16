@@ -5,6 +5,7 @@
 import {Grid} from '../actors/grid';
 import {Axes} from '../actors/axes';
 import {Ohlc} from '../actors/ohlc';
+import {Candle} from '../actors/candle';
 import {Line} from '../actors/line';
 import {Study} from '../actors/study';
 import {Sprite} from '../actors/sprite';
@@ -296,6 +297,24 @@ class Graphics {
         // For exp: ETH0_past, ETH0_recent
         case 'ohlc':
           Ohlc.create(-layer*layerDelta, layers[layer], options)
+            .then((tuple) => {
+              console.log(`received tuple`);
+              // add two glyph-arrays passed in tuple as actors for future ref
+              past_ray = `${options['symbol']}${layer}_past`;
+              recent_ray = `${options['symbol']}${layer}_recent`;
+              console.log(`past_ray = ${past_ray}`);
+              console.log(`recent_ray = ${recent_ray}`);
+              graphics.addActor(past_ray, tuple['past'], options);
+              graphics.addActor(recent_ray, tuple['recent'], options);
+            });
+          break;
+
+        // Candle.create() returns {candle_past:candle[],candle_recent:candle[]}
+        // these are distinct actors with convention-defined names:
+        // '<symbol><layer>_past' and '<symbol><layer>_recent'
+        // For exp: ETH0_past, ETH0_recent
+        case 'candle':
+          Candle.create(-layer*layerDelta, layers[layer], options)
             .then((tuple) => {
               console.log(`received tuple`);
               // add two glyph-arrays passed in tuple as actors for future ref

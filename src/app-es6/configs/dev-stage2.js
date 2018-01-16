@@ -16,7 +16,7 @@ System.register([], function (exports_1, context_1) {
                 },
                 stage: {
                     layerDelta: 5.0,
-                    layer_type: ['ohlc', 'study', 'study', 'study', 'study', 'study', 'study', 'study'],
+                    layer_type: ['none', 'none', 'none', 'none', 'none', 'none', 'none', 'none'],
                     layers: [
                         [{ name: 'grid0', type: 'grid', layer: 0, options: {
                                     size: 100000, divisions: 10000,
@@ -24,63 +24,13 @@ System.register([], function (exports_1, context_1) {
                                     x: 0, y: 0, z: 0
                                 } }
                         ],
-                        [{ name: 'study1', type: 'study', layer: 1, options: {
-                                    max_vertices: 500,
-                                    drawCount: 500,
-                                    color: 0xff00ff,
-                                    linewidth: 30,
-                                    vertices: [0, 0, 0, -10, 40, 0, -20, 70, 0]
-                                } }
-                        ],
-                        [{ name: 'study2', type: 'study', layer: 2, options: {
-                                    max_vertices: 500,
-                                    drawCount: 500,
-                                    color: 0xff00ff,
-                                    linewidth: 30,
-                                    vertices: [0, 0, 0, -10, 50, 0, -20, 60, 0]
-                                } },
-                        ],
-                        [{ name: 'study3', type: 'study', layer: 3, options: {
-                                    max_vertices: 500,
-                                    drawCount: 500,
-                                    color: 0xff00ff,
-                                    linewidth: 30,
-                                    vertices: [0, 0, 0, -10, 60, 0, -20, 50, 0]
-                                } },
-                        ],
-                        [{ name: 'study4', type: 'study', layer: 4, options: {
-                                    max_vertices: 500,
-                                    drawCount: 500,
-                                    color: 0xff00ff,
-                                    linewidth: 30,
-                                    vertices: [0, 0, 0, -10, 70, 0, -20, 40, 0]
-                                } },
-                        ],
-                        [{ name: 'study5', type: 'study', layer: 5, options: {
-                                    max_vertices: 500,
-                                    drawCount: 500,
-                                    color: 0xff00ff,
-                                    linewidth: 30,
-                                    vertices: [0, 0, 0, -10, 80, 0, -20, 30, 0],
-                                } },
-                        ],
-                        [{ name: 'study6', type: 'study', layer: 6, options: {
-                                    max_vertices: 500,
-                                    drawCount: 500,
-                                    color: 0xff00ff,
-                                    linewidth: 30,
-                                    vertices: [0, 0, 0, -10, 90, 0, -20, 20, 0],
-                                } },
-                        ],
-                        [{ name: 'study7', type: 'study', layer: 7, options: {
-                                    max_vertices: 500,
-                                    drawCount: 500,
-                                    color: 0xff00ff,
-                                    linewidth: 30,
-                                    vertices: [0, 0, 0, -10, 100, 0, -20, 10, 0],
-                                } },
-                            { name: 'axes7', type: 'axes', layer: 7, options: { size: 3000 } }
-                        ]
+                        [{ name: 'null1', type: 'null', layer: 1, options: {} }],
+                        [{ name: 'null2', type: 'null', layer: 2, options: {} }],
+                        [{ name: 'null3', type: 'null', layer: 3, options: {} }],
+                        [{ name: 'null4', type: 'null', layer: 4, options: {} }],
+                        [{ name: 'null5', type: 'null', layer: 5, options: {} }],
+                        [{ name: 'null6', type: 'null', layer: 6, options: {} }],
+                        [{ name: 'axes7', type: 'axes', layer: 7, options: { size: 5000 } }]
                     ]
                 }
             };

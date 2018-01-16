@@ -1,5 +1,5 @@
-// ohlc.ts
-// optimized to create all ohlc-glyphs in one create call
+// candle.ts
+// optimized to create all candle-glyphs in one create call
 // returns promise resolving an object containing the two time-ray arrays
 // 'past' which are static glyphs pointing into the past and whose 0th element 
 // is the glyph representing data[options.first_dynamic_index + 1], and
@@ -12,25 +12,28 @@
 // layer:number - index of layer which is the parent THREE.Group of glyph set
 // options:object containing
 //   first_dynamic_index:number (see above)
-//   width:number - width of the three quad components of the ohlc-glyph
+//   width:number - width of the 2 smaller top and bottom quads quadH and quadL
+//     NOTE: the width of the central quadOC is then 2*width
 //   xpositions:number[] - glyph.x position of the glyph on the x 'time' axis
 //   data:number[] - sequence of open, high, low, close y-values for each glyph
 //
-// kth ohlc glyph is a central quad of width 'width' and height (high-low)
+// kth candle glyph is a central quad 'quad' of width 2*width and centered at
+//   (open+close)/2
 // located at (xposition[k], (high-low)/2)
-// The kth opening quad 'quadO' is a square-quad of width(=height) = 'width' 
-// and located at (xposition[k]-width/2, open)
-// The kth closing quad 'quadC' is a square-quad of width(=height) = 'width' 
-// and located at (xposition[k]+width/2, close)
+// The kth (top) high quad 'quadH' has width = 'width' and is centered at 
+//   (high+max(open,close))/2 
+// The kth (bottom) low quad 'quadL' has width = 'width' and is centered at 
+//   (low+min(open,close))/2
+// NOTE: all glyphs are constructed at the origin (local coordinates) and
+//   the kth glyphs are translated in the negative-x direction by xpositions[k]
 
 
+export var Candle = {
 
-export var Ohlc = {
-
-  // create ohlc-bar actors 
+  // create candle actors 
   create: (depth:number, layer:THREE.Group, options:object):Promise<object> => {
 
-    console.log(`ohlc.create() depth=${depth} layer=${layer} options= `);
+    console.log(`candle.create() depth=${depth} layer=${layer} options= `);
     console.dir(options);
     console.log(`options['data'].length = ${options['data'].length/4}`);
     
@@ -45,9 +48,8 @@ export var Ohlc = {
         // glyph={quad,quadO,quadC} is set behind possible grid on same layer
         // 'arm' components (quadO,quadC} are set behind quad to avoid
         // possible 'depth-flickering' of overlapping planes at identical depth
-        halfwidth:number = width*0.5,
+        doublewidth:number = 2.0*width,
         quad_depth:number = depth-0.01,
-        quadOC_depth:number = depth-0.02,
 
         // rays past and recent-'future' in data-set
         // these are the 'time-rays' returnd in the promise resolution
@@ -63,26 +65,33 @@ export var Ohlc = {
   
         // values derived from open, high, low and close
         last_static_index:number = first_dynamic_index + 1,
-        dhl:number,      // delta-high-low = Math.max(high-low, 1.0);
-        yhl:number,     // y-high-low = (high + low)*0.5;
+        center:number,
+        centerH:number,
+        centerL:number,
+        heightH:number,
+        heightL:number,
+        doc:number,     // delta-open-close (O>=C)  delta-close-open (C>O
+
+        // additional properties
+        doubleWidth:number,    // 2*width
         glyph_color:string,
   
         // actor - three components
-        // [1] quad: high-low
+        // [1] quad: open-close
         quad_g:THREE.PlaneBuffergeometry,
         quad_m:THREE.Material,
         quad:THREE.Mesh,
   
-        // [2a] quadO: opening
+        // [2a] quadH: top 'high' quad
         vertices:Float32Array,
-        quadO_g:THREE.PlaneBufferGeometry,
-        quadO_m:THREE.Material,
-        quadO:THREE.Mesh,
+        quadH_g:THREE.PlaneBufferGeometry,
+        quadH_m:THREE.Material,
+        quadH:THREE.Mesh,
   
-        // [2b] quadC: close
-        quadC_g:THREE.PlaneBufferGeometry,
-        quadC_m:THREE.Material,
-        quadC:THREE.Mesh,
+        // [2b] quadL: bottom low quad
+        quadL_g:THREE.PlaneBufferGeometry,
+        quadL_m:THREE.Material,
+        quadL:THREE.Mesh,
 
         promise = new Promise((resolve, reject) => {
           try{
@@ -94,38 +103,41 @@ export var Ohlc = {
               low = data[4*i + 2];
               close = data[4*i + 3];
         
-              // values derived from open, high, low and close
-              dhl = Math.max(high-low, 1.0);
-              yhl = (high + low)*0.5;
+              // y-center values derived from open, high, low and close
+              center = 0.5*(open+close);
+              centerH = 0.5*(high + Math.max(open, close));
+              centerL = 0.5*(low + Math.min(open, close));
+              doc = (open > close) ? Math.max(1.0, (open-close)) : Math.max(1.0, (close-open));
               glyph_color = open > close ? 'red' : 'green';
         
               // three components:
               // [1] quad: high-low
               // NOTE: quad.position.x = 0 by default
-              quad_g = new THREE.PlaneBufferGeometry(width, dhl);
+              quad_g = new THREE.PlaneBufferGeometry(doublewidth, doc);
               quad_m = new THREE.MeshBasicMaterial({color:glyph_color, transparent:false});
               quad = new THREE.Mesh(quad_g, quad_m);
-              quad.position.y = yhl;
+              quad.position.y = center;
               quad.position.z = quad_depth;
               actor.add(quad);
               
-              // [2a] quadO: open
-              quadO_g = new THREE.PlaneBufferGeometry(width, width);
-              quadO_m = new THREE.MeshBasicMaterial( {color:glyph_color, transparent:false} );
-              quadO = new THREE.Mesh(quadO_g, quadO_m);
-              quadO.position.x = -halfwidth;
-              quadO.position.y = open;
-              quadO.position.z = quadOC_depth;
-              actor.add( quadO );       
+              // [2a] quadH: top high quad
+              heightH = high - Math.max(open,close);
+              heightH = Math.max(heightH, 1.0);   // for visibility
+              quadH_g = new THREE.PlaneBufferGeometry(width, heightH);
+              quadH_m = new THREE.MeshBasicMaterial( {color:glyph_color, transparent:false} );
+              quadH = new THREE.Mesh(quadH_g, quadH_m);
+              quadH.position.y = centerH;
+              quadH.position.z = quad_depth;
+              actor.add( quadH );       
             
-              // [2b] quadC: close
-              quadC_g = new THREE.PlaneBufferGeometry(width, width);
-              quadC_m = new THREE.MeshBasicMaterial( {color:glyph_color, transparent:false} );
-              quadC = new THREE.Mesh(quadC_g, quadC_m);
-              quadC.position.x = halfwidth;
-              quadC.position.y = close;
-              quadC.position.z = quadOC_depth;
-              actor.add( quadC );  
+              // [2b] quadL: bottom low quad
+              heightL = Math.min(open,close) - low;
+              quadL_g = new THREE.PlaneBufferGeometry(width, heightL);
+              quadL_m = new THREE.MeshBasicMaterial( {color:glyph_color, transparent:false} );
+              quadL = new THREE.Mesh(quadL_g, quadL_m);
+              quadL.position.y = centerL;
+              quadL.position.z = quad_depth;
+              actor.add( quadL );  
         
         
               // set position.x from xpositions array and add to layer
@@ -135,13 +147,13 @@ export var Ohlc = {
               layer.add(actor);
         
               // add to static 'past' or dynamic 'recent' arrays of actors(THREE.Group)
-              //console.log(`ohlc for-loop: i = ${i}`);
+              //console.log(`candle for-loop: i = ${i}`);
               //console.log(`actor[${i}].position.x = ${actor.position.x}`);
               if(i <= first_dynamic_index){
-                //console.log(`ohlc: recent[${first_dynamic_index-i}] = ${actor}`);
+                //console.log(`candle: recent[${first_dynamic_index-i}] = ${actor}`);
                 recent[first_dynamic_index - i] = actor;
               }else{
-                //console.log(`ohlc: past[${i-last_static_index}] = ${actor}`);
+                //console.log(`candle: past[${i-last_static_index}] = ${actor}`);
                 past[i - last_static_index] = actor;
               }  
 

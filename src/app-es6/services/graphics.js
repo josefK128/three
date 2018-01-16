@@ -1,4 +1,4 @@
-System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actors/study", "../actors/sprite", "../actors/quad", "../actors/quad_shm"], function (exports_1, context_1) {
+System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actors/candle", "../actors/line", "../actors/study", "../actors/sprite", "../actors/quad", "../actors/quad_shm"], function (exports_1, context_1) {
     "use strict";
     var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         return new (P || (P = Promise))(function (resolve, reject) {
@@ -9,7 +9,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
         });
     };
     var __moduleName = context_1 && context_1.id;
-    var grid_1, axes_1, ohlc_1, study_1, sprite_1, quad_1, quad_shm_1, graphics, config, gl, renderer, stats, clock, et, count, camera, lookAt, light, scene, stage, layers, nLayers, layerDelta, actors, onWindowResize, Graphics;
+    var grid_1, axes_1, ohlc_1, candle_1, line_1, study_1, sprite_1, quad_1, quad_shm_1, graphics, config, gl, renderer, stats, clock, et, count, camera, lookAt, light, scene, stage, layers, nLayers, layerDelta, actors, onWindowResize, Graphics;
     return {
         setters: [
             function (grid_1_1) {
@@ -20,6 +20,12 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
             },
             function (ohlc_1_1) {
                 ohlc_1 = ohlc_1_1;
+            },
+            function (candle_1_1) {
+                candle_1 = candle_1_1;
+            },
+            function (line_1_1) {
+                line_1 = line_1_1;
             },
             function (study_1_1) {
                 study_1 = study_1_1;
@@ -89,10 +95,8 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                         console.log(`\n^^^ graphics.scene(): camera.position.z = ${d}`);
                         console.log(`\n^^^ graphics.scene(): nLayers = ${nLayers}`);
                         for (let i = 0; i < nLayers; i++) {
-                            let s = (d + layerDelta * i) / d;
-                            console.log(`^^^ graphics.scene():layer[${i}] scale s = ${s}`);
+                            console.log(`^^^ graphics.scene():create/add layer[${i}] to stage`);
                             layers[i] = new THREE.Group();
-                            layers[i].scale.set(s, s, 1.0);
                             stage.add(layers[i]);
                         }
                     }
@@ -131,8 +135,14 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                     return layers[i];
                 }
                 layer_type(l, type, options = {}) {
-                    console.log(`graphics.layer_type(${l}, ${type})`);
+                    var prev_type = config.stage.layer_type[l], flag = true;
+                    console.log(`\n\n*** graphics.layer_type(${l}, ${type})`);
+                    console.log(`prev_type of layer[${l}] = ${prev_type})`);
                     config.stage.layer_type[l] = type;
+                    if (prev_type === 'invisible') {
+                        layers[l].visible = true;
+                        return;
+                    }
                     if (type === 'invisible') {
                         console.log(`setting layers[${l}].visible = false`);
                         layers[l].visible = false;
@@ -140,6 +150,27 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                     else {
                         console.log(`graphics.create(${type},${type}${l}, ${l}, options:`);
                         console.dir(options);
+                        for (let i = 0; i < layers[l].children.length;) {
+                            let actor = layers[l].children[i];
+                            let actorname = actor.name || 'unknown';
+                            if (!actorname.startsWith('grid') && !actorname.startsWith('axes')) {
+                                layers[l].remove(actor);
+                                if (prev_type === 'ohlc' || prev_type === 'candle') {
+                                    console.log(`prev_type = ${prev_type} flag = ${flag}`);
+                                    if (flag) {
+                                        graphics.removeActor(`${actorname}_recent`);
+                                        graphics.removeActor(`${actorname}_past`);
+                                        flag = false;
+                                    }
+                                }
+                                else {
+                                    graphics.removeActor(actorname);
+                                }
+                            }
+                            else {
+                                i = i + 1;
+                            }
+                        }
                         graphics.create(type, `${type}${l}`, l, options);
                         console.log(`setting layers[${l}].visible = true`);
                         layers[l].visible = true;
@@ -147,7 +178,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                 }
                 create(type, name, layer, options) {
                     return __awaiter(this, void 0, void 0, function* () {
-                        var grid, axes, past_ray, recent_ray, study, sprite, quad, 
+                        var grid, axes, past_ray, recent_ray, line, study, sprite, quad, 
                         quad_shm; 
                         try {
                             switch (type) {
@@ -167,6 +198,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                                 case 'ohlc':
                                     ohlc_1.Ohlc.create(-layer * layerDelta, layers[layer], options)
                                         .then((tuple) => {
+                                        console.log(`received tuple`);
                                         past_ray = `${options['symbol']}${layer}_past`;
                                         recent_ray = `${options['symbol']}${layer}_recent`;
                                         console.log(`past_ray = ${past_ray}`);
@@ -174,6 +206,25 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                                         graphics.addActor(past_ray, tuple['past'], options);
                                         graphics.addActor(recent_ray, tuple['recent'], options);
                                     });
+                                    break;
+                                case 'candle':
+                                    candle_1.Candle.create(-layer * layerDelta, layers[layer], options)
+                                        .then((tuple) => {
+                                        console.log(`received tuple`);
+                                        past_ray = `${options['symbol']}${layer}_past`;
+                                        recent_ray = `${options['symbol']}${layer}_recent`;
+                                        console.log(`past_ray = ${past_ray}`);
+                                        console.log(`recent_ray = ${recent_ray}`);
+                                        graphics.addActor(past_ray, tuple['past'], options);
+                                        graphics.addActor(recent_ray, tuple['recent'], options);
+                                    });
+                                    break;
+                                case 'line':
+                                    line = yield line_1.Line.create(options);
+                                    line.position.z = -layer * layerDelta;
+                                    layers[layer].add(line);
+                                    graphics.addActor(name, line, options);
+                                    console.log(`after adding ${name} actors = ${Object.keys(actors)}`);
                                     break;
                                 case 'study':
                                     study = yield study_1.Study.create(options); 
@@ -199,6 +250,8 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                                     quad_shm.position.z = -layer * layerDelta;
                                     layers[layer].add(quad_shm);
                                     break;
+                                case 'none':
+                                    break;
                                 default:
                                     console.log(`%%% failed to create actor of type ${type}`);
                             }
@@ -215,19 +268,8 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                 }
                 removeActor(name) {
                     var filtered_actors;
-                    console.log(`removeActor: name = ${name}`);
-                    console.log(`before removal of ${name} actors = `);
-                    for (let nm of Object.keys(actors)) {
-                        console.log(`actors contains name ${nm}`);
-                    }
                     if (actors[name]) {
-                        console.log(`removeActor: name = ${name}`);
                         delete actors[name];
-                        console.log(`after removal of ${name} actors = `);
-                        console.dir(actors);
-                    }
-                    else {
-                        console.log(`actor with name = ${name} not found!`);
                     }
                 }
                 actors() {

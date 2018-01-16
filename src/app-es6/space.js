@@ -19,8 +19,10 @@ System.register(["./services/graphics", "./controllers/ui"], function (exports_1
                     graphics_1.graphics.init(config);
                     for (let layer of config.stage['layers']) {
                         for (let actor of layer) {
-                            console.log(`layer ${actor['layer']}:creating actor ${actor['name']} type = ${actor['type']}`);
-                            graphics_1.graphics.create(actor['type'], actor['name'], actor['layer'], actor['options']);
+                            if (actor['type'] !== 'null') {
+                                console.log(`layer ${actor['layer']}:creating actor ${actor['name']} type = ${actor['type']}`);
+                                graphics_1.graphics.create(actor['type'], actor['name'], actor['layer'], actor['options']);
+                            }
                         }
                     }
                     ui_1.ui.init(graphics_1.graphics, config);

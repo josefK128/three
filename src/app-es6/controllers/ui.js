@@ -36,7 +36,7 @@ System.register(["../services/data"], function (exports_1, context_1) {
                     };
                     layersv = false;
                     layers = { layers: layersv };
-                    layer_typev = ["invisible", "ohlc", "candle", "lineOp", "lineH", "lineL", "lineC", "mountainOp", "mountainH", "mountainL", "mountainC", "study"];
+                    layer_typev = ["none", "invisible", "ohlc", "candle", "lineOp", "lineH", "lineL", "lineC", "mountainOp", "mountainH", "mountainL", "mountainC", "study"];
                     for (let l = 0; l < config.stage.layer_type.length; l++) {
                         layername[l] = `layer_type${l}`;
                         layer_type[layername[l]] = { layer_typev: config.stage.layer_type[l] };
@@ -58,13 +58,11 @@ System.register(["../services/data"], function (exports_1, context_1) {
                     for (let s of symbolv) {
                         ohlc_options[s] = data_1.data.synthesize(s);
                     }
-                    console.log(`%%% ui creating glyphs for layer 0`);
-                    graphics.create('ohlc', 'ohlc0', 0, ohlc_options[current_symbol]);
+                    console.log(`setting layer_typev[0] = 'ohlc'`);
+                    graphics.layer_type(0, 'candle', ohlc_options[current_symbol]);
+                    layer_type[layername[0]]['layer_typev'] = 'candle';
                     console.log(`\n%%% ui layers[0] initialized for ${current_symbol} as:`);
                     console.dir(graphics.layer(0));
-                    console.log(`setting layer_typev[0] = 'ohlc'`);
-                    graphics.layer_type(0, 'ohlc');
-                    layer_type[layername[0]]['layer_typev'] = 'ohlc';
                     gui.add(initial_view, 'initial_view').onFinishChange(() => {
                         camera.position.set(camera['initial_position'].x, camera['initial_position'].y, camera['initial_position'].z);
                         camera.lookAt(camera['initial_position'].x, camera['initial_position'].y, 0.0);

@@ -1,25 +1,25 @@
 System.register([], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var Ohlc;
+    var Candle;
     return {
         setters: [],
         execute: function () {
-            exports_1("Ohlc", Ohlc = {
+            exports_1("Candle", Candle = {
                 create: (depth, layer, options) => {
-                    console.log(`ohlc.create() depth=${depth} layer=${layer} options= `);
+                    console.log(`candle.create() depth=${depth} layer=${layer} options= `);
                     console.dir(options);
                     console.log(`options['data'].length = ${options['data'].length / 4}`);
                     var symbol = options['symbol'], nglyphs = options['data'].length / 4, first_dynamic_index = options['first_dynamic_index'], width = options['width'], xpositions = options['xpositions'], data = options['data'], 
-                    halfwidth = width * 0.5, quad_depth = depth - 0.01, quadOC_depth = depth - 0.02, 
+                    doublewidth = 2.0 * width, quad_depth = depth - 0.01, 
                     past = [], recent = [], 
                     actor, open, high, low, close, 
-                    last_static_index = first_dynamic_index + 1, dhl, 
-                    yhl, 
+                    last_static_index = first_dynamic_index + 1, center, centerH, centerL, heightH, heightL, doc, 
+                    doubleWidth, 
                     glyph_color, 
                     quad_g, quad_m, quad, 
-                    vertices, quadO_g, quadO_m, quadO, 
-                    quadC_g, quadC_m, quadC, promise = new Promise((resolve, reject) => {
+                    vertices, quadH_g, quadH_m, quadH, 
+                    quadL_g, quadL_m, quadL, promise = new Promise((resolve, reject) => {
                         try {
                             for (let i = 0; i < nglyphs; i++) {
                                 actor = new THREE.Group();
@@ -27,29 +27,32 @@ System.register([], function (exports_1, context_1) {
                                 high = data[4 * i + 1];
                                 low = data[4 * i + 2];
                                 close = data[4 * i + 3];
-                                dhl = Math.max(high - low, 1.0);
-                                yhl = (high + low) * 0.5;
+                                center = 0.5 * (open + close);
+                                centerH = 0.5 * (high + Math.max(open, close));
+                                centerL = 0.5 * (low + Math.min(open, close));
+                                doc = (open > close) ? Math.max(1.0, (open - close)) : Math.max(1.0, (close - open));
                                 glyph_color = open > close ? 'red' : 'green';
-                                quad_g = new THREE.PlaneBufferGeometry(width, dhl);
+                                quad_g = new THREE.PlaneBufferGeometry(doublewidth, doc);
                                 quad_m = new THREE.MeshBasicMaterial({ color: glyph_color, transparent: false });
                                 quad = new THREE.Mesh(quad_g, quad_m);
-                                quad.position.y = yhl;
+                                quad.position.y = center;
                                 quad.position.z = quad_depth;
                                 actor.add(quad);
-                                quadO_g = new THREE.PlaneBufferGeometry(width, width);
-                                quadO_m = new THREE.MeshBasicMaterial({ color: glyph_color, transparent: false });
-                                quadO = new THREE.Mesh(quadO_g, quadO_m);
-                                quadO.position.x = -halfwidth;
-                                quadO.position.y = open;
-                                quadO.position.z = quadOC_depth;
-                                actor.add(quadO);
-                                quadC_g = new THREE.PlaneBufferGeometry(width, width);
-                                quadC_m = new THREE.MeshBasicMaterial({ color: glyph_color, transparent: false });
-                                quadC = new THREE.Mesh(quadC_g, quadC_m);
-                                quadC.position.x = halfwidth;
-                                quadC.position.y = close;
-                                quadC.position.z = quadOC_depth;
-                                actor.add(quadC);
+                                heightH = high - Math.max(open, close);
+                                heightH = Math.max(heightH, 1.0); 
+                                quadH_g = new THREE.PlaneBufferGeometry(width, heightH);
+                                quadH_m = new THREE.MeshBasicMaterial({ color: glyph_color, transparent: false });
+                                quadH = new THREE.Mesh(quadH_g, quadH_m);
+                                quadH.position.y = centerH;
+                                quadH.position.z = quad_depth;
+                                actor.add(quadH);
+                                heightL = Math.min(open, close) - low;
+                                quadL_g = new THREE.PlaneBufferGeometry(width, heightL);
+                                quadL_m = new THREE.MeshBasicMaterial({ color: glyph_color, transparent: false });
+                                quadL = new THREE.Mesh(quadL_g, quadL_m);
+                                quadL.position.y = centerL;
+                                quadL.position.z = quad_depth;
+                                actor.add(quadL);
                                 actor.position.x = xpositions[i];
                                 actor.name = `${symbol}${i}`;
                                 layer.add(actor);

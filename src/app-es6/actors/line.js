@@ -6,41 +6,50 @@ System.register([], function (exports_1, context_1) {
         setters: [],
         execute: function () {
             exports_1("Line", Line = {
-                create: (options = {
-                        max_vertices: 200,
-                        drawCount: 200,
-                        color: 0xff0000,
-                        linewidth: 30,
-                        vertices: [0, 0, 0, -10, 80, 0, -15, 40, 0]
-                    }) => {
+                create: (options) => {
                     console.log(`line.create() options= `);
                     console.dir(options);
-                    var line_g, line_m, positions, drawCount, line, count = 0, flag = true, promise = new Promise((resolve, reject) => {
+                    var line_g, subset = [], vertices = new Float32Array(3 * options['xpositions'].length), 
+                    nvertices = vertices.length, xpositions = options['xpositions'], nxpositions = xpositions.length, data = options['data'], line_m, color = options['color'] || 'red', linewidth = options['linewidth'] || 5, line, k = 3, 
+                    promise = new Promise((resolve, reject) => {
                         try {
                             line_g = new THREE.BufferGeometry();
-                            line_m = new THREE.LineBasicMaterial({ color: options.color,
-                                linewidth: options.linewidth });
-                            positions = new Float32Array(options.max_vertices * 3);
-                            line_g.addAttribute('position', new THREE.BufferAttribute(positions, 3));
-                            drawCount = options.drawCount;
-                            line_g.setDrawRange(0, drawCount);
+                            line_m = new THREE.LineBasicMaterial({ color: color, linewidth: linewidth, visible: true });
+                            if (options['subset'] === 'Op') {
+                                k = 0;
+                            }
+                            if (options['subset'] === 'H') {
+                                k = 1;
+                            }
+                            if (options['subset'] === 'L') {
+                                k = 2;
+                            }
+                            if (options['subset'] === 'C') {
+                                k = 3;
+                            }
+                            console.log(`options['subset'] = ${options['subset']} k = ${k}`);
+                            for (let i = 0; i < data.length; i++) {
+                                let j = Math.floor(i / 4.0);
+                                if (i % 4 === k) {
+                                    subset[j] = data[i];
+                                }
+                            }
+                            console.log(`nvertices = ${nvertices}`);
+                            console.log(`subset.length = ${subset.length}`);
+                            console.log(`nxpositions = ${nxpositions}`);
+                            for (let i = 0; i < nxpositions; i++) {
+                                vertices[3 * i] = xpositions[i];
+                                vertices[3 * i + 1] = subset[i];
+                                vertices[3 * i + 2] = 0.0;
+                            }
+                            line_g.addAttribute('position', new THREE.BufferAttribute(vertices, 3));
+                            console.log(`line_g.attribute`);
+                            line_g.setDrawRange(0, subset.length);
                             line = new THREE.Line(line_g, line_m);
-                            positions = line.geometry.attributes.position.array;
-                            for (let i = 0; i < options.vertices.length; i++) {
-                                positions[i] = options.vertices[i];
-                            }
-                            for (let i = options.vertices.length; i < 3 * options.max_vertices; i++) {
-                                if (i % 3 === 0) {
-                                    positions[i] = -10 * (i / 3);
-                                }
-                                if (i % 3 === 1) {
-                                    positions[i] = 100.0 * Math.random();
-                                }
-                                if (i % 3 === 2) {
-                                    positions[i] = 0.0;
-                                }
-                            }
+                            line.visible = true;
+                            console.log(`line`);
                             line.geometry.attributes.position.needsUpdate = true;
+                            console.log(`line_g.attributes.needsUpdate = true`);
                             resolve(line);
                         }
                         catch (e) {
