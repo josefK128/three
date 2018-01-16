@@ -1,53 +1,90 @@
 // line.ts
 export var Line = {
-  create: (options:any = {
-    max_vertices: 200, 
-    drawCount:200, 
-    color: 0xff0000, 
-    linewidth: 30, 
-    vertices: [0,0,0, -10,80,0, -15,40,0]
-  }):Promise<THREE.Line> => {
+  create: (options:object):Promise<THREE.Line> => {
 
     console.log(`line.create() options= `);
     console.dir(options);
 
     var line_g:THREE.BufferGeometry,
+        subset:number[] = [],
+        vertices:Float32Array = new Float32Array(3*options['xpositions'].length),
+        //vertices:Float32Array = new Float32Array(3*10),
+        nvertices:number = vertices.length,
+        xpositions:number[] = options['xpositions'],
+        nxpositions:number = xpositions.length,
+        data:number[] = options['data'],
         line_m:THREE.LineBasicMaterial,
-        positions:Float32Array,
-        drawCount:number,
+        color:string = options['color'] || 'red',
+        linewidth:number = options['linewidth'] || 5,
         line:THREE.Line,
-        count:number = 0,
-        flag:boolean = true,
+        k:number = 3,                          // default is close 'C'
         promise = new Promise((resolve, reject) => {
 
           try{
             line_g = new THREE.BufferGeometry();
-            line_m = new THREE.LineBasicMaterial({color:options.color, 
-              linewidth:options.linewidth});
+            line_m = new THREE.LineBasicMaterial({color:color, linewidth:linewidth, visible:true});
+
+            // extract Op|H|L|C from options.data
+            if(options['subset'] === 'Op'){
+              k = 0;
+            }              
+            if(options['subset'] === 'H'){
+              k = 1;
+            }              
+            if(options['subset'] === 'L'){
+              k = 2;
+            }              
+            if(options['subset'] === 'C'){
+              k = 3;
+            }
+            console.log(`options['subset'] = ${options['subset']} k = ${k}`);
+            // subset - y-values
+            for(let i=0; i<data.length; i++){
+              let j = Math.floor(i/4.0);
+              if(i%4 === k){
+                subset[j] = data[i];
+//              console.log(`subset[${j}] = ${subset[j]}`);
+              }
+            }
+
+
+            // vertices values
+            console.log(`nvertices = ${nvertices}`);
+            console.log(`subset.length = ${subset.length}`);
+            console.log(`nxpositions = ${nxpositions}`);
+            for(let i=0; i<nxpositions; i++){
+              vertices[3*i] = xpositions[i];
+              //console.log(`vertices[${3*i}] = ${vertices[3*i]}`);
+              vertices[3*i+1] = subset[i];
+              vertices[3*i+2] = 0.0;
+            }
+
+            // check for NaN
+//            for(let i=0,flag=true; i<nvertices; i++){
+//              //console.log(`vertices[${i}] = ${vertices[i]}`);
+//              if(flag){
+//                if(Number.isNaN(vertices[i])){
+//                  console.log(`vertices[${i}] is NaN!!!!!!!!!`);
+//                  flag = false;
+//                }
+//              }
+//            }
+
 
             // create custom attribute for BufferGeometry
             // (x,y,z) => 3 vertices per point
-            positions = new Float32Array(options.max_vertices*3); 
-            line_g.addAttribute('position', new THREE.BufferAttribute(positions,3));
+            line_g.addAttribute('position', new THREE.BufferAttribute(vertices,3));
+            console.log(`line_g.attribute`);
 
             // set rendering set
-            drawCount = options.drawCount;
-            line_g.setDrawRange(0, drawCount);
+            line_g.setDrawRange(0, subset.length);
 
             // create line
             line = new THREE.Line(line_g,line_m);
-
-            // assign positions the attribute 'position'
-            positions = line.geometry.attributes.position.array;
-            for(let i=0; i<options.vertices.length; i++){
-              positions[i] = options.vertices[i];
-            }
-            for(let i=options.vertices.length; i<3*options.max_vertices; i++){
-            if(i%3 === 0){positions[i] = -10*(i/3);}
-              if(i%3 === 1){positions[i] =  100.0*Math.random();}
-              if(i%3 === 2){positions[i] = 0.0;}
-            }
+            line.visible = true;
+            console.log(`line`);
             line.geometry.attributes.position.needsUpdate = true;
+            console.log(`line_g.attributes.needsUpdate = true`);
 
             resolve(line);
           }catch(e){

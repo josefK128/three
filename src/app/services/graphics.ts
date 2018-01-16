@@ -5,6 +5,7 @@
 import {Grid} from '../actors/grid';
 import {Axes} from '../actors/axes';
 import {Ohlc} from '../actors/ohlc';
+import {Line} from '../actors/line';
 import {Study} from '../actors/study';
 import {Sprite} from '../actors/sprite';
 import {Quad} from '../actors/quad';
@@ -137,11 +138,8 @@ class Graphics {
       console.log(`\n^^^ graphics.scene(): camera.position.z = ${d}`);
       console.log(`\n^^^ graphics.scene(): nLayers = ${nLayers}`);
       for(let i=0; i<nLayers; i++){
-        let s = (d+layerDelta*i)/d;
-        console.log(`^^^ graphics.scene():layer[${i}] scale s = ${s}`);
+        console.log(`^^^ graphics.scene():create/add layer[${i}] to stage`);
         layers[i] = new THREE.Group();
-        layers[i].scale.set(s, s, 1.0);
-        //console.log(`layers[${i}].scale = ${layers[i].scale.toArray()}`);
         stage.add(layers[i]);
       }
     }
@@ -204,14 +202,51 @@ class Graphics {
 
 
   layer_type(l:number, type:string, options:object={}):void {
-    console.log(`graphics.layer_type(${l}, ${type})`);
+    var prev_type = config.stage.layer_type[l],
+        flag = true;
+
+    console.log(`\n\n*** graphics.layer_type(${l}, ${type})`);
+    console.log(`prev_type of layer[${l}] = ${prev_type})`);
     config.stage.layer_type[l] = type;
+    if(prev_type === 'invisible'){
+      layers[l].visible = true;
+      return;
+    }
     if(type === 'invisible'){
       console.log(`setting layers[${l}].visible = false`);
       layers[l].visible = false;
     }else{
       console.log(`graphics.create(${type},${type}${l}, ${l}, options:`);
       console.dir(options);
+
+//      for(let actor of layers[l].children){
+//          console.log(`layers[${l}] contains actor ${actor.name}`);
+//      }
+
+      // remove non-grid non-axes from layer
+      // NOTE: only increment i if skip 'grid' or 'axes' 
+      // the children iterator points to the next available actor after removal
+      for(let i=0; i<layers[l].children.length; ){
+          let actor = layers[l].children[i];
+          let actorname = actor.name || 'unknown';
+          //console.log(`\nlayers[${l}] contains actor ${actorname}`);
+          if(!actorname.startsWith('grid') && !actorname.startsWith('axes')){
+            //console.log(`removing actor ${actorname} from layers[${l}]`);
+            layers[l].remove(actor);
+            if(prev_type === 'ohlc' || prev_type === 'candle'){
+              console.log(`prev_type = ${prev_type} flag = ${flag}`);
+              if(flag){
+                graphics.removeActor(`${actorname}_recent`);
+                graphics.removeActor(`${actorname}_past`);
+                flag = false;
+              }
+            }else{
+              graphics.removeActor(actorname);
+            }
+          }else{
+            i = i+1;
+          }
+      }
 
       //graphics.create(type:string, name:string, layer:number, options:object)
       graphics.create(type, `${type}${l}`, l, options);
@@ -228,6 +263,7 @@ class Graphics {
         axes:THREE.AxesHelper,
         past_ray:string,
         recent_ray:string,
+        line:THREE.Line,
         study:THREE.Line,
         sprite:THREE.Sprite,
         quad:THREE.Mesh,         // BufferGeometry & MeshBasicMaterial
@@ -261,26 +297,31 @@ class Graphics {
         case 'ohlc':
           Ohlc.create(-layer*layerDelta, layers[layer], options)
             .then((tuple) => {
-              //console.log(`Ohlc.create resolves to tuple = `);
-              //console.dir(tuple);
-    
+              console.log(`received tuple`);
               // add two glyph-arrays passed in tuple as actors for future ref
               past_ray = `${options['symbol']}${layer}_past`;
               recent_ray = `${options['symbol']}${layer}_recent`;
               console.log(`past_ray = ${past_ray}`);
               console.log(`recent_ray = ${recent_ray}`);
-              //console.log(`tuple['past'] = ${tuple['past']}`);
-              //console.log(`tuple['recent'] = ${tuple['recent']}`);
               graphics.addActor(past_ray, tuple['past'], options);
               graphics.addActor(recent_ray, tuple['recent'], options);
-              //for(let p in actors){
-              //  console.log(`actors[${p}] = ${actors[p]}`);
-              //}
-              //console.log(`graphics.actor(${past_ray}):`);
-              //console.dir(graphics.actor(past_ray));
-              //console.log(`graphics.actor(${recent_ray}):`);
-              //console.dir(graphics.actor(recent_ray));
             });
+          break;
+
+
+        case 'line':
+          // Line.create() returns Promise
+//          Line.create(options).then((line) => {
+//            line.position.z = -layer*layerDelta;
+//            layers[layer].add(line);
+//            graphics.addActor(name, line, options);
+//          });
+//          break;
+          line = await Line.create(options);
+          line.position.z = -layer*layerDelta;
+          layers[layer].add(line);
+          graphics.addActor(name, line, options);
+          console.log(`after adding ${name} actors = ${Object.keys(actors)}`);
           break;
 
         case 'study':
@@ -311,6 +352,9 @@ class Graphics {
           layers[layer].add(quad_shm);
           break;
 
+        case 'none':
+          break;
+
         default:
           console.log(`%%% failed to create actor of type ${type}`);
       }
@@ -334,19 +378,20 @@ class Graphics {
   removeActor(name:string):void {
     var filtered_actors;
 
-    console.log(`removeActor: name = ${name}`);
-    console.log(`before removal of ${name} actors = `);
-    for(let nm of Object.keys(actors)){
-      console.log(`actors contains name ${nm}`);
-    }
+//    console.log(`removeActor: name = ${name}`);
+//    console.log(`before removal of ${name} actors = `);
+//    for(let nm of Object.keys(actors)){
+//      console.log(`actors contains name ${nm}`);
+//    }
     if(actors[name]){
-      console.log(`removeActor: name = ${name}`);
+      //console.log(`removeActor: name = ${name}`);
       delete actors[name];
-      console.log(`after removal of ${name} actors = `);
-      console.dir(actors);
-    }else{
-      console.log(`actor with name = ${name} not found!`);
+      //console.log(`after removal of ${name} actors = `);
+      //console.dir(actors);
     }
+//    }else{
+//      console.log(`actor with name = ${name} not found!`);
+//    }
   }
 
   // get actors

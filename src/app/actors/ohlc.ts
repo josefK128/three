@@ -32,6 +32,7 @@ export var Ohlc = {
 
     console.log(`ohlc.create() depth=${depth} layer=${layer} options= `);
     console.dir(options);
+    console.log(`options['data'].length = ${options['data'].length/4}`);
     
     var symbol:string = options['symbol'],
         nglyphs:number = options['data'].length/4,
@@ -130,7 +131,7 @@ export var Ohlc = {
               // set position.x from xpositions array and add to layer
               actor.position.x = xpositions[i];
               actor.name = `${symbol}${i}`;
-              //console.log(`actor.name = ${actor.name}`);
+              //console.log(`actor.name = ${actor.name} add to layer[${layer}]`);
               layer.add(actor);
         
               // add to static 'past' or dynamic 'recent' arrays of actors(THREE.Group)

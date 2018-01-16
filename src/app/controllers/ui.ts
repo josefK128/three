@@ -88,7 +88,7 @@ class Ui {
     };
     layersv = false; 
     layers = {layers: layersv};
-    layer_typev = ["invisible", "ohlc", "candle", "lineOp", "lineH", "lineL","lineC", "mountainOp", "mountainH", "mountainL", "mountainC", "study"];
+    layer_typev = ["none", "invisible", "ohlc", "candle", "lineOp", "lineH", "lineL","lineC", "mountainOp", "mountainH", "mountainL", "mountainC", "study"];
     for(let l=0;  l<config.stage.layer_type.length; l++){
       layername[l] = `layer_type${l}`;
       layer_type[layername[l]] = {layer_typev: config.stage.layer_type[l]};
@@ -146,17 +146,12 @@ class Ui {
     }
 
     // initialize layers[0]  
-    console.log(`%%% ui creating glyphs for layer 0`);
-    graphics.create('ohlc', 'ohlc0', 0, ohlc_options[current_symbol]);
-    console.log(`\n%%% ui layers[0] initialized for ${current_symbol} as:`);
-    console.dir(graphics.layer(0));
-    //for(let child of graphics.layer(0).children){
-    //  console.log(`layer0 contains Group actor ${child.name}`);
-    //}
     // modify layer_typev for current_layer
     console.log(`setting layer_typev[0] = 'ohlc'`);
-    graphics.layer_type(0, 'ohlc');
+    graphics.layer_type(0, 'ohlc', ohlc_options[current_symbol]);
     layer_type[layername[0]]['layer_typev'] = 'ohlc';
+    console.log(`\n%%% ui layers[0] initialized for ${current_symbol} as:`);
+    console.dir(graphics.layer(0));
 
 
     // build gui
@@ -339,7 +334,7 @@ class Ui {
     gui.add(layers, 'layers').onFinishChange(() => {
       layersv = !layersv;
       if(layersv === false){
-      current_layer = 0;      // set layers=f => load all glyph sets at layer0
+        current_layer = 0;    // set layers=f => load all glyph sets at layer0
       }else{
         current_layer = 1;  // set layers=t => load next glyph set at layer1
       }
