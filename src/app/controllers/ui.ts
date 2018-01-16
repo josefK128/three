@@ -373,6 +373,7 @@ class Ui {
           ltype = 'study';
         }
 
+        console.log(`\n&&& graphics.layer_type(${l}, ${ltype}, ohlc_options)`);
         graphics.layer_type(l, ltype, ohlc_options[current_symbol]);
       }).listen();
     }

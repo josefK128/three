@@ -7,6 +7,7 @@ import {Axes} from '../actors/axes';
 import {Ohlc} from '../actors/ohlc';
 import {Candle} from '../actors/candle';
 import {Line} from '../actors/line';
+import {Mountain} from '../actors/mountain';
 import {Study} from '../actors/study';
 import {Sprite} from '../actors/sprite';
 import {Quad} from '../actors/quad';
@@ -265,6 +266,7 @@ class Graphics {
         past_ray:string,
         recent_ray:string,
         line:THREE.Line,
+        mountain:THREE.Mesh,
         study:THREE.Line,
         sprite:THREE.Sprite,
         quad:THREE.Mesh,         // BufferGeometry & MeshBasicMaterial
@@ -340,6 +342,17 @@ class Graphics {
           line.position.z = -layer*layerDelta;
           layers[layer].add(line);
           graphics.addActor(name, line, options);
+          console.log(`after adding ${name} actors = ${Object.keys(actors)}`);
+          break;
+
+        case 'mountain':
+          // Mountain.create() returns Promise
+          console.log(`graphics.create(${type})`);
+          mountain = await Mountain.create(options);
+          console.log(`graphics.create(${type}) mountain = ${mountain}`);
+          mountain.position.z = -layer*layerDelta;
+          layers[layer].add(mountain);
+          graphics.addActor(name, mountain, options);
           console.log(`after adding ${name} actors = ${Object.keys(actors)}`);
           break;
 

@@ -1,4 +1,4 @@
-System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actors/candle", "../actors/line", "../actors/study", "../actors/sprite", "../actors/quad", "../actors/quad_shm"], function (exports_1, context_1) {
+System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actors/candle", "../actors/line", "../actors/mountain", "../actors/study", "../actors/sprite", "../actors/quad", "../actors/quad_shm"], function (exports_1, context_1) {
     "use strict";
     var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         return new (P || (P = Promise))(function (resolve, reject) {
@@ -9,7 +9,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
         });
     };
     var __moduleName = context_1 && context_1.id;
-    var grid_1, axes_1, ohlc_1, candle_1, line_1, study_1, sprite_1, quad_1, quad_shm_1, graphics, config, gl, renderer, stats, clock, et, count, camera, lookAt, light, scene, stage, layers, nLayers, layerDelta, actors, onWindowResize, Graphics;
+    var grid_1, axes_1, ohlc_1, candle_1, line_1, mountain_1, study_1, sprite_1, quad_1, quad_shm_1, graphics, config, gl, renderer, stats, clock, et, count, camera, lookAt, light, scene, stage, layers, nLayers, layerDelta, actors, onWindowResize, Graphics;
     return {
         setters: [
             function (grid_1_1) {
@@ -26,6 +26,9 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
             },
             function (line_1_1) {
                 line_1 = line_1_1;
+            },
+            function (mountain_1_1) {
+                mountain_1 = mountain_1_1;
             },
             function (study_1_1) {
                 study_1 = study_1_1;
@@ -178,7 +181,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                 }
                 create(type, name, layer, options) {
                     return __awaiter(this, void 0, void 0, function* () {
-                        var grid, axes, past_ray, recent_ray, line, study, sprite, quad, 
+                        var grid, axes, past_ray, recent_ray, line, mountain, study, sprite, quad, 
                         quad_shm; 
                         try {
                             switch (type) {
@@ -224,6 +227,15 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                                     line.position.z = -layer * layerDelta;
                                     layers[layer].add(line);
                                     graphics.addActor(name, line, options);
+                                    console.log(`after adding ${name} actors = ${Object.keys(actors)}`);
+                                    break;
+                                case 'mountain':
+                                    console.log(`graphics.create(${type})`);
+                                    mountain = yield mountain_1.Mountain.create(options);
+                                    console.log(`graphics.create(${type}) mountain = ${mountain}`);
+                                    mountain.position.z = -layer * layerDelta;
+                                    layers[layer].add(mountain);
+                                    graphics.addActor(name, mountain, options);
                                     console.log(`after adding ${name} actors = ${Object.keys(actors)}`);
                                     break;
                                 case 'study':

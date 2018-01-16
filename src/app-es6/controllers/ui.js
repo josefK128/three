@@ -202,6 +202,7 @@ System.register(["../services/data"], function (exports_1, context_1) {
                             if (ltype.startsWith('study')) {
                                 ltype = 'study';
                             }
+                            console.log(`\n&&& graphics.layer_type(${l}, ${ltype}, ohlc_options)`);
                             graphics.layer_type(l, ltype, ohlc_options[current_symbol]);
                         }).listen();
                     }
