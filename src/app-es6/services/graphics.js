@@ -178,7 +178,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                         console.log(`setting layers[${l}].visible = true`);
                         layers[l].visible = true;
                     }
-                }
+                } 
                 create(type, name, layer, options) {
                     return __awaiter(this, void 0, void 0, function* () {
                         var grid, axes, past_ray, recent_ray, line, mountain, study, sprite, quad, 
@@ -325,6 +325,18 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                 zoom(_fov) {
                     camera.fov = _fov;
                     camera.updateProjectionMatrix();
+                }
+                mod_recent(symbol, layer, type, values) {
+                    let recent = graphics.actor(`${symbol}${layer}_recent`);
+                    console.log(`recent actor = ${recent}`);
+                }
+                add_recent(symbol, layer, type, values) {
+                    let recent = graphics.actor(`${symbol}${layer}_recent`);
+                    console.log(`recent actor = ${recent}`);
+                }
+                add_past(symbol, layer, type, values) {
+                    let past = graphics.actor(`${symbol}${layer}_past`);
+                    console.log(`past actor = ${past}`);
                 }
             }; 
             if (graphics === undefined) {

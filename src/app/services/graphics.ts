@@ -256,7 +256,8 @@ class Graphics {
       console.log(`setting layers[${l}].visible = true`);
       layers[l].visible = true;
     }
-  }
+    }//layer_type
+
 
 
   // create actor - give reference name and place in appropriate layer
@@ -494,6 +495,26 @@ class Graphics {
   zoom(_fov:number):void {
     camera.fov = _fov;
     camera.updateProjectionMatrix();
+  }
+
+
+
+  // modify value(s) of glyph in <current_symbol><layer>_recent
+  mod_recent(symbol:string, layer:number, type:string, values:object){
+    let recent = graphics.actor(`${symbol}${layer}_recent`);
+    console.log(`recent actor = ${recent}`);
+  }
+
+  // add value(s) of glyph in <current_symbol><layer>_recent
+  add_recent(symbol:string, layer:number, type:string, values:number[]){
+    let recent = graphics.actor(`${symbol}${layer}_recent`);
+    console.log(`recent actor = ${recent}`);
+  }
+
+  // add value(s) of glyph in <current_symbol><layer>_past
+  add_past(symbol:string, layer:number, type:string, values:number[]){
+    let past = graphics.actor(`${symbol}${layer}_past`);
+    console.log(`past actor = ${past}`);
   }
 
 }//Graphics

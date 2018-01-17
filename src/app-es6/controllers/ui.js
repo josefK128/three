@@ -159,14 +159,18 @@ System.register(["../services/data"], function (exports_1, context_1) {
                     });
                     gui.add(mod_present, 'mod_present').onFinishChange(() => {
                         console.log(`event: modify present glyph`);
-                        console.log(`removing actor name = 'ETH0_past'`);
-                        graphics.removeActor('ETH0_past');
+                        let l = current_layer;
+                        graphics.mod_recent(current_symbol, l, layer_type[layername[l]], { close: 45.0 });
                     });
                     gui.add(add_present, 'add_present').onFinishChange(() => {
                         console.log(`event: add to present array of glyphs`);
+                        let l = current_layer;
+                        graphics.add_recent(current_symbol, l, layer_type[layername[l]], []);
                     });
                     gui.add(add_past, 'add_past').onFinishChange(() => {
                         console.log(`event: add to past array of glyphs`);
+                        let l = current_layer;
+                        graphics.add_past(current_symbol, l, layer_type[layername[l]], []);
                     });
                     gui.add(layers, 'layers').onFinishChange(() => {
                         layersv = !layersv;
