@@ -512,13 +512,39 @@ class Graphics {
 
   // modify value(s) of glyph in <current_symbol><layer>_recent
   mod_recent(symbol:string, layer:number, type:string, options:object){
+    var modified_glyphs = options['data'].length/4,
+        recent = graphics.actor(`${symbol}${layer}_recent`),
+        modifications = Math.min(modified_glyphs, recent.length);
+
     console.log(`\nmod_recent: symbol=${symbol} layer=${layer} type=${type}`);
+    console.log(`modififications = ${modifications}`);
     console.log(`options:`);
     console.dir(options);
 
-    let recent = graphics.actor(`${symbol}${layer}_recent`);
     console.log(`recent actor = ${recent}`);
-  }
+    console.log(`recent.length = ${recent.length}`);
+    // sanity
+    for(let i=0; i<recent.length; i++){
+      console.log(`recent[${i}] instance of THREE.Group is ${recent[i] instanceof THREE.Group}`);
+    }
+
+    // set first_dynamic_index to number of added glyphs - 1 
+    // these N-1 glyphs are returned by graphics.create 
+    // in tuple['recent']:THREE.Group[] (called by graphics.append)
+    console.log(`options['data'].length = ${options['data'].length}`);
+    options['first_dynamic_index'] = options['data'].length/4 - 1;
+    options['symbol'] = symbol;
+    console.log(`options['first_dynamic_index'] = ${options['first_dynamic_index']}`);
+
+    // delete glyphs to be modified
+    for(let i=0; i<modifications; i++){
+      console.log(`removing recent[${i}]`);
+      recent[i].parent.remove(recent[0]);
+    }
+
+    // create new replacement glyphs based on xpositions and data 
+    graphics.append(type, -layer*layerDelta, layer, layers[layer], recent, options);
+    }//mod_recent
 
 
   // add value(s) of glyph in <current_symbol><layer>_recent
@@ -601,7 +627,7 @@ class Graphics {
     // set first_dynamic_index to number of added glyphs - 1 
     // these N-1 glyphs are returned by graphics.create 
     // in tuple['recent']:THREE.Group[] (called by graphics.append)
-    options['first_dynamic-index'] = options['data'].length/4 - 1;
+    options['first_dynamic_index'] = options['data'].length/4 - 1;
     options['symbol'] = symbol;
     graphics.append(type, -layer*layerDelta, layer, layers[layer], past, options);
     
@@ -609,7 +635,7 @@ class Graphics {
 
 
   append(type:string, depth:number, layer:number, layerGroup:THREE.Group, ray:THREE.Group[], options:object){
-    console.log(`\n\n ###graphics.append: layer = ${layer} options=`);
+  console.log(`\n\n ###graphics.append: type = ${type} layer = ${layer} options=`);
     console.dir(options);
 
     switch(type){

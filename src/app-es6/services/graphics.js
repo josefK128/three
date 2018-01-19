@@ -329,12 +329,26 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                     camera.updateProjectionMatrix();
                 }
                 mod_recent(symbol, layer, type, options) {
+                    var modified_glyphs = options['data'].length / 4, recent = graphics.actor(`${symbol}${layer}_recent`), modifications = Math.min(modified_glyphs, recent.length);
                     console.log(`\nmod_recent: symbol=${symbol} layer=${layer} type=${type}`);
+                    console.log(`modififications = ${modifications}`);
                     console.log(`options:`);
                     console.dir(options);
-                    let recent = graphics.actor(`${symbol}${layer}_recent`);
                     console.log(`recent actor = ${recent}`);
-                }
+                    console.log(`recent.length = ${recent.length}`);
+                    for (let i = 0; i < recent.length; i++) {
+                        console.log(`recent[${i}] instance of THREE.Group is ${recent[i] instanceof THREE.Group}`);
+                    }
+                    console.log(`options['data'].length = ${options['data'].length}`);
+                    options['first_dynamic_index'] = options['data'].length / 4 - 1;
+                    options['symbol'] = symbol;
+                    console.log(`options['first_dynamic_index'] = ${options['first_dynamic_index']}`);
+                    for (let i = 0; i < modifications; i++) {
+                        console.log(`removing recent[${i}]`);
+                        recent[i].parent.remove(recent[0]);
+                    }
+                    graphics.append(type, -layer * layerDelta, layer, layers[layer], recent, options);
+                } 
                 add_recent(symbol, layer, type, options) {
                     console.log(`\nadd_recent: symbol=${symbol} layer=${layer} type=${type}`);
                     console.log(`options:`);
@@ -364,12 +378,12 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                     console.dir(options);
                     let past = graphics.actor(`${symbol}${layer}_past`);
                     console.log(`local xpositions = ${options['xpositions']}`);
-                    options['first_dynamic-index'] = options['data'].length / 4 - 1;
+                    options['first_dynamic_index'] = options['data'].length / 4 - 1;
                     options['symbol'] = symbol;
                     graphics.append(type, -layer * layerDelta, layer, layers[layer], past, options);
                 } 
                 append(type, depth, layer, layerGroup, ray, options) {
-                    console.log(`\n\n ###graphics.append: layer = ${layer} options=`);
+                    console.log(`\n\n ###graphics.append: type = ${type} layer = ${layer} options=`);
                     console.dir(options);
                     switch (type) {
                         case 'ohlc':

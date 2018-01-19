@@ -1,7 +1,7 @@
 System.register(["../services/data"], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var data_1, ui, config, graphics, camera, pivot, ohlc_options, current_symbol, mock_data, mock_recent_xpositions, mock_past_xpositions, current_layer, initial_view, normalize_scale, normalize_zoom, normalize_pan_tilt, railsv, rails, dollyX_, dollyY_, logscaleX_, logscaleY_, sx, sy, pan_, tilt_, zoom_, pitch_, symbolv, symbols, layersv, layers, layername, layer_typev, layer_type, mod_present, add_present, add_past, gui, stop, events, Ui;
+    var data_1, ui, config, graphics, camera, pivot, ohlc_options, current_symbol, mock_data, mock_recent_xpositions, mock_past_xpositions, mock_mod_data, mock_mod_xpositions, current_layer, initial_view, normalize_scale, normalize_zoom, normalize_pan_tilt, railsv, rails, dollyX_, dollyY_, logscaleX_, logscaleY_, sx, sy, pan_, tilt_, zoom_, pitch_, symbolv, symbols, layersv, layers, layername, layer_typev, layer_type, mod_present, add_present, add_past, gui, stop, events, Ui;
     return {
         setters: [
             function (data_1_1) {
@@ -10,9 +10,10 @@ System.register(["../services/data"], function (exports_1, context_1) {
         ],
         execute: function () {
             ohlc_options = {}, 
-            mock_data = [300, 320, 60, 80, 260, 260, 220, 100], 
+            mock_data = [300, 320, 60, 80, 260, 280, 220, 100], 
             mock_recent_xpositions = [-5, 0], 
             mock_past_xpositions = [-50005, -50000], 
+            mock_mod_data = [300, 320, 60, 80], mock_mod_xpositions = [0], 
             current_layer = 0, sx = 1.0, sy = 1.0, layername = [], layer_typev = [], layer_type = {};
             Ui = class Ui {
                 init(_graphics, _config = {}) {
@@ -164,11 +165,11 @@ System.register(["../services/data"], function (exports_1, context_1) {
                         var options = {}, l = current_layer;
                         console.log(`event: modify present glyph`);
                         options['xpositions'] = [];
-                        for (let p of mock_recent_xpositions) {
+                        for (let p of mock_mod_xpositions) {
                             options['xpositions'].push(p);
                         }
-                        options['data'] = mock_data;
-                        graphics.mod_recent(current_symbol, l, layer_type[layername[l]], options);
+                        options['data'] = mock_mod_data;
+                        graphics.mod_recent(current_symbol, l, layer_type[layername[l]]['layer_typev'], options);
                     });
                     gui.add(add_present, 'add_present').onFinishChange(() => {
                         var options = {}, l = current_layer;

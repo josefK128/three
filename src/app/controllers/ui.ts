@@ -25,12 +25,14 @@ var ui:Ui,
     // temporary hard-coded mock data!!
     // mock data for add_recent, add_past, modify_recent
     // NOTE: xpositions must be increasing seq! (neg-to-pos)(past-to-future)
-    mock_data:number[] = [300, 320, 60, 80, 260, 260, 220, 100],
+    mock_data:number[] = [300, 320, 60, 80, 260, 280, 220, 100],
     //mock_data:number[] = [300, 320, 60, 80],
     mock_recent_xpositions:number[] = [-5, 0],
     //mock_recent_xpositions:number[] = [0],
     mock_past_xpositions:number[] = [-50005,-50000], 
     //mock_past_xpositions:number[] = [-50000], 
+    mock_mod_data:number[] = [300, 320, 60, 80],
+    mock_mod_xpositions:number[] = [0],
 
 
     // layer in which to insert new symbol glyphs based on ohlc_option[symbol]
@@ -331,11 +333,11 @@ class Ui {
 
         console.log(`event: modify present glyph`);
         options['xpositions'] = [];
-        for(let p of mock_recent_xpositions){
+        for(let p of mock_mod_xpositions){
           options['xpositions'].push(p);
         }
-        options['data'] = mock_data;
-        graphics.mod_recent(current_symbol, l, layer_type[layername[l]], options);
+        options['data'] = mock_mod_data;
+        graphics.mod_recent(current_symbol, l, layer_type[layername[l]]['layer_typev'], options);
     });
 
     gui.add(add_present, 'add_present').onFinishChange(() => {
