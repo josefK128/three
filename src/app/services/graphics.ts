@@ -273,8 +273,7 @@ class Graphics {
 
   // create actor - give reference name and place in appropriate layer
   async create(type:string, name:string, layer:number, options:any):Promise<THREE.Object3D> {
-    var past_ray:string,
-        recent_ray:string,
+    var recent_ray:string,
         line:THREE.Line,
         mountain:THREE.Mesh,
         study:THREE.Line,
@@ -305,38 +304,30 @@ class Graphics {
           layers[layer].add(axes);
           break;
 
-        // Ohlc.create() returns {ohlc_past:ohlc[], ohlc_recent:ohlc[]}
-        // these are distinct actors with convention-defined names:
-        // '<symbol><layer>_past' and '<symbol><layer>_recent'
-        // For exp: ETH0_past, ETH0_recent
+        // Ohlc.create() returns {ohlc_recent:ohlc[]} 
+        // convention-defined name: '<symbol><layer>_recent'
+        // For exp: ETH0_recent
         case 'ohlc':
           Ohlc.create(-layer*layerDelta, layers[layer], deltaX, options)
             .then((tuple) => {
               console.log(`received tuple`);
-              // add two glyph-arrays passed in tuple as actors for future ref
-              past_ray = `${options['symbol']}${layer}_past`;
+              // add glyph-array passed in tuple as actor for future ref
               recent_ray = `${options['symbol']}${layer}_recent`;
-              console.log(`past_ray = ${past_ray}`);
               console.log(`recent_ray = ${recent_ray}`);
-              graphics.addActor(past_ray, tuple['past'], options);
               graphics.addActor(recent_ray, tuple['recent'], options);
             });
           break;
 
-        // Candle.create() returns {candle_past:candle[],candle_recent:candle[]}
-        // these are distinct actors with convention-defined names:
-        // '<symbol><layer>_past' and '<symbol><layer>_recent'
-        // For exp: ETH0_past, ETH0_recent
+        // Candle.create() returns {candle_recent:candle[]}
+        // convention-defined name: '<symbol><layer>_recent'
+        // For exp: ETH0_recent
         case 'candle':
           Candle.create(-layer*layerDelta, layers[layer], deltaX, options)
             .then((tuple) => {
               console.log(`received tuple`);
-              // add two glyph-arrays passed in tuple as actors for future ref
-              past_ray = `${options['symbol']}${layer}_past`;
+              // add glyph-array passed in tuple as actor for future ref
               recent_ray = `${options['symbol']}${layer}_recent`;
-              console.log(`past_ray = ${past_ray}`);
               console.log(`recent_ray = ${recent_ray}`);
-              graphics.addActor(past_ray, tuple['past'], options);
               graphics.addActor(recent_ray, tuple['recent'], options);
             });
           break;
@@ -614,10 +605,6 @@ class Graphics {
     console.log(`options:`);
     console.dir(options);
 
-    // get array of past glyphs for the given symbol
-    let past = graphics.actor(`${symbol}${layer}_past`);
-    //console.log(`past actor = ${past}`);
-
     // NOTE: xpositions for add_past are unmodified since they are in the
     // correct 'local' layer coords
     // However, add_past is NOT repetitive - each invocation requires new
@@ -629,7 +616,9 @@ class Graphics {
     // in tuple['recent']:THREE.Group[] (called by graphics.append)
     options['first_dynamic_index'] = options['data'].length/4 - 1;
     options['symbol'] = symbol;
-    graphics.append(type, -layer*layerDelta, layer, layers[layer], past, options);
+
+    // send null for recent-ray - nothing to do if appending to 'past' of chart
+    graphics.append(type, -layer*layerDelta, layer, layers[layer], null, options);
     
   }//add_past
 
@@ -649,9 +638,14 @@ class Graphics {
 
             for(let i=0; i<tuple['recent'].length; i++){
               glyph = tuple['recent'][i];
-              ray.push(glyph);
               console.log(`glyph = ${glyph}:`);
               //console.dir(glyph);
+
+              // if appending to present add to recent-ray
+              // if appending to past ray===null - nothing to do
+              if(ray){
+                ray.push(glyph);
+              }
               layerGroup.add(glyph);
             }
         });      
@@ -667,9 +661,14 @@ class Graphics {
 
             for(let i=0; i<tuple['recent'].length; i++){
               glyph = tuple['recent'][i];
-              ray.push(glyph);
               console.log(`glyph = ${glyph}:`);
               //console.dir(glyph);
+
+              // if appending to present add to recent-ray
+              // if appending to past ray===null - nothing to do
+              if(ray){
+                ray.push(glyph);
+              }
               layerGroup.add(glyph);
             }
           });      

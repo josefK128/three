@@ -1,8 +1,6 @@
 // ohlc.ts
 // optimized to create all ohlc-glyphs in one create call
-// returns promise resolving an object containing the two time-ray arrays
-// 'past' which are static glyphs pointing into the past and whose 0th element 
-// is the glyph representing data[options.first_dynamic_index + 1], and
+// returns promise resolving an object containing the time-ray array
 // 'recent' which are dynamic glyph(s) pointing in the future direction and
 // whose 0th element is the glyph represented by data[first_dynamic_index]
 //
@@ -54,9 +52,8 @@ export var Ohlc = {
         quad_depth:number = depth-0.01,
         quadOC_depth:number = depth-0.02,
 
-        // rays past and recent-'future' in data-set
-        // these are the 'time-rays' returnd in the promise resolution
-        past:THREE.Group[] = [],
+        // recent-ray - 'near-present to present' in data-set
+        // 'time-ray' returnd in the promise resolution
         recent:THREE.Group[] = [],
 
         // iterations placeholders for glyph construction
@@ -145,14 +142,10 @@ export var Ohlc = {
               if(i <= first_dynamic_index){
                 //console.log(`ohlc: recent[${first_dynamic_index-i}] = ${actor}`);
                 recent[first_dynamic_index - i] = actor;
-              }else{
-                //console.log(`ohlc: past[${i-last_static_index}] = ${actor}`);
-                past[i - last_static_index] = actor;
-              }  
-
+              }
             }//for-loop
         
-            resolve({past:past, recent:recent});
+            resolve({recent:recent});
 
           }catch(e){
             reject(e);

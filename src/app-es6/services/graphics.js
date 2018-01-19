@@ -183,7 +183,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                 } 
                 create(type, name, layer, options) {
                     return __awaiter(this, void 0, void 0, function* () {
-                        var past_ray, recent_ray, line, mountain, study, sprite, quad, 
+                        var recent_ray, line, mountain, study, sprite, quad, 
                         quad_shm; 
                         try {
                             switch (type) {
@@ -204,11 +204,8 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                                     ohlc_1.Ohlc.create(-layer * layerDelta, layers[layer], deltaX, options)
                                         .then((tuple) => {
                                         console.log(`received tuple`);
-                                        past_ray = `${options['symbol']}${layer}_past`;
                                         recent_ray = `${options['symbol']}${layer}_recent`;
-                                        console.log(`past_ray = ${past_ray}`);
                                         console.log(`recent_ray = ${recent_ray}`);
-                                        graphics.addActor(past_ray, tuple['past'], options);
                                         graphics.addActor(recent_ray, tuple['recent'], options);
                                     });
                                     break;
@@ -216,11 +213,8 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                                     candle_1.Candle.create(-layer * layerDelta, layers[layer], deltaX, options)
                                         .then((tuple) => {
                                         console.log(`received tuple`);
-                                        past_ray = `${options['symbol']}${layer}_past`;
                                         recent_ray = `${options['symbol']}${layer}_recent`;
-                                        console.log(`past_ray = ${past_ray}`);
                                         console.log(`recent_ray = ${recent_ray}`);
-                                        graphics.addActor(past_ray, tuple['past'], options);
                                         graphics.addActor(recent_ray, tuple['recent'], options);
                                     });
                                     break;
@@ -376,11 +370,10 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                     console.log(`\nadd_past: symbol=${symbol} layer=${layer} type=${type}`);
                     console.log(`options:`);
                     console.dir(options);
-                    let past = graphics.actor(`${symbol}${layer}_past`);
                     console.log(`local xpositions = ${options['xpositions']}`);
                     options['first_dynamic_index'] = options['data'].length / 4 - 1;
                     options['symbol'] = symbol;
-                    graphics.append(type, -layer * layerDelta, layer, layers[layer], past, options);
+                    graphics.append(type, -layer * layerDelta, layer, layers[layer], null, options);
                 } 
                 append(type, depth, layer, layerGroup, ray, options) {
                     console.log(`\n\n ###graphics.append: type = ${type} layer = ${layer} options=`);
@@ -395,8 +388,10 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                                 console.dir(tuple);
                                 for (let i = 0; i < tuple['recent'].length; i++) {
                                     glyph = tuple['recent'][i];
-                                    ray.push(glyph);
                                     console.log(`glyph = ${glyph}:`);
+                                    if (ray) {
+                                        ray.push(glyph);
+                                    }
                                     layerGroup.add(glyph);
                                 }
                             });
@@ -410,8 +405,10 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                                 console.dir(tuple);
                                 for (let i = 0; i < tuple['recent'].length; i++) {
                                     glyph = tuple['recent'][i];
-                                    ray.push(glyph);
                                     console.log(`glyph = ${glyph}:`);
+                                    if (ray) {
+                                        ray.push(glyph);
+                                    }
                                     layerGroup.add(glyph);
                                 }
                             });

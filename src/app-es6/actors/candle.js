@@ -13,7 +13,7 @@ System.register([], function (exports_1, context_1) {
                     var symbol = options['symbol'], nglyphs = options['data'].length / 4, first_dynamic_index = options['first_dynamic_index'] || 0, 
                     width = deltaX * 0.4, xpositions = options['xpositions'], data = options['data'], 
                     doublewidth = 2.0 * width, quad_depth = depth - 0.01, 
-                    past = [], recent = [], 
+                    recent = [], 
                     actor, open, high, low, close, 
                     last_static_index = first_dynamic_index + 1, center, centerH, centerL, heightH, heightL, doc, 
                     doubleWidth, 
@@ -60,11 +60,8 @@ System.register([], function (exports_1, context_1) {
                                 if (i <= first_dynamic_index) {
                                     recent[first_dynamic_index - i] = actor;
                                 }
-                                else {
-                                    past[i - last_static_index] = actor;
-                                }
                             } 
-                            resolve({ past: past, recent: recent });
+                            resolve({ recent: recent });
                         }
                         catch (e) {
                             reject(e);
