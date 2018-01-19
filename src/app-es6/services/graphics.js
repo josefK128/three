@@ -9,7 +9,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
         });
     };
     var __moduleName = context_1 && context_1.id;
-    var grid_1, axes_1, ohlc_1, candle_1, line_1, mountain_1, study_1, sprite_1, quad_1, quad_shm_1, graphics, config, gl, renderer, stats, clock, et, count, camera, lookAt, light, scene, stage, layers, nLayers, layerDelta, actors, onWindowResize, Graphics;
+    var grid_1, axes_1, ohlc_1, candle_1, line_1, mountain_1, study_1, sprite_1, quad_1, quad_shm_1, graphics, config, gl, renderer, stats, clock, grid, axes, et, count, camera, lookAt, light, scene, stage, layers, nLayers, layerDelta, layersGlobal2Local, deltaX, actors, onWindowResize, Graphics;
     return {
         setters: [
             function (grid_1_1) {
@@ -71,8 +71,10 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                     camera.lookAt(lookAt.x, lookAt.y, lookAt.z);
                     camera['initial_position'] = config.camera.position;
                     nLayers = config.stage.layers.length;
-                    layerDelta = config.stage.layerDelta;
                     scene = graphics.scene();
+                    layersGlobal2Local = 0;
+                    layerDelta = config.stage.layerDelta; 
+                    deltaX = config.stage.deltaX; 
                     window.addEventListener('resize', onWindowResize, false);
                 } 
                 animate() {
@@ -181,7 +183,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                 } 
                 create(type, name, layer, options) {
                     return __awaiter(this, void 0, void 0, function* () {
-                        var grid, axes, past_ray, recent_ray, line, mountain, study, sprite, quad, 
+                        var past_ray, recent_ray, line, mountain, study, sprite, quad, 
                         quad_shm; 
                         try {
                             switch (type) {
@@ -326,18 +328,84 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                     camera.fov = _fov;
                     camera.updateProjectionMatrix();
                 }
-                mod_recent(symbol, layer, type, values) {
+                mod_recent(symbol, layer, type, options) {
+                    console.log(`\nmod_recent: symbol=${symbol} layer=${layer} type=${type}`);
+                    console.log(`options:`);
+                    console.dir(options);
                     let recent = graphics.actor(`${symbol}${layer}_recent`);
                     console.log(`recent actor = ${recent}`);
                 }
-                add_recent(symbol, layer, type, values) {
+                add_recent(symbol, layer, type, options) {
+                    console.log(`\nadd_recent: symbol=${symbol} layer=${layer} type=${type}`);
+                    console.log(`options:`);
+                    console.dir(options);
                     let recent = graphics.actor(`${symbol}${layer}_recent`);
                     console.log(`recent actor = ${recent}`);
-                }
-                add_past(symbol, layer, type, values) {
+                    let xpl = options['xpositions'].length;
+                    console.log(`xpositions.length = ${xpl}`);
+                    for (let i = 0; i < layers.length; i++) {
+                        layers[i].translateX(-deltaX * xpl);
+                    }
+                    grid.translateX(deltaX * xpl);
+                    axes.translateX(deltaX * xpl);
+                    layersGlobal2Local += deltaX * xpl;
+                    console.log(`layersGlobal2Local = ${layersGlobal2Local}`);
+                    for (let i = 0; i < xpl; i++) {
+                        options['xpositions'][i] += layersGlobal2Local;
+                    }
+                    console.log(`local xpositions = ${options['xpositions']}`);
+                    options['first_dynamic-index'] = options['data'].length / 4 - 1;
+                    options['symbol'] = symbol;
+                    graphics.append(type, -layer * layerDelta, layer, layers[layer], recent, options);
+                } 
+                add_past(symbol, layer, type, options) {
+                    console.log(`\nadd_past: symbol=${symbol} layer=${layer} type=${type}`);
+                    console.log(`options:`);
+                    console.dir(options);
                     let past = graphics.actor(`${symbol}${layer}_past`);
-                    console.log(`past actor = ${past}`);
-                }
+                    console.log(`local xpositions = ${options['xpositions']}`);
+                    options['first_dynamic-index'] = options['data'].length / 4 - 1;
+                    options['symbol'] = symbol;
+                    graphics.append(type, -layer * layerDelta, layer, layers[layer], past, options);
+                } 
+                append(type, depth, layer, layerGroup, ray, options) {
+                    console.log(`\n\n ###graphics.append: layer = ${layer} options=`);
+                    console.dir(options);
+                    switch (type) {
+                        case 'ohlc':
+                            console.log(`append glyph(s) of type ${type} layerDelta = ${layerDelta}`);
+                            ohlc_1.Ohlc.create(-layer * layerDelta, layerGroup, options)
+                                .then((tuple) => {
+                                let glyph;
+                                console.log(`received tuple:`);
+                                console.dir(tuple);
+                                for (let i = 0; i < tuple['recent'].length; i++) {
+                                    glyph = tuple['recent'][i];
+                                    ray.push(glyph);
+                                    console.log(`glyph = ${glyph}:`);
+                                    layerGroup.add(glyph);
+                                }
+                            });
+                            break;
+                        case 'candle':
+                            console.log(`append glyph(s) of type ${type} layerDelta = ${layerDelta}`);
+                            candle_1.Candle.create(-layer * layerDelta, layerGroup, options)
+                                .then((tuple) => {
+                                let glyph;
+                                console.log(`received tuple:`);
+                                console.dir(tuple);
+                                for (let i = 0; i < tuple['recent'].length; i++) {
+                                    glyph = tuple['recent'][i];
+                                    ray.push(glyph);
+                                    console.log(`glyph = ${glyph}:`);
+                                    layerGroup.add(glyph);
+                                }
+                            });
+                            break;
+                        default:
+                            console.log(`%%% failed to append actor(s) of type ${type}`);
+                    }
+                } 
             }; 
             if (graphics === undefined) {
                 exports_1("graphics", graphics = new Graphics());

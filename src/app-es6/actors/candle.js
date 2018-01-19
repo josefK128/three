@@ -10,7 +10,7 @@ System.register([], function (exports_1, context_1) {
                     console.log(`candle.create() depth=${depth} layer=${layer} options= `);
                     console.dir(options);
                     console.log(`options['data'].length = ${options['data'].length / 4}`);
-                    var symbol = options['symbol'], nglyphs = options['data'].length / 4, first_dynamic_index = options['first_dynamic_index'], width = options['width'], xpositions = options['xpositions'], data = options['data'], 
+                    var symbol = options['symbol'], nglyphs = options['data'].length / 4, first_dynamic_index = options['first_dynamic_index'] || 0, width = options['width'] || 1.0, xpositions = options['xpositions'], data = options['data'], 
                     doublewidth = 2.0 * width, quad_depth = depth - 0.01, 
                     past = [], recent = [], 
                     actor, open, high, low, close, 

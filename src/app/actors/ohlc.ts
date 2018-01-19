@@ -36,8 +36,8 @@ export var Ohlc = {
     
     var symbol:string = options['symbol'],
         nglyphs:number = options['data'].length/4,
-        first_dynamic_index:number = options['first_dynamic_index'],
-        width:number = options['width'],
+        first_dynamic_index:number = options['first_dynamic_index'] || 0,
+        width:number = options['width'] || 2.0,
         xpositions:number[] = options['xpositions'],
         data:number[] = options['data'],
 

@@ -6,6 +6,7 @@
 import {data} from '../services/data';
 
 
+
 // closure vars
 var ui:Ui,
     config:Config,
@@ -19,6 +20,18 @@ var ui:Ui,
     // symbol options objects
     ohlc_options:object = {},
     current_symbol:string,
+
+
+    // temporary hard-coded mock data!!
+    // mock data for add_recent, add_past, modify_recent
+    // NOTE: xpositions must be increasing seq! (neg-to-pos)(past-to-future)
+    mock_data:number[] = [300, 320, 60, 80, 260, 260, 220, 100],
+    //mock_data:number[] = [300, 320, 60, 80],
+    mock_recent_xpositions:number[] = [-5, 0],
+    //mock_recent_xpositions:number[] = [0],
+    mock_past_xpositions:number[] = [-50005,-50000], 
+    //mock_past_xpositions:number[] = [-50000], 
+
 
     // layer in which to insert new symbol glyphs based on ohlc_option[symbol]
     // (data-service synthesized) data
@@ -313,22 +326,55 @@ class Ui {
 
 
     gui.add(mod_present, 'mod_present').onFinishChange(() => {
+        var options = {},
+            l = current_layer;
+
         console.log(`event: modify present glyph`);
-        let l = current_layer;
-        graphics.mod_recent(current_symbol, l, layer_type[layername[l]], {close:45.0});
+        options['xpositions'] = [];
+        for(let p of mock_recent_xpositions){
+          options['xpositions'].push(p);
+        }
+        options['data'] = mock_data;
+        graphics.mod_recent(current_symbol, l, layer_type[layername[l]], options);
     });
 
     gui.add(add_present, 'add_present').onFinishChange(() => {
+       var options = {},
+            l = current_layer;
+
         console.log(`event: add to present array of glyphs`);
-        let l = current_layer;
-        graphics.add_recent(current_symbol, l, layer_type[layername[l]], []);
+        options['xpositions'] = [];
+        console.log(`gui add_present empty options:`);
+        console.dir(options);
+        for(let p of mock_recent_xpositions){
+          options['xpositions'].push(p);
+        }
+        options['data'] = mock_data;
+        console.log(`gui add_present data, xpositions options:`);
+        console.dir(options);
+       
+        graphics.add_recent(current_symbol, l, layer_type[layername[l]]['layer_typev'], options);
     });
 
     gui.add(add_past, 'add_past').onFinishChange(() => {
+        var options = {},
+            l = current_layer;
+
         console.log(`event: add to past array of glyphs`);
-        let l = current_layer;
-        graphics.add_past(current_symbol, l, layer_type[layername[l]], []);
-    });
+        options['xpositions'] = [];
+        console.log(`gui add_past empty options:`);
+        console.dir(options);
+        for(let p of mock_past_xpositions){
+          console.log(`options['xpositions'].push ${p}`);
+          options['xpositions'].push(p);
+        }
+        options['data'] = mock_data;
+        console.log(`gui add_past data, xpositions options:`);
+        console.dir(options);
+
+        graphics.add_past(current_symbol, l, layer_type[layername[l]]['layer_typev'], options);
+        });
+
 
 
     // DISABLE - NOT USEFUL

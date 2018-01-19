@@ -21,6 +21,8 @@ var graphics:Graphics,
     renderer:THREE.WebGLRenderer,
     stats:Stats,
     clock:THREE.Clock = new THREE.Clock(),
+    grid:THREE.Object3D,
+    axes:THREE.Object3D,
     et:number = 0,  // elapsedTime from clock  
     count:number = 0,
 
@@ -33,6 +35,8 @@ var graphics:Graphics,
     layers:THREE.Group[] = [],
     nLayers:number, 
     layerDelta:number,
+    layersGlobal2Local:number,
+    deltaX:number,
     actors:object = {},
 
     onWindowResize = () => {
@@ -81,12 +85,19 @@ class Graphics {
     camera['initial_position'] = config.camera.position;
 
 
-    // scene - meta-container
+
     // scene > stage(1) > layers(i) > actors(i,j)
     // stage layers and depths
     nLayers = config.stage.layers.length;
-    layerDelta = config.stage.layerDelta;
+
+    // scene - meta-container (uses nLayers)
     scene = graphics.scene();
+    
+    // initially all layer local coords match their global coords
+    layersGlobal2Local = 0;
+
+    layerDelta = config.stage.layerDelta;  // distance between layers
+    deltaX = config.stage.deltaX;         // units between x 'index' marks
 
     // resize renderer and adjust camera aspect ratio
     window.addEventListener( 'resize', onWindowResize, false );
@@ -262,9 +273,7 @@ class Graphics {
 
   // create actor - give reference name and place in appropriate layer
   async create(type:string, name:string, layer:number, options:any):Promise<THREE.Object3D> {
-    var grid:THREE.GridHelper,
-        axes:THREE.AxesHelper,
-        past_ray:string,
+    var past_ray:string,
         recent_ray:string,
         line:THREE.Line,
         mountain:THREE.Mesh,
@@ -277,6 +286,7 @@ class Graphics {
     try{
       switch(type){
         case 'grid':
+          // grid is a graphics closure var
           grid = await Grid.create(options);  // Grid.create() returns Promise
           console.log(`grid = ${grid}`);
           graphics.addActor(name, grid, options);
@@ -287,6 +297,7 @@ class Graphics {
         // rotateY(PI) so X-axis points negative (time)
         // and z-axis points positive depth (layer order)
         case 'axes':
+          // axes is a graphics closure var
           axes = await Axes.create(options);  // Axes.create() returns Promise
           graphics.addActor(name, axes, options);
           //axes.rotateY(Math.PI);
@@ -500,22 +511,149 @@ class Graphics {
 
 
   // modify value(s) of glyph in <current_symbol><layer>_recent
-  mod_recent(symbol:string, layer:number, type:string, values:object){
+  mod_recent(symbol:string, layer:number, type:string, options:object){
+    console.log(`\nmod_recent: symbol=${symbol} layer=${layer} type=${type}`);
+    console.log(`options:`);
+    console.dir(options);
+
     let recent = graphics.actor(`${symbol}${layer}_recent`);
     console.log(`recent actor = ${recent}`);
   }
+
 
   // add value(s) of glyph in <current_symbol><layer>_recent
-  add_recent(symbol:string, layer:number, type:string, values:number[]){
+  // NOTE: add_recent is repetitive with new adds to the 'relatiev present
+  // each time
+  add_recent(symbol:string, layer:number, type:string, options:object){
+    console.log(`\nadd_recent: symbol=${symbol} layer=${layer} type=${type}`);
+    console.log(`options:`);
+    console.dir(options);
+
+    // get array of recent glyphs for the given symbol
     let recent = graphics.actor(`${symbol}${layer}_recent`);
     console.log(`recent actor = ${recent}`);
-  }
+
+    // move all layers back 'in time' by the added 'present' in oreder to 
+    // open space at first 'xpl' positions (in all layers)
+    // increment layersGlobal2Local to reflect the translation of all layers
+    // 'into the past' by translateX(-deltaX*xpl)
+    // For exp. if deltaX=5 and nxp=1, and if a new glyph is to be added at 
+    // global x=0, it must be added at local layers coord x=5
+    let xpl = options['xpositions'].length;
+    console.log(`xpositions.length = ${xpl}`);
+    for(let i=0; i<layers.length; i++){
+      layers[i].translateX(-deltaX * xpl);
+    }
+
+    // move grid and axes so they remain at global x=0
+    grid.translateX(deltaX * xpl);
+    axes.translateX(deltaX * xpl);
+
+    // continuing the exp above, global x=0 must correspond to local x=5
+    // functionally layersGlobal2Local(0) = 5
+    // functionally layersGlobal2Local(10000) = 100005
+    // etc...
+    // each addition to 'the present' increments this global-to-local
+    // translation 
+    layersGlobal2Local += deltaX*xpl;
+    console.log(`layersGlobal2Local = ${layersGlobal2Local}`);
+
+
+    // translate options.xpositions from global to layer[l] coordinates
+    // RECALL: layer[l].translateX(deltaX * xpl) - these are global coords
+    // They must be localized for the new glyph(s) by adding deltaX*xpl
+    // For exp, suppose deltaX=5 and one glyph is added at (global) x=0
+    // Since glyphs are added in local layer coords in actor.create,
+    // the exp glyph must be added at local layer x=5
+    for(let i=0; i<xpl; i++){
+      options['xpositions'][i] += layersGlobal2Local;
+    }
+    console.log(`local xpositions = ${options['xpositions']}`);
+
+    // set first_dynamic_index to number of added glyphs - 1 
+    // these N-1 glyphs are returned by graphics.create 
+    // in tuple['recent']:THREE.Group[] (called by graphics.append)
+    options['first_dynamic-index'] = options['data'].length/4 - 1;
+    options['symbol'] = symbol;
+    graphics.append(type, -layer*layerDelta, layer, layers[layer], recent, options);
+  
+  }//add_recent
+
 
   // add value(s) of glyph in <current_symbol><layer>_past
-  add_past(symbol:string, layer:number, type:string, values:number[]){
+  // NOTE: add_past is NOT repetitive - new adds to the 'absolute' past require
+  // specific coords EACH call
+  add_past(symbol:string, layer:number, type:string, options:object){
+    console.log(`\nadd_past: symbol=${symbol} layer=${layer} type=${type}`);
+    console.log(`options:`);
+    console.dir(options);
+
+    // get array of past glyphs for the given symbol
     let past = graphics.actor(`${symbol}${layer}_past`);
-    console.log(`past actor = ${past}`);
-  }
+    //console.log(`past actor = ${past}`);
+
+    // NOTE: xpositions for add_past are unmodified since they are in the
+    // correct 'local' layer coords
+    // However, add_past is NOT repetitive - each invocation requires new
+    // local coords 'further in the past' (i.s greater negative in x)
+    console.log(`local xpositions = ${options['xpositions']}`);
+
+    // set first_dynamic_index to number of added glyphs - 1 
+    // these N-1 glyphs are returned by graphics.create 
+    // in tuple['recent']:THREE.Group[] (called by graphics.append)
+    options['first_dynamic-index'] = options['data'].length/4 - 1;
+    options['symbol'] = symbol;
+    graphics.append(type, -layer*layerDelta, layer, layers[layer], past, options);
+    
+  }//add_past
+
+
+  append(type:string, depth:number, layer:number, layerGroup:THREE.Group, ray:THREE.Group[], options:object){
+    console.log(`\n\n ###graphics.append: layer = ${layer} options=`);
+    console.dir(options);
+
+    switch(type){
+      case 'ohlc':
+        console.log(`append glyph(s) of type ${type} layerDelta = ${layerDelta}`);
+        Ohlc.create(-layer*layerDelta, layerGroup, options)
+          .then((tuple) => {
+            let glyph:THREE.Object3D;
+            console.log(`received tuple:`);
+            console.dir(tuple);
+
+            for(let i=0; i<tuple['recent'].length; i++){
+              glyph = tuple['recent'][i];
+              ray.push(glyph);
+              console.log(`glyph = ${glyph}:`);
+              //console.dir(glyph);
+              layerGroup.add(glyph);
+            }
+        });      
+        break;
+
+      case 'candle':
+        console.log(`append glyph(s) of type ${type} layerDelta = ${layerDelta}`);
+        Candle.create(-layer*layerDelta, layerGroup, options)
+          .then((tuple) => {
+            let glyph:THREE.Object3D;
+            console.log(`received tuple:`);
+            console.dir(tuple);
+
+            for(let i=0; i<tuple['recent'].length; i++){
+              glyph = tuple['recent'][i];
+              ray.push(glyph);
+              console.log(`glyph = ${glyph}:`);
+              //console.dir(glyph);
+              layerGroup.add(glyph);
+            }
+          });      
+        break;
+
+      default:
+        console.log(`%%% failed to append actor(s) of type ${type}`);
+
+    }
+  }//append
 
 }//Graphics
 

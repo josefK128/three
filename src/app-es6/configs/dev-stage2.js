@@ -15,6 +15,7 @@ System.register([], function (exports_1, context_1) {
                     lookAt: { x: -100, y: 80, z: 0 },
                 },
                 stage: {
+                    deltaX: 5.0,
                     layerDelta: 5.0,
                     layer_type: ['none', 'none', 'none', 'none', 'none', 'none', 'none', 'none'],
                     layers: [

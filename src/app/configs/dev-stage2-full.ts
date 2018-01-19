@@ -21,7 +21,8 @@ const config:Config = {
 
 
   // stage: {
-  //   layerDelta:number = 0.5,
+  //   deltaX: 5.0,          // units between x 'index' marks
+  //   layerDelta: 5.0,     // distance between layers
   //   layers:object[][] = [
   //     [{name:string, type:string, layer:number=0, options:object=undefined, ...],
   //     [{name:string, type:string, layer:number=0, options:object=undefined}, ...],
@@ -30,7 +31,8 @@ const config:Config = {
   // }
   // EXP: 8 layers
   stage: {
-    layerDelta: 5.0,
+    deltaX: 5.0,          // units between x 'index' marks
+    layerDelta: 5.0,     // distance between layers
     layer_type: ['ohlc','study','study','study','study','study','study','study'],
     layers: [
       [ {name:'grid0', type:'grid', layer:0, options:{ 
