@@ -310,7 +310,7 @@ class Graphics {
         // '<symbol><layer>_past' and '<symbol><layer>_recent'
         // For exp: ETH0_past, ETH0_recent
         case 'ohlc':
-          Ohlc.create(-layer*layerDelta, layers[layer], options)
+          Ohlc.create(-layer*layerDelta, layers[layer], deltaX, options)
             .then((tuple) => {
               console.log(`received tuple`);
               // add two glyph-arrays passed in tuple as actors for future ref
@@ -328,7 +328,7 @@ class Graphics {
         // '<symbol><layer>_past' and '<symbol><layer>_recent'
         // For exp: ETH0_past, ETH0_recent
         case 'candle':
-          Candle.create(-layer*layerDelta, layers[layer], options)
+          Candle.create(-layer*layerDelta, layers[layer], deltaX, options)
             .then((tuple) => {
               console.log(`received tuple`);
               // add two glyph-arrays passed in tuple as actors for future ref
@@ -641,7 +641,7 @@ class Graphics {
     switch(type){
       case 'ohlc':
         console.log(`append glyph(s) of type ${type} layerDelta = ${layerDelta}`);
-        Ohlc.create(-layer*layerDelta, layerGroup, options)
+        Ohlc.create(-layer*layerDelta, layerGroup, deltaX, options)
           .then((tuple) => {
             let glyph:THREE.Object3D;
             console.log(`received tuple:`);
@@ -659,7 +659,7 @@ class Graphics {
 
       case 'candle':
         console.log(`append glyph(s) of type ${type} layerDelta = ${layerDelta}`);
-        Candle.create(-layer*layerDelta, layerGroup, options)
+        Candle.create(-layer*layerDelta, layerGroup, deltaX, options)
           .then((tuple) => {
             let glyph:THREE.Object3D;
             console.log(`received tuple:`);

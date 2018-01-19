@@ -201,7 +201,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                                     layers[layer].add(axes);
                                     break;
                                 case 'ohlc':
-                                    ohlc_1.Ohlc.create(-layer * layerDelta, layers[layer], options)
+                                    ohlc_1.Ohlc.create(-layer * layerDelta, layers[layer], deltaX, options)
                                         .then((tuple) => {
                                         console.log(`received tuple`);
                                         past_ray = `${options['symbol']}${layer}_past`;
@@ -213,7 +213,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                                     });
                                     break;
                                 case 'candle':
-                                    candle_1.Candle.create(-layer * layerDelta, layers[layer], options)
+                                    candle_1.Candle.create(-layer * layerDelta, layers[layer], deltaX, options)
                                         .then((tuple) => {
                                         console.log(`received tuple`);
                                         past_ray = `${options['symbol']}${layer}_past`;
@@ -388,7 +388,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                     switch (type) {
                         case 'ohlc':
                             console.log(`append glyph(s) of type ${type} layerDelta = ${layerDelta}`);
-                            ohlc_1.Ohlc.create(-layer * layerDelta, layerGroup, options)
+                            ohlc_1.Ohlc.create(-layer * layerDelta, layerGroup, deltaX, options)
                                 .then((tuple) => {
                                 let glyph;
                                 console.log(`received tuple:`);
@@ -403,7 +403,7 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                             break;
                         case 'candle':
                             console.log(`append glyph(s) of type ${type} layerDelta = ${layerDelta}`);
-                            candle_1.Candle.create(-layer * layerDelta, layerGroup, options)
+                            candle_1.Candle.create(-layer * layerDelta, layerGroup, deltaX, options)
                                 .then((tuple) => {
                                 let glyph;
                                 console.log(`received tuple:`);

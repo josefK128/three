@@ -10,10 +10,10 @@
 // depth:number - z-depth at which to create the set of glyphs
 //  depth = -layer * config.layerDepth
 // layer:number - index of layer which is the parent THREE.Group of glyph set
+// width:number - width of the 2 smaller top and bottom quads quadH and quadL
+//   NOTE: the width of the central quadOC is then 2*width
 // options:object containing
 //   first_dynamic_index:number (see above)
-//   width:number - width of the 2 smaller top and bottom quads quadH and quadL
-//     NOTE: the width of the central quadOC is then 2*width
 //   xpositions:number[] - glyph.x position of the glyph on the x 'time' axis
 //   data:number[] - sequence of open, high, low, close y-values for each glyph
 //
@@ -31,16 +31,22 @@
 export var Candle = {
 
   // create candle actors 
-  create: (depth:number, layer:THREE.Group, options:object):Promise<object> => {
+  create: (depth:number, layer:THREE.Group, deltaX:number, options:object):Promise<object> => {
 
-    console.log(`candle.create() depth=${depth} layer=${layer} options= `);
+    console.log(`candle.create() depth=${depth} layer=${layer} deltaX=${deltaX}  options= `);
     console.dir(options);
     console.log(`options['data'].length = ${options['data'].length/4}`);
     
     var symbol:string = options['symbol'],
         nglyphs:number = options['data'].length/4,
         first_dynamic_index:number = options['first_dynamic_index'] || 0,
-        width:number = options['width'] || 1.0,
+
+
+        //width:number = options['width'] || 1.0,
+        // TMP!!!!
+        width:number = deltaX*0.4,
+        
+        
         xpositions:number[] = options['xpositions'],
         data:number[] = options['data'],
 

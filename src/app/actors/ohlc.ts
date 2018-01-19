@@ -9,10 +9,10 @@
 // arguments to create are:
 // depth:number - z-depth at which to create the set of glyphs
 //  depth = -layer * config.layerDepth
+// width:number - width of the three quad components of the ohlc-glyph
 // layer:number - index of layer which is the parent THREE.Group of glyph set
 // options:object containing
 //   first_dynamic_index:number (see above)
-//   width:number - width of the three quad components of the ohlc-glyph
 //   xpositions:number[] - glyph.x position of the glyph on the x 'time' axis
 //   data:number[] - sequence of open, high, low, close y-values for each glyph
 //
@@ -28,16 +28,21 @@
 export var Ohlc = {
 
   // create ohlc-bar actors 
-  create: (depth:number, layer:THREE.Group, options:object):Promise<object> => {
+  create: (depth:number, layer:THREE.Group, deltaX:number, options:object):Promise<object> => {
 
-    console.log(`ohlc.create() depth=${depth} layer=${layer} options= `);
+    console.log(`ohlc.create() depth=${depth} layer=${layer} deltaX=${deltaX} options= `);
     console.dir(options);
     console.log(`options['data'].length = ${options['data'].length/4}`);
     
     var symbol:string = options['symbol'],
         nglyphs:number = options['data'].length/4,
         first_dynamic_index:number = options['first_dynamic_index'] || 0,
-        width:number = options['width'] || 2.0,
+
+
+        //width:number = options['width'] || 2.0,
+        // TMP!!!!
+        width:number = deltaX*0.4,
+        
         xpositions:number[] = options['xpositions'],
         data:number[] = options['data'],
 

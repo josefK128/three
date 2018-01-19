@@ -6,11 +6,12 @@ System.register([], function (exports_1, context_1) {
         setters: [],
         execute: function () {
             exports_1("Candle", Candle = {
-                create: (depth, layer, options) => {
-                    console.log(`candle.create() depth=${depth} layer=${layer} options= `);
+                create: (depth, layer, deltaX, options) => {
+                    console.log(`candle.create() depth=${depth} layer=${layer} deltaX=${deltaX}  options= `);
                     console.dir(options);
                     console.log(`options['data'].length = ${options['data'].length / 4}`);
-                    var symbol = options['symbol'], nglyphs = options['data'].length / 4, first_dynamic_index = options['first_dynamic_index'] || 0, width = options['width'] || 1.0, xpositions = options['xpositions'], data = options['data'], 
+                    var symbol = options['symbol'], nglyphs = options['data'].length / 4, first_dynamic_index = options['first_dynamic_index'] || 0, 
+                    width = deltaX * 0.4, xpositions = options['xpositions'], data = options['data'], 
                     doublewidth = 2.0 * width, quad_depth = depth - 0.01, 
                     past = [], recent = [], 
                     actor, open, high, low, close, 

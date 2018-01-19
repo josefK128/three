@@ -18,6 +18,9 @@ var ui:Ui,
     pivot:THREE.Object3D,
 
     // symbol options objects
+    // ohlc_options:object = {first_dynamic_index:number = 0,
+    //                        xpositions:number[N],
+    //                        data:number[4*N]}
     ohlc_options:object = {},
     current_symbol:string,
 
@@ -25,7 +28,7 @@ var ui:Ui,
     // temporary hard-coded mock data!!
     // mock data for add_recent, add_past, modify_recent
     // NOTE: xpositions must be increasing seq! (neg-to-pos)(past-to-future)
-    mock_data:number[] = [300, 320, 60, 80, 260, 280, 220, 100],
+    mock_data:number[] = [300, 320, 60, 80, 260, 280, 100, 220],
     //mock_data:number[] = [300, 320, 60, 80],
     mock_recent_xpositions:number[] = [-5, 0],
     //mock_recent_xpositions:number[] = [0],

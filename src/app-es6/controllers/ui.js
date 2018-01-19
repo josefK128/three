@@ -10,7 +10,7 @@ System.register(["../services/data"], function (exports_1, context_1) {
         ],
         execute: function () {
             ohlc_options = {}, 
-            mock_data = [300, 320, 60, 80, 260, 280, 220, 100], 
+            mock_data = [300, 320, 60, 80, 260, 280, 100, 220], 
             mock_recent_xpositions = [-5, 0], 
             mock_past_xpositions = [-50005, -50000], 
             mock_mod_data = [300, 320, 60, 80], mock_mod_xpositions = [0], 

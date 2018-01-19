@@ -6,11 +6,12 @@ System.register([], function (exports_1, context_1) {
         setters: [],
         execute: function () {
             exports_1("Ohlc", Ohlc = {
-                create: (depth, layer, options) => {
-                    console.log(`ohlc.create() depth=${depth} layer=${layer} options= `);
+                create: (depth, layer, deltaX, options) => {
+                    console.log(`ohlc.create() depth=${depth} layer=${layer} deltaX=${deltaX} options= `);
                     console.dir(options);
                     console.log(`options['data'].length = ${options['data'].length / 4}`);
-                    var symbol = options['symbol'], nglyphs = options['data'].length / 4, first_dynamic_index = options['first_dynamic_index'] || 0, width = options['width'] || 2.0, xpositions = options['xpositions'], data = options['data'], 
+                    var symbol = options['symbol'], nglyphs = options['data'].length / 4, first_dynamic_index = options['first_dynamic_index'] || 0, 
+                    width = deltaX * 0.4, xpositions = options['xpositions'], data = options['data'], 
                     halfwidth = width * 0.5, quad_depth = depth - 0.01, quadOC_depth = depth - 0.02, 
                     past = [], recent = [], 
                     actor, open, high, low, close, 
