@@ -43,7 +43,7 @@ export var Line = {
               let j = Math.floor(i/4.0);
               if(i%4 === k){
                 subset[j] = data[i];
-//              console.log(`subset[${j}] = ${subset[j]}`);
+                console.log(`subset[${j}] = ${subset[j]}`);
               }
             }
 
@@ -59,16 +59,10 @@ export var Line = {
               vertices[3*i+2] = 0.0;
             }
 
-            // check for NaN
-//            for(let i=0,flag=true; i<nvertices; i++){
-//              //console.log(`vertices[${i}] = ${vertices[i]}`);
-//              if(flag){
-//                if(Number.isNaN(vertices[i])){
-//                  console.log(`vertices[${i}] is NaN!!!!!!!!!`);
-//                  flag = false;
-//                }
-//              }
-//            }
+            // diagnostic
+            for(let i=0; i<15; i++){
+              console.log(`vertices[${i}] = ${vertices[i]}`);
+            }
 
 
             // create custom attribute for BufferGeometry

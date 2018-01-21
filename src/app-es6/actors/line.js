@@ -32,6 +32,7 @@ System.register([], function (exports_1, context_1) {
                                 let j = Math.floor(i / 4.0);
                                 if (i % 4 === k) {
                                     subset[j] = data[i];
+                                    console.log(`subset[${j}] = ${subset[j]}`);
                                 }
                             }
                             console.log(`nvertices = ${nvertices}`);
@@ -41,6 +42,9 @@ System.register([], function (exports_1, context_1) {
                                 vertices[3 * i] = xpositions[i];
                                 vertices[3 * i + 1] = subset[i];
                                 vertices[3 * i + 2] = 0.0;
+                            }
+                            for (let i = 0; i < 15; i++) {
+                                console.log(`vertices[${i}] = ${vertices[i]}`);
                             }
                             line_g.addAttribute('position', new THREE.BufferAttribute(vertices, 3));
                             console.log(`line_g.attribute`);

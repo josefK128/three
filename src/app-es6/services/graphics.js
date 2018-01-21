@@ -143,6 +143,8 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                     var prev_type = config.stage.layer_type[l], flag = true;
                     console.log(`\n\n*** graphics.layer_type(${l}, ${type})`);
                     console.log(`prev_type of layer[${l}] = ${prev_type})`);
+                    console.log(`options['xp'].length = ${options['xpositions'].length})`);
+                    console.log(`options['d'].length = ${options['data'].length})`);
                     config.stage.layer_type[l] = type;
                     if (prev_type === 'invisible') {
                         layers[l].visible = true;

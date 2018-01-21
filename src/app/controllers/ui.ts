@@ -24,6 +24,8 @@ var ui:Ui,
     ohlc_options:object = {},
     current_symbol:string,
 
+    // deltaX - distance between xpositions
+    deltaX:number,
 
     // temporary hard-coded mock data!!
     // mock data for add_recent, add_past, modify_recent
@@ -84,6 +86,8 @@ class Ui {
     graphics = _graphics;
     camera = graphics.camera();
 
+    // deltaX - distance between xpositions
+    deltaX = config.stage.deltaX;
 
     // gui 
     initial_view = {initial_view:()=>{console.log(`\ninitial_view`);}};
@@ -334,6 +338,18 @@ class Ui {
         var options = {},
             l = current_layer;
 
+        // modify ohlc_options['data']
+        for(let i=0; i<mock_mod_xpositions.length; i++){
+          let j = -mock_mod_xpositions[i]/deltaX;
+          console.log(`j = ${j}`);
+          for(let k=j; k<j+4; k++){
+            console.log(`initially ohlc_options[current_symbol]['data'][${k}] = ${ohlc_options[current_symbol]['data'][k]}`);
+            ohlc_options[current_symbol]['data'][k] = mock_mod_data[k];
+            console.log(`after update ohlc_options[current_symbol]['data'][${k}] = ${ohlc_options[current_symbol]['data'][k]}`);
+          }
+        }
+
+        // modify graphics
         console.log(`event: modify present glyph`);
         options['xpositions'] = [];
         for(let p of mock_mod_xpositions){
@@ -345,8 +361,48 @@ class Ui {
 
     gui.add(add_present, 'add_present').onFinishChange(() => {
        var options = {},
-            l = current_layer;
+           l = current_layer,
+           mrxp = mock_recent_xpositions,
+           md = mock_data,
+           lxp = mock_recent_xpositions.length,
+           offset = lxp*deltaX;
 
+        // modify ohlc_options['xpositions'] and ohlc_options['data']
+        // xpositions
+        for(let i=0; i<lxp; i++){
+//          //console.log(`i = ${i}`);
+          ohlc_options[current_symbol]['xpositions'].unshift(mrxp[i] + offset);
+          console.log(`### ${ohlc_options[current_symbol]['xpositions'][0]}`);
+        }
+
+        // data
+        console.log(`ohlc_op[c_s][d].length = ${ohlc_options[current_symbol]['data'].length}`);
+        for(let i=0; i<lxp; i++){
+          for(let j=(i+1)*4-1; j>=i*4; j--){
+            if(j%4 === 0){
+              console.log(`open`);
+            }
+            if(j%4 === 1){
+              console.log(`high`);
+            }
+            if(j%4 === 2){
+              console.log(`low`);
+            }
+            if(j%4 === 3){
+              console.log(`close`);
+            }
+            console.log(`unshift md[${j}] = ${md[j]}`);
+            ohlc_options[current_symbol]['data'].unshift(md[j]);
+          }
+        }
+        let length = ohlc_options[current_symbol]['data'].length;
+        for(let i=0; i<8; i++){
+          console.log(`data[${i}] = ${ohlc_options[current_symbol]['data'][i]}`);
+        }
+        console.log(`ohlc_op[c_s][d].length = ${ohlc_options[current_symbol]['data'].length}`);
+
+
+        // modify graphics
         console.log(`event: add to present array of glyphs`);
         options['xpositions'] = [];
         console.log(`gui add_present empty options:`);
@@ -355,22 +411,29 @@ class Ui {
           options['xpositions'].push(p);
         }
         options['data'] = mock_data;
-        console.log(`gui add_present data, xpositions options:`);
-        console.dir(options);
-       
+
         graphics.add_recent(current_symbol, l, layer_type[layername[l]]['layer_typev'], options);
     });
 
     gui.add(add_past, 'add_past').onFinishChange(() => {
         var options = {},
-            l = current_layer;
+            l = current_layer,
+            mpxp:number[] = mock_past_xpositions,
+            md:number[] = mock_data;
 
+        // modify ohlc_options['xpositions'] and ohlc_options['data']
+        for(let i=0; i<mpxp.length; i++){
+          ohlc_options[current_symbol]['xpositions'].push(mpxp[mpxp.length-1-i]);
+          let m = ohlc_options[current_symbol]['data'].length;  
+          for(let k=0; k<4; k++){
+            ohlc_options[current_symbol]['data'].push(md[4*(mpxp.length-1-i) + k]);
+          }
+        }
+
+        // modify graphics
         console.log(`event: add to past array of glyphs`);
         options['xpositions'] = [];
-        console.log(`gui add_past empty options:`);
-        console.dir(options);
         for(let p of mock_past_xpositions){
-          console.log(`options['xpositions'].push ${p}`);
           options['xpositions'].push(p);
         }
         options['data'] = mock_data;
@@ -426,7 +489,11 @@ class Ui {
           ltype = 'study';
         }
 
-        console.log(`\n&&& graphics.layer_type(${l}, ${ltype}, ohlc_options)`);
+        console.log(`&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&`);
+        console.log(`xpositions.l = ${ohlc_options[current_symbol]['xpositions'].length}`);
+//        for(let i=0; i<ohlc_options[current_symbol]['xpositions']; i++){
+//          console.log(`xpositions[${i}] = ohlc_options[current_symbol]['xpositions'][i]`);
+//        }
         graphics.layer_type(l, ltype, ohlc_options[current_symbol]);
       }).listen();
     }
