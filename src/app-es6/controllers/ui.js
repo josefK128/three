@@ -1,7 +1,7 @@
 System.register(["../services/data"], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var data_1, ui, config, graphics, camera, pivot, ohlc_options, current_symbol, mock_data, mock_recent_xpositions, mock_past_xpositions, mock_mod_data, mock_mod_xpositions, current_layer, initial_view, normalize_scale, normalize_zoom, normalize_pan_tilt, railsv, rails, dollyX_, dollyY_, logscaleX_, logscaleY_, sx, sy, pan_, tilt_, zoom_, pitch_, symbolv, symbols, layersv, layers, layername, layer_typev, layer_type, mod_present, add_present, add_past, gui, stop, events, Ui;
+    var data_1, ui, config, graphics, camera, pivot, ohlc_options, current_symbol, deltaX, mock_data, mock_recent_xpositions, mock_past_xpositions, mock_mod_data, mock_mod_xpositions, current_layer, initial_view, normalize_scale, normalize_zoom, normalize_pan_tilt, railsv, rails, dollyX_, dollyY_, logscaleX_, logscaleY_, sx, sy, pan_, tilt_, zoom_, pitch_, symbolv, symbols, layersv, layers, layername, layer_typev, layer_type, mod_present, add_present, add_past, gui, stop, events, Ui;
     return {
         setters: [
             function (data_1_1) {
@@ -10,7 +10,7 @@ System.register(["../services/data"], function (exports_1, context_1) {
         ],
         execute: function () {
             ohlc_options = {}, 
-            mock_data = [300, 320, 60, 80, 260, 280, 220, 100], 
+            mock_data = [300, 320, 60, 80, 260, 280, 100, 220], 
             mock_recent_xpositions = [-5, 0], 
             mock_past_xpositions = [-50005, -50000], 
             mock_mod_data = [300, 320, 60, 80], mock_mod_xpositions = [0], 
@@ -20,6 +20,7 @@ System.register(["../services/data"], function (exports_1, context_1) {
                     config = _config;
                     graphics = _graphics;
                     camera = graphics.camera();
+                    deltaX = config.stage.deltaX;
                     initial_view = { initial_view: () => { console.log(`\ninitial_view`); } };
                     normalize_scale = { normalize_scale: () => { console.log(`\nnormalize_scale`); } };
                     normalize_zoom = { normalize_zoom: () => { console.log(`\nnormalize_zoom`); } };
@@ -62,11 +63,16 @@ System.register(["../services/data"], function (exports_1, context_1) {
                     for (let s of symbolv) {
                         ohlc_options[s] = data_1.data.synthesize(s);
                     }
-                    console.log(`setting layer_typev[0] = 'ohlc'`);
+                    console.log(`setting layer_typev[0] = 'candle'`);
                     graphics.layer_type(0, 'candle', ohlc_options[current_symbol]);
                     layer_type[layername[0]]['layer_typev'] = 'candle';
                     console.log(`\n%%% ui layers[0] initialized for ${current_symbol} as:`);
                     console.dir(graphics.layer(0));
+                    console.log(`setting layer_typev[1] = 'lineC'`);
+                    graphics.layer_type(1, 'line', ohlc_options[current_symbol]);
+                    layer_type[layername[1]]['layer_typev'] = 'lineC';
+                    console.log(`\n%%% ui layers[1] initialized for ${current_symbol} as:`);
+                    console.dir(graphics.layer(1));
                     gui.add(initial_view, 'initial_view').onFinishChange(() => {
                         camera.position.set(camera['initial_position'].x, camera['initial_position'].y, camera['initial_position'].z);
                         camera.lookAt(camera['initial_position'].x, camera['initial_position'].y, 0.0);
@@ -163,6 +169,15 @@ System.register(["../services/data"], function (exports_1, context_1) {
                     });
                     gui.add(mod_present, 'mod_present').onFinishChange(() => {
                         var options = {}, l = current_layer;
+                        for (let i = 0; i < mock_mod_xpositions.length; i++) {
+                            let j = -mock_mod_xpositions[i] / deltaX;
+                            console.log(`j = ${j}`);
+                            for (let k = j; k < j + 4; k++) {
+                                console.log(`initially ohlc_options[current_symbol]['data'][${k}] = ${ohlc_options[current_symbol]['data'][k]}`);
+                                ohlc_options[current_symbol]['data'][k] = mock_mod_data[k];
+                                console.log(`after update ohlc_options[current_symbol]['data'][${k}] = ${ohlc_options[current_symbol]['data'][k]}`);
+                            }
+                        }
                         console.log(`event: modify present glyph`);
                         options['xpositions'] = [];
                         for (let p of mock_mod_xpositions) {
@@ -172,7 +187,35 @@ System.register(["../services/data"], function (exports_1, context_1) {
                         graphics.mod_recent(current_symbol, l, layer_type[layername[l]]['layer_typev'], options);
                     });
                     gui.add(add_present, 'add_present').onFinishChange(() => {
-                        var options = {}, l = current_layer;
+                        var options = {}, l = current_layer, mrxp = mock_recent_xpositions, md = mock_data, lxp = mock_recent_xpositions.length, offset = lxp * deltaX;
+                        for (let i = 0; i < lxp; i++) {
+                            ohlc_options[current_symbol]['xpositions'].unshift(mrxp[i] + offset);
+                            console.log(`### ${ohlc_options[current_symbol]['xpositions'][0]}`);
+                        }
+                        console.log(`ohlc_op[c_s][d].length = ${ohlc_options[current_symbol]['data'].length}`);
+                        for (let i = 0; i < lxp; i++) {
+                            for (let j = (i + 1) * 4 - 1; j >= i * 4; j--) {
+                                if (j % 4 === 0) {
+                                    console.log(`open`);
+                                }
+                                if (j % 4 === 1) {
+                                    console.log(`high`);
+                                }
+                                if (j % 4 === 2) {
+                                    console.log(`low`);
+                                }
+                                if (j % 4 === 3) {
+                                    console.log(`close`);
+                                }
+                                console.log(`unshift md[${j}] = ${md[j]}`);
+                                ohlc_options[current_symbol]['data'].unshift(md[j]);
+                            }
+                        }
+                        let length = ohlc_options[current_symbol]['data'].length;
+                        for (let i = 0; i < 8; i++) {
+                            console.log(`data[${i}] = ${ohlc_options[current_symbol]['data'][i]}`);
+                        }
+                        console.log(`ohlc_op[c_s][d].length = ${ohlc_options[current_symbol]['data'].length}`);
                         console.log(`event: add to present array of glyphs`);
                         options['xpositions'] = [];
                         console.log(`gui add_present empty options:`);
@@ -181,18 +224,20 @@ System.register(["../services/data"], function (exports_1, context_1) {
                             options['xpositions'].push(p);
                         }
                         options['data'] = mock_data;
-                        console.log(`gui add_present data, xpositions options:`);
-                        console.dir(options);
                         graphics.add_recent(current_symbol, l, layer_type[layername[l]]['layer_typev'], options);
                     });
                     gui.add(add_past, 'add_past').onFinishChange(() => {
-                        var options = {}, l = current_layer;
+                        var options = {}, l = current_layer, mpxp = mock_past_xpositions, md = mock_data;
+                        for (let i = 0; i < mpxp.length; i++) {
+                            ohlc_options[current_symbol]['xpositions'].push(mpxp[mpxp.length - 1 - i]);
+                            let m = ohlc_options[current_symbol]['data'].length;
+                            for (let k = 0; k < 4; k++) {
+                                ohlc_options[current_symbol]['data'].push(md[4 * (mpxp.length - 1 - i) + k]);
+                            }
+                        }
                         console.log(`event: add to past array of glyphs`);
                         options['xpositions'] = [];
-                        console.log(`gui add_past empty options:`);
-                        console.dir(options);
                         for (let p of mock_past_xpositions) {
-                            console.log(`options['xpositions'].push ${p}`);
                             options['xpositions'].push(p);
                         }
                         options['data'] = mock_data;
@@ -234,7 +279,8 @@ System.register(["../services/data"], function (exports_1, context_1) {
                             if (ltype.startsWith('study')) {
                                 ltype = 'study';
                             }
-                            console.log(`\n&&& graphics.layer_type(${l}, ${ltype}, ohlc_options)`);
+                            console.log(`&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&`);
+                            console.log(`xpositions.l = ${ohlc_options[current_symbol]['xpositions'].length}`);
                             graphics.layer_type(l, ltype, ohlc_options[current_symbol]);
                         }).listen();
                     }
