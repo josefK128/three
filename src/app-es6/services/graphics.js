@@ -263,7 +263,8 @@ System.register(["../actors/grid", "../actors/axes", "../actors/ohlc", "../actor
                                     layers[layer].add(study);
                                     break;
                                 case 'sprite':
-                                    sprite = yield sprite_1.Sprite.create(options); 
+                                    sprite = yield sprite_1.Sprite.create(options);
+                                    console.log(`@@@@ sprite = ${sprite}`);
                                     graphics.addActor(name, sprite, options);
                                     sprite.position.z = -layer * layerDelta;
                                     layers[layer].add(sprite);

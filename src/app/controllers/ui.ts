@@ -174,22 +174,36 @@ class Ui {
     // **********
 
     // initialize layers[0] to candle (graphics.create('candle',...)   
-    // modify layer_typev for current_layer
+    // and modify layer_typev for current_layer
     console.log(`setting layer_typev[0] = 'candle'`);
+    // create layer[0]
     //graphics.layer_type(0, 'ohlc', ohlc_options[current_symbol]);
     graphics.layer_type(0, 'candle', ohlc_options[current_symbol]);
+    // UI
     //layer_type[layername[0]]['layer_typev'] = 'ohlc';
     layer_type[layername[0]]['layer_typev'] = 'candle';
     console.log(`\n%%% ui layers[0] initialized for ${current_symbol} as:`);
     console.dir(graphics.layer(0));
 
+
     // initialize layers[1] to lineC (graphics.create('line',...)  
-    // modify layer_typev for current_layer
+    // and modify layer_typev for current_layer
     console.log(`setting layer_typev[1] = 'lineC'`);
+    // create layer[1]
     graphics.layer_type(1, 'line', ohlc_options[current_symbol]);
+    // UI
     layer_type[layername[1]]['layer_typev'] = 'lineC';
     console.log(`\n%%% ui layers[1] initialized for ${current_symbol} as:`);
     console.dir(graphics.layer(1));
+
+
+    // initialize layers[2] to TextNumeric (graphics.create('text_numeric',...) 
+    // create layer[2]
+    console.log(`\n\n initializing layer[2] with sprite w default options`);
+    graphics.create('sprite', 'sprite2', 2);
+    // UI
+    layer_type[layername[2]]['layer_typev'] = 'study';
+
 
 
 

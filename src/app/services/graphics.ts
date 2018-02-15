@@ -387,11 +387,13 @@ class Graphics {
           break;
 
         case 'sprite':
-          sprite = await Sprite.create(options);  // Sprite.create() returns Promise
-          graphics.addActor(name, sprite, options);
-          sprite.position.z = -layer*layerDelta;
-          layers[layer].add(sprite);
-          break;
+        // Sprite.create() returns Promise
+        sprite = await Sprite.create(options);  
+        console.log(`@@@@ sprite = ${sprite}`);
+        graphics.addActor(name, sprite, options);
+        sprite.position.z = -layer*layerDelta;
+        layers[layer].add(sprite);
+        break;
 
         case 'quad':
           quad = await Quad.create(options);  // Quad.create() returns Promise
