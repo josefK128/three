@@ -197,7 +197,7 @@ class Ui {
     console.dir(graphics.layer(1));
 
 
-    // initialize layers[2] to TextNumeric (graphics.create('text_numeric',...) 
+    // initialize layers[2] to Sprite (graphics.create('sprite',...) 
     // create layer[2]
     console.log(`\n\n initializing layer[2] with sprite w default options`);
     graphics.create('sprite', 'sprite2', 2);
