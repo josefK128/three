@@ -74,7 +74,11 @@ System.register(["../services/data"], function (exports_1, context_1) {
                     console.log(`\n%%% ui layers[1] initialized for ${current_symbol} as:`);
                     console.dir(graphics.layer(1));
                     console.log(`\n\n initializing layer[2] with sprite w default options`);
-                    graphics.create('sprite', 'sprite2', 2);
+                    for (let i = 0; i < 10; i++) {
+                        graphics.create('sprite', 'sprite2', 2, {
+                            glyph: i.toString(), x: -10 * i, y: 120.0 + Math.random() * 10, z: 0.0, sx: 10, sy: 20
+                        });
+                    }
                     layer_type[layername[2]]['layer_typev'] = 'study';
                     gui.add(initial_view, 'initial_view').onFinishChange(() => {
                         camera.position.set(camera['initial_position'].x, camera['initial_position'].y, camera['initial_position'].z);

@@ -2,7 +2,7 @@
 // sprite is texture-mapped char/numeral symbol
 
 export var Sprite = {
-  create: (options:any={x:-100,y:120.0,z:0.0, sx:10,sy:20}):Promise<THREE.Sprite> => {
+  create: (options:any={glyph:'3', x:-100,y:120.0,z:0.0, sx:10,sy:20}):Promise<THREE.Sprite> => {
         
     console.log(`\n\n &&& sprite.create() options= `);
     console.dir(options);
@@ -15,7 +15,7 @@ export var Sprite = {
         return new Promise((resolve, reject) => {
           try{
             // loader.load('http://tosca:8080/webgl/three/src/assets/images/sprite_redlight.png', (texture) => { 
-            texture = loader.load('./assets/images/three.png'); 
+            texture = loader.load(`./assets/images/${options['glyph']}.png`); 
               console.log(`\n\n &&& texture = ${texture}`);
               sprite_m = new THREE.SpriteMaterial({
                 map: texture,
