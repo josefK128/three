@@ -45,7 +45,8 @@ synthesize(symbol:string, first_dynamic_index:number=0, nglyphs:number=10000, de
       data[j+3] = meanC + 20*Math.random() - 10.0;
     }
 
-    return {symbol:symbol, first_dynamic_index:first_dynamic_index, width:deltaX*0.4, xpositions:xpositions, data:data};
+//    return {symbol:symbol, first_dynamic_index:first_dynamic_index, width:deltaX*0.4, xpositions:xpositions, data:data};
+    return {symbol:symbol, first_dynamic_index:first_dynamic_index, xpositions:xpositions, data:data};
 
   }//synthesize
 }//Data

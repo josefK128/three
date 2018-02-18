@@ -16,7 +16,7 @@ System.register([], function (exports_1, context_1) {
                         data[j + 2] = meanL + 10 * Math.random() - 5.0;
                         data[j + 3] = meanC + 20 * Math.random() - 10.0;
                     }
-                    return { symbol: symbol, first_dynamic_index: first_dynamic_index, xpositions: xpositions, data: data };
+                    return { symbol: symbol, first_dynamic_index: first_dynamic_index, width: deltaX * 0.4, xpositions: xpositions, data: data };
                 } 
             }; 
             if (data === undefined) {

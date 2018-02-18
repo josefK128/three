@@ -6,7 +6,6 @@ import {Grid} from '../actors/grid';
 import {Axes} from '../actors/axes';
 import {Ohlc} from '../actors/ohlc';
 import {Candle} from '../actors/candle';
-import {QuadLine} from '../actors/quadline';
 import {Line} from '../actors/line';
 import {Mountain} from '../actors/mountain';
 import {Study} from '../actors/study';
@@ -278,7 +277,6 @@ class Graphics {
     var past_ray:string,
         recent_ray:string,
         line:THREE.Group,
-        quadline:THREE.Mesh,
         mountain:THREE.Mesh,
         study:THREE.Line,
         sprite:THREE.Sprite,
@@ -343,20 +341,6 @@ class Graphics {
               graphics.addActor(recent_ray, tuple['recent'], options);
             });
             break;
-
-
-        case 'quadline':
-          console.log(`@@@@ type = 'quadline'`);
-          quadline = await QuadLine.create(options);
-          console.log(`@@@@ quadline = ${quadline}`);
-          quadline.position.z = -layer*layerDelta;
-          console.log(`@@@@ quadline.position.x = ${quadline.position.x}`);
-          console.log(`@@@@ quadline.position.y = ${quadline.position.y}`);
-          console.log(`@@@@ quadline.position.z = ${quadline.position.z}`);
-          layers[layer].add(quadline);
-          graphics.addActor(name, quadline, options);
-          console.log(`after adding ${name} actors = ${Object.keys(actors)}`);
-          break;
 
 
         case 'line':

@@ -74,7 +74,7 @@ System.register(["../services/data"], function (exports_1, context_1) {
                     console.log(`\n%%% ui layers[1] initialized for ${current_symbol} as:`);
                     console.dir(graphics.layer(1));
                     console.log(`\n\n initializing layer[2] with sprite w default options`);
-                    for (let i = 0; i < 10; i++) {
+                    for (let i = 1; i < 10; i++) {
                         graphics.create('sprite', 'sprite2', 2, {
                             glyph: i.toString(), x: -10 * i, y: 120.0 + Math.random() * 10, z: 0.0, sx: 10, sy: 20
                         });
